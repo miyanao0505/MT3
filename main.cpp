@@ -2,7 +2,7 @@
 #include "Script/Matrix.h"
 #include "Script/MyTools.h"
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_0_4_3次元での回転_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_0_5_3次元アフィン変換行列_確認課題";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -15,13 +15,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char preKeys[256] = {0};
 
 	// 3次元ベクトル
+	MyBase::Vec3 scale = { 1.2f, 0.79f, -2.1f };
 	MyBase::Vec3 rotate = { 0.4f, 1.43f, -0.8f };
+	MyBase::Vec3 translate = { 2.7f, -4.15f, 1.57f };
 
 	// 結果
-	MyBase::Matrix4x4 rotateXMatrix = Matrix::MakeRotateXMatrix4x4(rotate.x);
-	MyBase::Matrix4x4 rotateYMatrix = Matrix::MakeRotateYMatrix4x4(rotate.y);
-	MyBase::Matrix4x4 rotateZMatrix = Matrix::MakeRotateZMatrix4x4(rotate.z);
-	MyBase::Matrix4x4 rotateXYZMatrix = Matrix::Multiply(rotateXMatrix, Matrix::Multiply(rotateYMatrix, rotateZMatrix));
+	MyBase::Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix(scale, rotate, translate);
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -44,10 +43,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		Matrix::MatrixScreenPrintf(0, 0, rotateXMatrix, "rotateXMatrix");
-		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5, rotateYMatrix, "rotateYMatrix");
-		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5 * 2, rotateZMatrix, "rotateZMatrix");
-		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5 * 3, rotateXYZMatrix, "rotateXYZMatrix");
+		Matrix::MatrixScreenPrintf(0, 0, worldMatrix, "worldMatrix");
 
 		///
 		/// ↑描画処理ここまで

@@ -202,7 +202,7 @@ Matrix::Matrix3x3 Matrix::MakeTranslateMatrix(const Vec2& translate)
 }
 
 /// <summary>
-/// 3x3アフィン変換行列の作成
+/// 2次元アフィン変換行列の作成
 /// </summary>
 Matrix::Matrix3x3 Matrix::MakeAffineMatrix(const Vec2& scale, const float& rotate, const Vec2& translate)
 {
@@ -514,6 +514,22 @@ Matrix::Matrix4x4 Matrix::MakeTranslateMatrix(const Vec3& translate)
 	ans.m[3][2] = translate.z;
 
 	return ans;
+}
+
+/// <summary>
+/// 3次元アフィン変換行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeAffineMatrix(const Vec3& scale, const Vec3& rotate, const Vec3& translate)
+{
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+	Matrix4x4 rotateMatrix = MakeRotateMatrix4x4(rotate.x, rotate.y, rotate.z);
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+	Matrix4x4 worldMatrix = { 0 };
+
+	worldMatrix = Multiply(scaleMatrix, rotateMatrix);
+	worldMatrix = Multiply(worldMatrix, translateMatrix);
+
+	return worldMatrix;
 }
 
 /// <summary>
