@@ -1,6 +1,6 @@
 ﻿#pragma once
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include <assert.h>
 #include "MyBase.h"
 
@@ -39,15 +39,19 @@ public:
 	// 拡縮行列の作成
 	static Matrix3x3 MakeScaleMatrix(const Vec2& scale);
 	// 回転行列の作成
-	static Matrix3x3 MakeRotateMatrix(const float& theta);
+	static Matrix3x3 MakeRotateMatrix3x3(const float& theta);
 	// 平行移動行列の作成関数
 	static Matrix3x3 MakeTranslateMatrix(const Vec2& translate);
-	// アフィン変換行列の作成
+	// 2次元アフィン変換行列の作成
 	static Matrix3x3 MakeAffineMatrix(const Vec2& scale, const float& rotate, const Vec2& translate);
 	// 正射影行列の作成
 	static Matrix3x3 MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom);
 	// ビューポート行列の作成
 	static Matrix3x3 MakeViewportMatrix(const float& left, const float& top, const float& width, const float& height);
+	// 行列の加法
+	static Matrix3x3 Add(const Matrix3x3& matrix1, Matrix3x3& matrix2);
+	// 行列の減法
+	static Matrix3x3 Subtract(const Matrix3x3& matrix1, Matrix3x3& matrix2);
 	// 行列の積
 	static Matrix3x3 Multiply(const Matrix3x3& matrix1, const Matrix3x3& matrix2);
 	// スカラーと行列の積
@@ -62,6 +66,26 @@ public:
 	/// <summary>
 	/// 4x4の行列
 	/// </summary>
+	// 拡縮行列の作成
+	static Matrix4x4 MakeScaleMatrix(const Vec3& scale);
+	// X軸回転行列
+	static Matrix4x4 MakeRotateXMatrix4x4(const float& radian);
+	// Y軸回転行列
+	static Matrix4x4 MakeRotateYMatrix4x4(const float& radian);
+	// Z軸回転行列
+	static Matrix4x4 MakeRotateZMatrix4x4(const float& radian);
+	// 回転行列の作成
+	static Matrix4x4 MakeRotateMatrix4x4(const float& thetaX, const float& thetaY, const float& thetaZ);
+	// 平行移動行列の作成
+	static Matrix4x4 MakeTranslateMatrix(const Vec3& translate);
+	// 3次元アフィン変換行列の作成
+	static Matrix4x4 MakeAffineMatrix(const Vec3& scale, const Vec3& rotate, const Vec3& translate);
+	// 透視投影行列の作成
+	static Matrix4x4 MakePerspectiveFovMatrix(const float& fovY, const float& aspectRatio, const float& nearClip, const float& farClip);
+	// 正射影行列の作成
+	static Matrix4x4 MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom, const float& nearClip, const float& farClip);
+	// ビューポート変換行列の作成
+	static Matrix4x4 MakeViewportMatrix(const float& left, const float& top, const float& width, const float& height, const float& minDepth, const float& maxDepth);
 	// 単位行列の作成
 	static Matrix4x4 MakeIdentity4x4();
 	// 行列の加法
@@ -72,6 +96,8 @@ public:
 	static Matrix4x4 Multiply(const Matrix4x4& matrix1, const Matrix4x4& matrix2);
 	// スカラーと行列の積
 	static Matrix4x4 Multiply(const float& scalar, const Matrix4x4& matrix);
+	// 3次元ベクトルを同時座標として変換する
+	static Vec3 Transform(const Vec3& vector, const Matrix4x4 matrix);
 	// 逆行列
 	static Matrix4x4 Inverse(const Matrix4x4& matrix);
 	// 行列式

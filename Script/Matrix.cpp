@@ -1,6 +1,8 @@
 ﻿#include "Matrix.h"
 #include <Novice.h>
 
+using namespace std;
+
 ///
 /// 2x2行列関数 ここから
 /// 
@@ -12,10 +14,10 @@ Matrix::Matrix2x2 Matrix::MakeRotateMatrix2x2(const float& theta)
 {
 	Matrix2x2 ans = { 0 };
 
-	ans.m[0][0] = cosf(theta);
-	ans.m[0][1] = sinf(theta);
-	ans.m[1][0] = sinf(theta) * -1.f;
-	ans.m[1][1] = cosf(theta);
+	ans.m[0][0] = cos(theta);
+	ans.m[0][1] = sin(theta);
+	ans.m[1][0] = sin(theta) * -1.f;
+	ans.m[1][1] = cos(theta);
 
 	return ans;
 }
@@ -171,14 +173,14 @@ Matrix::Matrix3x3 Matrix::MakeScaleMatrix(const Vec2& scale)
 /// <summary>
 /// 3x3回転行列の作成
 /// </summary>
-Matrix::Matrix3x3 Matrix::MakeRotateMatrix(const float& theta)
+Matrix::Matrix3x3 Matrix::MakeRotateMatrix3x3(const float& theta)
 {
 	Matrix3x3 ans = { 0 };
 
-	ans.m[0][0] = cosf(theta);
-	ans.m[0][1] = sinf(theta);
-	ans.m[1][0] = sinf(theta) * -1.f;
-	ans.m[1][1] = cosf(theta);
+	ans.m[0][0] = cos(theta);
+	ans.m[0][1] = sin(theta);
+	ans.m[1][0] = sin(theta) * -1.f;
+	ans.m[1][1] = cos(theta);
 	ans.m[2][2] = 1;
 
 	return ans;
@@ -202,7 +204,7 @@ Matrix::Matrix3x3 Matrix::MakeTranslateMatrix(const Vec2& translate)
 }
 
 /// <summary>
-/// 3x3アフィン変換行列の作成
+/// 2次元アフィン変換行列の作成
 /// </summary>
 Matrix::Matrix3x3 Matrix::MakeAffineMatrix(const Vec2& scale, const float& rotate, const Vec2& translate)
 {
@@ -215,7 +217,7 @@ Matrix::Matrix3x3 Matrix::MakeAffineMatrix(const Vec2& scale, const float& rotat
 	scaleMatrix = MakeScaleMatrix(scale);
 
 	// 回転行列を作成
-	rotateMatrix = MakeRotateMatrix(rotate);
+	rotateMatrix = MakeRotateMatrix3x3(rotate);
 
 	// 平行移動行列を作成
 	translateMatrix = MakeTranslateMatrix(translate);
@@ -255,6 +257,42 @@ Matrix::Matrix3x3 Matrix::MakeViewportMatrix(const float& left, const float& top
 	ans.m[2][0] = left + width / 2;
 	ans.m[2][1] = top + height / 2;
 	ans.m[2][2] = 1;
+
+	return ans;
+}
+
+/// <summary>
+/// 3x3行列の加算
+/// </summary>
+Matrix::Matrix3x3 Matrix::Add(const Matrix3x3& matrix1, Matrix3x3& matrix2)
+{
+	Matrix3x3 ans = { 0 };
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int k = 0; k < 3; k++)
+		{
+			ans.m[i][k] = matrix1.m[i][k] + matrix2.m[i][k];
+		}
+	}
+
+	return ans;
+}
+
+/// <summary>
+/// 3x3行列の減算
+/// </summary>
+Matrix::Matrix3x3 Matrix::Subtract(const Matrix3x3& matrix1, Matrix3x3& matrix2)
+{
+	Matrix3x3 ans = { 0 };
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int k = 0; k < 3; k++)
+		{
+			ans.m[i][k] = matrix1.m[i][k] - matrix2.m[i][k];
+		}
+	}
 
 	return ans;
 }
@@ -378,6 +416,177 @@ Matrix::Matrix3x3 Matrix::Transpose(const Matrix3x3& matrix)
 /// 
 
 /// <summary>
+/// 4x4拡縮行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeScaleMatrix(const Vec3& scale)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = scale.x;
+	ans.m[1][1] = scale.y;
+	ans.m[2][2] = scale.z;
+	ans.m[3][3] = 1;
+
+	return ans;
+}
+
+/// <summary>
+/// X軸回転行列
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeRotateXMatrix4x4(const float& radian)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = 1;
+	ans.m[1][1] = cos(radian);
+	ans.m[1][2] = sin(radian);
+	ans.m[2][1] = -sin(radian);
+	ans.m[2][2] = cos(radian);
+	ans.m[3][3] = 1;
+
+	return ans;
+}
+
+/// <summary>
+/// Y軸回転行列
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeRotateYMatrix4x4(const float& radian)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = cos(radian);
+	ans.m[0][2] = -sin(radian);
+	ans.m[1][1] = 1;
+	ans.m[2][0] = sin(radian);
+	ans.m[2][2] = cos(radian);
+	ans.m[3][3] = 1;
+
+	return ans;
+}
+
+/// <summary>
+/// Z軸回転行列
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeRotateZMatrix4x4(const float& radian)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = cos(radian);
+	ans.m[0][1] = sin(radian);
+	ans.m[1][0] = -sin(radian);
+	ans.m[1][1] = cos(radian);
+	ans.m[2][2] = 1;
+	ans.m[3][3] = 1;
+
+	return ans;
+}
+
+/// <summary>
+/// 4x4回転行列の作成
+/// <param name="thetaX">X軸周りのθ値</param>
+/// <param name="thetaY">Y軸周りのθ値</param>
+/// <param name="thetaZ">Z軸周りのθ値</param>
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeRotateMatrix4x4(const float& thetaX, const float& thetaY, const float& thetaZ)
+{
+	Matrix4x4 rotateX = MakeRotateXMatrix4x4(thetaX);
+	Matrix4x4 rotateY = MakeRotateYMatrix4x4(thetaY);
+	Matrix4x4 rotateZ = MakeRotateZMatrix4x4(thetaZ);
+	Matrix4x4 ans = { 0 };
+
+	ans = Multiply(rotateX, Multiply(rotateY, rotateZ));
+
+	return ans;
+}
+
+/// <summary>
+/// 4x4平行移動行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeTranslateMatrix(const Vec3& translate)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = 1;
+	ans.m[1][1] = 1;
+	ans.m[2][2] = 1;
+	ans.m[3][3] = 1;
+
+	ans.m[3][0] = translate.x;
+	ans.m[3][1] = translate.y;
+	ans.m[3][2] = translate.z;
+
+	return ans;
+}
+
+/// <summary>
+/// 3次元アフィン変換行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeAffineMatrix(const Vec3& scale, const Vec3& rotate, const Vec3& translate)
+{
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+	Matrix4x4 rotateMatrix = MakeRotateMatrix4x4(rotate.x, rotate.y, rotate.z);
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+	Matrix4x4 worldMatrix = { 0 };
+
+	worldMatrix = Multiply(scaleMatrix, rotateMatrix);
+	worldMatrix = Multiply(worldMatrix, translateMatrix);
+
+	return worldMatrix;
+}
+
+/// <summary>
+/// 4x4透視投影行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakePerspectiveFovMatrix(const float& fovY, const float& aspectRatio, const float& nearClip, const float& farClip)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = (1 / aspectRatio) * (1 / std::tan(fovY / 2));
+	ans.m[1][1] = (1 / std::tan(fovY / 2));
+	ans.m[2][2] = farClip / (farClip - nearClip);
+	ans.m[2][3] = 1;
+	ans.m[3][2] = (-nearClip * farClip) / (farClip - nearClip);
+
+	return ans;
+}
+
+/// <summary>
+/// 4x4正射影行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom, const float& nearClip, const float& farClip)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = 2 / (right - left);
+	ans.m[1][1] = 2 / (top - bottom);
+	ans.m[2][2] = 1 / (farClip - nearClip);
+	ans.m[3][0] = (left + right) / (left - right);
+	ans.m[3][1] = (top + bottom) / (bottom - top);
+	ans.m[3][2] = nearClip / (nearClip - farClip);
+	ans.m[3][3] = 1;
+
+	return ans;
+}
+
+/// <summary>
+/// 4x4ビューポート変換行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeViewportMatrix(const float& left, const float& top, const float& width, const float& height, const float& minDepth, const float& maxDepth)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = width / 2;
+	ans.m[1][1] = -height / 2;
+	ans.m[2][2] = maxDepth - minDepth;
+	ans.m[3][0] = left + width / 2;
+	ans.m[3][1] = top + height / 2;
+	ans.m[3][2] = minDepth;
+	ans.m[3][3] = 1;
+
+	return ans;
+}
+
+/// <summary>
 /// 4x4単位行列の作成
 /// </summary>
 Matrix::Matrix4x4 Matrix::MakeIdentity4x4()
@@ -482,6 +691,27 @@ Matrix::Matrix4x4 Matrix::Multiply(const float& scalar, const Matrix4x4& matrix)
 	}
 
 	return ans;
+}
+
+/// <summary>
+/// 3次元ベクトルを同時座標として変換する
+/// </summary>
+Matrix::Vec3 Matrix::Transform(const Vec3& vector, const Matrix4x4 matrix)
+{
+	Vec3 result;
+
+	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.f * matrix.m[3][0];
+	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.f * matrix.m[3][1];
+	result.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + 1.f * matrix.m[3][2];
+	float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + 1.f * matrix.m[3][3];
+
+	assert(w != 0.0f);
+
+	result.x /= w;
+	result.y /= w;
+	result.z /= w;
+
+	return result;
 }
 
 /// <summary>
