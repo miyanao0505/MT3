@@ -42,7 +42,7 @@ public:
 	static Matrix3x3 MakeRotateMatrix3x3(const float& theta);
 	// 平行移動行列の作成関数
 	static Matrix3x3 MakeTranslateMatrix(const Vec2& translate);
-	// 2次元アフィン変換行列の作成
+	// アフィン変換行列の作成
 	static Matrix3x3 MakeAffineMatrix(const Vec2& scale, const float& rotate, const Vec2& translate);
 	// 正射影行列の作成
 	static Matrix3x3 MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom);
@@ -78,14 +78,6 @@ public:
 	static Matrix4x4 MakeRotateMatrix4x4(const float& thetaX, const float& thetaY, const float& thetaZ);
 	// 平行移動行列の作成
 	static Matrix4x4 MakeTranslateMatrix(const Vec3& translate);
-	// 3次元アフィン変換行列の作成
-	static Matrix4x4 MakeAffineMatrix(const Vec3& scale, const Vec3& rotate, const Vec3& translate);
-	// 透視投影行列の作成
-	static Matrix4x4 MakePerspectiveFovMatrix(const float& fovY, const float& aspectRatio, const float& nearClip, const float& farClip);
-	// 正射影行列の作成
-	static Matrix4x4 MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom, const float& nearClip, const float& farClip);
-	// ビューポート変換行列の作成
-	static Matrix4x4 MakeViewportMatrix(const float& left, const float& top, const float& width, const float& height, const float& minDepth, const float& maxDepth);
 	// 単位行列の作成
 	static Matrix4x4 MakeIdentity4x4();
 	// 行列の加法
