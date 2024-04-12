@@ -414,7 +414,7 @@ Matrix::Matrix3x3 Matrix::Transpose(const Matrix3x3& matrix)
 /// 
 
 /// <summary>
-/// 拡縮行列の作成
+/// 4x4拡縮行列の作成
 /// </summary>
 Matrix::Matrix4x4 Matrix::MakeScaleMatrix(const Vec3& scale)
 {
@@ -480,7 +480,7 @@ Matrix::Matrix4x4 Matrix::MakeRotateZMatrix4x4(const float& radian)
 }
 
 /// <summary>
-/// 回転行列の作成
+/// 4x4回転行列の作成
 /// <param name="thetaX">X軸周りのθ値</param>
 /// <param name="thetaY">Y軸周りのθ値</param>
 /// <param name="thetaZ">Z軸周りのθ値</param>
@@ -498,7 +498,7 @@ Matrix::Matrix4x4 Matrix::MakeRotateMatrix4x4(const float& thetaX, const float& 
 }
 
 /// <summary>
-/// 平行移動行列の作成
+/// 4x4平行移動行列の作成
 /// </summary>
 Matrix::Matrix4x4 Matrix::MakeTranslateMatrix(const Vec3& translate)
 {
@@ -530,6 +530,58 @@ Matrix::Matrix4x4 Matrix::MakeAffineMatrix(const Vec3& scale, const Vec3& rotate
 	worldMatrix = Multiply(worldMatrix, translateMatrix);
 
 	return worldMatrix;
+}
+
+/// <summary>
+/// 4x4透視投影行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakePerspectiveFovMatrix(const float& fovY, const float& aspectRatio, const float& nearClip, const float& farClip)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = (1 / aspectRatio) * (1 / std::tan(fovY / 2));
+	ans.m[1][1] = (1 / std::tan(fovY / 2));
+	ans.m[2][2] = farClip / (farClip - nearClip);
+	ans.m[2][3] = 1;
+	ans.m[3][2] = (-nearClip * farClip) / (farClip - nearClip);
+
+	return ans;
+}
+
+/// <summary>
+/// 4x4正射影行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom, const float& nearClip, const float& farClip)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = 2 / (right - left);
+	ans.m[1][1] = 2 / (top - bottom);
+	ans.m[2][2] = 1 / (farClip - nearClip);
+	ans.m[3][0] = (left + right) / (left - right);
+	ans.m[3][1] = (top + bottom) / (bottom - top);
+	ans.m[3][2] = nearClip / (nearClip - farClip);
+	ans.m[3][3] = 1;
+
+	return ans;
+}
+
+/// <summary>
+/// 4x4ビューポート変換行列の作成
+/// </summary>
+Matrix::Matrix4x4 Matrix::MakeViewportMatrix(const float& left, const float& top, const float& width, const float& height, const float& minDepth, const float& maxDepth)
+{
+	Matrix4x4 ans = { 0 };
+
+	ans.m[0][0] = width / 2;
+	ans.m[1][1] = -height / 2;
+	ans.m[2][2] = maxDepth - minDepth;
+	ans.m[3][0] = left + width / 2;
+	ans.m[3][1] = top + height / 2;
+	ans.m[3][2] = minDepth;
+	ans.m[3][3] = 1;
+
+	return ans;
 }
 
 /// <summary>

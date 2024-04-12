@@ -2,7 +2,7 @@
 #include "Script/Matrix.h"
 #include "Script/MyTools.h"
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_0_5_3次元アフィン変換行列_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_1_0_レンダリングパイプラインVer2_確認課題";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -14,13 +14,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	// 3次元ベクトル
-	MyBase::Vec3 scale = { 1.2f, 0.79f, -2.1f };
-	MyBase::Vec3 rotate = { 0.4f, 1.43f, -0.8f };
-	MyBase::Vec3 translate = { 2.7f, -4.15f, 1.57f };
-
 	// 結果
-	MyBase::Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix(scale, rotate, translate);
+	Matrix::Matrix4x4 orthographicMatrix = Matrix::MakeOrthographicMatrix(-160.f, 160.f, 200.0f, 300.0f, 0.0f, 1000.0f);
+	Matrix::Matrix4x4 perspectiveFovMatrix = Matrix::MakePerspectiveFovMatrix(0.63f, 1.33f, 0.1f, 1000.0f);
+	Matrix::Matrix4x4 viewportMatrix = Matrix::MakeViewportMatrix(100.0f, 200.0f, 600.0f, 300.0f, 0.0f, 1.0f);
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -43,7 +40,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		Matrix::MatrixScreenPrintf(0, 0, worldMatrix, "worldMatrix");
+		Matrix::MatrixScreenPrintf(0, 0, orthographicMatrix, "orthographicMatrix");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5, perspectiveFovMatrix, "perspectiveFovMatrix");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 10, viewportMatrix, "viewportMatrix");
 
 		///
 		/// ↑描画処理ここまで
