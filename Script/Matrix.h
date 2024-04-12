@@ -9,43 +9,85 @@ class Matrix :
 {
 public:
 	/// 定数
-	static const int kRowHeight = 20;		// 縦：一文字、20
-	static const int kColumnWidth = 55;		// 横：一文字、11
+	static const int kRowHeight = 20;		// 縦
+	static const int kColumnWidth = 60;		// 横
 
 	/// 関数
 	/// <summary>
 	/// 2x2の行列
 	/// </summary>
-	static Matrix2x2 MakeRotateMatrix2x2(float);						// 回転行列の作成
-	static Matrix2x2 Add(Matrix2x2 matrix1, Matrix2x2 matrix2);			// 行列の加法
-	static Matrix2x2 Subtract(Matrix2x2 matrix1, Matrix2x2 matrix2);	// 行列の減法
-	static Matrix2x2 Multiply(Matrix2x2 matrix1, Matrix2x2 matrix2);	// 行列の積
-	static Matrix2x2 Multiply(float scalar, Matrix2x2 matrix);			// スカラーと行列の積
-	static Vec2 Multiply(Vec2 vector, Matrix2x2 matrix);				// ベクトルと行列の積
-	static Matrix2x2 Inverse(Matrix2x2 matrix);							// 逆行列の取得
-	static Matrix2x2 Transpose(Matrix2x2);								// 転置行列の取得
+	// 回転行列の作成
+	static Matrix2x2 MakeRotateMatrix2x2(const float& theta);
+	// 行列の加法
+	static Matrix2x2 Add(const Matrix2x2& matrix1, const Matrix2x2& matrix2);
+	// 行列の減法
+	static Matrix2x2 Subtract(const Matrix2x2& matrix1, const Matrix2x2& matrix2);
+	// 行列の積
+	static Matrix2x2 Multiply(const Matrix2x2& matrix1, const Matrix2x2& matrix2);
+	// スカラーと行列の積
+	static Matrix2x2 Multiply(const float& scalar, const Matrix2x2& matrix);
+	// ベクトルと行列の積
+	static Vec2 Multiply(const Vec2& vector, const Matrix2x2& matrix);
+	// 逆行列
+	static Matrix2x2 Inverse(const Matrix2x2& matrix);
+	// 転置行列
+	static Matrix2x2 Transpose(const Matrix2x2& matrix);
 
 	/// <summary>
 	/// 3x3の行列
 	/// </summary>
-	static Matrix3x3 MakeScaleMatrix(Vec2 scale);									// 拡縮行列の作成
-	static Matrix3x3 MakeRotateMatrix(float);										// 回転行列の作成
-	static Matrix3x3 MakeTranslateMatrix(Vec2 translate);							// 平行移動行列の作成関数
-	static Matrix3x3 MakeAffineMatrix(Vec2 scale, float rotate, Vec2 translate);	// アフィン変換行列の作成
-	static Matrix3x3 MakeOrthographicMatrix(float, float, float, float);			// 正射影行列の作成
-	static Matrix3x3 MakeViewportMatrix(float, float, float, float);				// ビューポート行列の作成
-	static Matrix3x3 Multiply(Matrix3x3 matrix1, Matrix3x3 matrix2);				// 行列の積
-	static Matrix3x3 Multipty(float scalar, Matrix3x3 matrix);						// スカラーと行列の積
-	static Vec2 Transform(Vec2 vector, Matrix3x3 matrix);							// 2次元ベクトルを同次座標として変換する
-	static Matrix3x3 Inverse(Matrix3x3 matrix);										// 逆行列の取得
-	static Matrix3x3 Transpose(Matrix3x3);											// 転置行列の取得
+	// 拡縮行列の作成
+	static Matrix3x3 MakeScaleMatrix(const Vec2& scale);
+	// 回転行列の作成
+	static Matrix3x3 MakeRotateMatrix(const float& theta);
+	// 平行移動行列の作成関数
+	static Matrix3x3 MakeTranslateMatrix(const Vec2& translate);
+	// アフィン変換行列の作成
+	static Matrix3x3 MakeAffineMatrix(const Vec2& scale, const float& rotate, const Vec2& translate);
+	// 正射影行列の作成
+	static Matrix3x3 MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom);
+	// ビューポート行列の作成
+	static Matrix3x3 MakeViewportMatrix(const float& left, const float& top, const float& width, const float& height);
+	// 行列の積
+	static Matrix3x3 Multiply(const Matrix3x3& matrix1, const Matrix3x3& matrix2);
+	// スカラーと行列の積
+	static Matrix3x3 Multipty(const float& scalar, const Matrix3x3& matrix);
+	// 2次元ベクトルを同次座標として変換する
+	static Vec2 Transform(const Vec2& vector, const Matrix3x3& matrix);
+	// 逆行列
+	static Matrix3x3 Inverse(const Matrix3x3& matrix);
+	// 転置行列
+	static Matrix3x3 Transpose(const Matrix3x3& matrix);
+
+	/// <summary>
+	/// 4x4の行列
+	/// </summary>
+	// 単位行列の作成
+	static Matrix4x4 MakeIdentity4x4();
+	// 行列の加法
+	static Matrix4x4 Add(const Matrix4x4& matrix1, const Matrix4x4& matrix2);
+	// 行列の減法
+	static Matrix4x4 Subtract(const Matrix4x4& matrix1, const Matrix4x4& matrix2);
+	// 行列の積
+	static Matrix4x4 Multiply(const Matrix4x4& matrix1, const Matrix4x4& matrix2);
+	// スカラーと行列の積
+	static Matrix4x4 Multiply(const float& scalar, const Matrix4x4& matrix);
+	// 逆行列
+	static Matrix4x4 Inverse(const Matrix4x4& matrix);
+	// 行列式
+	static float Determinant(const Matrix4x4& matrix);
+	// 転置行列
+	static Matrix4x4 Transpose(const Matrix4x4& matrix);
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	static void VectorScreenPrintf(int, int, Vec2);			// ベクトルの表示
-	static void MatrixScreenPrintf(int, int, Matrix2x2);	// 行列の表示
-	static void MatrixScreenPrintf(int, int, Matrix3x3);	// 行列の表示
+	// 2x2行列の表示
+	static void MatrixScreenPrintf(int x, int y, const Matrix2x2& matrix, const char* label);
+	// 3x3行列の表示
+	static void MatrixScreenPrintf(int x, int y, const Matrix3x3& matrix, const char* label);
+	// 4x4行列の表示
+	static void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label);
 
 };
 

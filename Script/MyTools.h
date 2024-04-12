@@ -21,8 +21,6 @@ public:
 	static Vec2 Normalize(float x, float y);
 	/// 方向を求める
 	static Vec2 Direction(float x, float y);
-	/// 表示
-	static void VectorScreenPrintf(int x, int y, const Vec2& vector, const char* label);
 
 	/// <summary>
 	/// 3次元ベクトル
@@ -39,6 +37,13 @@ public:
 	static float Length(const Vec3& v);
 	/// 正規化
 	static Vec3 Normalize(const Vec3& v);
-	/// 表示
+
+	/// <summary>
+	/// 描画
+	/// </summary>
+	/// 2次元ベクトルの表示
+	static void VectorScreenPrintf(int x, int y, const Vec2& vector, const char* label);
+	/// 3次元ベクトルの表示
 	static void VectorScreenPrintf(int x, int y, const Vec3& vector, const char* label);
+
 };

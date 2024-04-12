@@ -33,16 +33,6 @@ MyTools::Vec2 MyTools::Direction(float x, float y)
 	return Normalize(x, y);
 }
 
-/// <summary>
-/// 表示
-/// </summary>
-void MyTools::VectorScreenPrintf(int x, int y, const Vec2& vector, const char* label)
-{
-	Novice::ScreenPrintf(x, y, "%.02f", vector.x);
-	Novice::ScreenPrintf(x + kColumnWidth, y, "%.02f", vector.y);
-	Novice::ScreenPrintf(x + kColumnWidth * 2, y, "%s", label);
-}
-
 ///
 /// 2次元ベクトル ここまで
 /// 
@@ -108,8 +98,26 @@ MyTools::Vec3 MyTools::Normalize(const Vec3& v)
 	return Vec3{ x, y, z };
 }
 
+/// 
+/// 3次元ベクトル ここまで
+/// 
+
+///
+/// 描画関数 ここから
+/// 
+
 /// <summary>
-/// 表示
+/// 2次元ベクトルの表示
+/// </summary>
+void MyTools::VectorScreenPrintf(int x, int y, const Vec2& vector, const char* label)
+{
+	Novice::ScreenPrintf(x, y, "%.02f", vector.x);
+	Novice::ScreenPrintf(x + kColumnWidth, y, "%.02f", vector.y);
+	Novice::ScreenPrintf(x + kColumnWidth * 2, y, "%s", label);
+}
+
+/// <summary>
+/// 3次元ベクトルの表示
 /// </summary>
 void MyTools::VectorScreenPrintf(int x, int y, const Vec3& vector, const char* label)
 {
@@ -120,6 +128,6 @@ void MyTools::VectorScreenPrintf(int x, int y, const Vec3& vector, const char* l
 }
 
 /// 
-/// 3次元ベクトル ここまで
+/// 描画関数 ここまで
 /// 
 

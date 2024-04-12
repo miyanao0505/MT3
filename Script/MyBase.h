@@ -36,6 +36,13 @@ public:
 	};
 
 	/// <summary>
+	/// 4x4の行列
+	/// </summary>
+	struct Matrix4x4 {
+		float m[4][4];
+	};
+
+	/// <summary>
 	/// 円
 	/// </summary>
 	struct Ball {

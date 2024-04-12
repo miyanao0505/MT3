@@ -2,7 +2,7 @@
 #include "Script/Matrix.h"
 #include "Script/MyTools.h"
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_0_1_3次元への拡張(ベクトル)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_0_2_3次元への拡張(行列)_確認課題";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -14,21 +14,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	// 定数
-	const int kRowHeight = 20;			// 縦：一文字、20
-	//const int kColumnWidth = 55;		// 横：一文字、11
+	// 行列
+	Matrix::Matrix4x4 matrix1 = {
+		3.2f, 0.7f, 9.6f, 4.4f,
+		5.5f, 1.3f, 7.8f, 2.1f,
+		6.9f, 8.0f, 2.6f, 1.0f,
+		0.5f, 7.2f, 5.1f, 3.3f
+	};
+	Matrix::Matrix4x4 matrix2 = {
+		4.1f, 6.5f, 3.3f, 2.2f,
+		8.8f, 0.6f, 9.9f, 7.7f,
+		1.1f, 5.5f, 6.6f, 0.0f,
+		3.3f, 9.9f, 8.8f, 2.2f
+	};
 
-	// 変数
-	MyBase::Vec3 v1 = { 1.0f, 3.0f, -5.0f };
-	MyBase::Vec3 v2 = { 4.0f, -1.0f, 2.0f };
-	float k = { 4.0f };
-
-	MyBase::Vec3 resultAdd = MyTools::Add(v1, v2);
-	MyBase::Vec3 resultSubtract = MyTools::Subtract(v1, v2);
-	MyBase::Vec3 resultMultiply = MyTools::Multiply(k, v1);
-	float resultDot = MyTools::Dot(v1, v2);
-	float resultLength = MyTools::Length(v1);
-	MyBase::Vec3 resultNormalize = MyTools::Normalize(v2);
+	// 結果
+	Matrix::Matrix4x4 resultAdd = Matrix::Add(matrix1, matrix2);
+	Matrix::Matrix4x4 resultMultiply = Matrix::Multiply(matrix1, matrix2);
+	Matrix::Matrix4x4 resultSubtract = Matrix::Subtract(matrix1, matrix2);
+	Matrix::Matrix4x4 inverseMatrix1 = Matrix::Inverse(matrix1);
+	Matrix::Matrix4x4 inverseMatrix2 = Matrix::Inverse(matrix2);
+	Matrix::Matrix4x4 transposeMatrix1 = Matrix::Transpose(matrix1);
+	Matrix::Matrix4x4 transposeMatrix2 = Matrix::Transpose(matrix2);
+	Matrix::Matrix4x4 identity = Matrix::MakeIdentity4x4();
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -51,12 +59,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		MyTools::VectorScreenPrintf(0, 0, resultAdd, "  : Add");
-		MyTools::VectorScreenPrintf(0, kRowHeight, resultSubtract, "  : Subtract");
-		MyTools::VectorScreenPrintf(0, kRowHeight * 2, resultMultiply, "  : Multiply");
-		Novice::ScreenPrintf(0, kRowHeight * 3, "%.02f  : Dot", resultDot);
-		Novice::ScreenPrintf(0, kRowHeight * 4, "%.02f  : Length", resultLength);
-		MyTools::VectorScreenPrintf(0, kRowHeight * 5, resultNormalize, "  : Normalize");
+		// 行列
+		Matrix::MatrixScreenPrintf(0, 0, resultAdd, "Add");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5, resultSubtract, "Subtract");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5 * 2, resultMultiply, "Multiply");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5 * 3, inverseMatrix1, "inverseMatrix1");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5 * 4, inverseMatrix2, "inverseMatrix2");
+		Matrix::MatrixScreenPrintf(Matrix::kColumnWidth * 5, 0, transposeMatrix1, "transposeMatrix1");
+		Matrix::MatrixScreenPrintf(Matrix::kColumnWidth * 5, Matrix::kRowHeight * 5, transposeMatrix2, "transposeMatrix2");
+		Matrix::MatrixScreenPrintf(Matrix::kColumnWidth * 5, Matrix::kRowHeight * 5 * 2, identity, "identity");
 
 		///
 		/// ↑描画処理ここまで
