@@ -2,7 +2,7 @@
 #include "Script/Matrix.h"
 #include "Script/MyTools.h"
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_1_1_ポリゴンを描こう_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_1_1_ポリゴンを描こう_応用課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -44,6 +44,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	MyBase::Vec3 screenVertices[3];
 	MyBase::Vec3 ndcVertex;
 
+	// クロス積
+	MyBase::Vec3 vectorA = { 0.f, 0.f, 0.f };
+	MyBase::Vec3 vectorB = { 0.f, 0.f, 0.f };
+	MyBase::Vec3 crossPositive = { 0.f, 0.f, 0.f };
+	MyBase::Vec3 crossReverse = { 0.f, 0.f, 0.f };
+
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
 		// フレームの開始
@@ -76,8 +82,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		// 回転
-		rotate.y += 1.f / 36 * float(M_PI);
-		if (rotate.y > float(M_PI))
+		rotate.y += 1.f / 72 * float(M_PI);
+		if (rotate.y > float(M_PI) * 2)
 		{
 			rotate.y = 0.f;
 		}
@@ -95,6 +101,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			screenVertices[i] = Matrix::Transform(ndcVertex, viewportMatrix);
 		}
 
+		// ベクトルA,Bの計算
+		vectorA = MyTools::Subtract(screenVertices[1], screenVertices[0]);
+		vectorB = MyTools::Subtract(screenVertices[2], screenVertices[1]);
+		vectorA.y *= -1.f;
+		vectorB.y += -1.f;
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -111,14 +123,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{
 			MyTools::VectorScreenPrintf(0, 20 + 20 * i, screenVertices[i], "screenVertices");
 		}*/
+		//MyTools::VectorScreenPrintf(0, 20, rotate, "ratate");
 
-		// 三角の描画
-		Novice::DrawTriangle(
-			int(screenVertices[0].x), int(screenVertices[0].y),
-			int(screenVertices[1].x), int(screenVertices[1].y),
-			int(screenVertices[2].x), int(screenVertices[2].y),
-			0xFF0000FF, kFillModeSolid
-		);
+		if (MyTools::Dot(cameraPosition, MyTools::Cross(vectorA, vectorB)) <= 0.f)
+		{
+			// 三角の描画
+			Novice::DrawTriangle(
+				int(screenVertices[0].x), int(screenVertices[0].y),
+				int(screenVertices[1].x), int(screenVertices[1].y),
+				int(screenVertices[2].x), int(screenVertices[2].y),
+				0xFF0000FF, kFillModeSolid
+			);
+		}
 
 		///
 		/// ↑描画処理ここまで
