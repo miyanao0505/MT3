@@ -1,11 +1,57 @@
 ﻿#include "MyTools.h"
 #include "Novice.h"
 
+using namespace std;
+
+/// 
+/// ツール関数 ここから
+/// 
+
+/// <summary>
+/// 範囲内の値を返す関数
+/// </summary>
+float MyTools::Clamp(const float& num, const float& min, const float& max)
+{
+	if (num < min)
+	{
+		return min;
+	}
+	else if (num > max)
+	{
+		return max;
+	}
+	else
+	{
+		return num;
+	}
+}
+
+/// 
+/// ツール関数 ここまで
+/// 
+
 ///
 /// 2次元ベクトル ここから
 ///
+
 /// <summary>
-/// 長さ(ノルム)関数
+/// 2次元ベクトル内積
+/// </suumary>
+float MyTools::Dot(const Vec2& v1, const Vec2& v2)
+{
+	return v1.x * v2.x + v1.y * v2.y;
+}
+
+/// <summary>
+/// 2次元ベクトルクロス積(外積)
+/// </summary>
+float MyTools::Cross(const Vec2& v1, const Vec2& v2)
+{
+	return v1.x * v2.y - v1.y * v2.x;
+}
+
+/// <summary>
+/// 2次元ベクトル長さ(ノルム)関数
 /// </summary>
 float MyTools::Length(float x, float y)
 {
@@ -13,7 +59,7 @@ float MyTools::Length(float x, float y)
 }
 
 /// <summary>
-/// 正規化関数
+/// 2次元ベクトル正規化関数
 /// </summary>
 MyTools::Vec2 MyTools::Normalize(float x, float y)
 {
@@ -26,7 +72,7 @@ MyTools::Vec2 MyTools::Normalize(float x, float y)
 }
 
 /// <summary>
-/// 方向を求める関数
+/// 2次元ベクトル方向を求める関数
 /// </summary>
 MyTools::Vec2 MyTools::Direction(float x, float y)
 {
@@ -42,7 +88,7 @@ MyTools::Vec2 MyTools::Direction(float x, float y)
 /// 
 
 /// <summary>
-/// 加算
+/// 3次元ベクトル加算
 /// </summary>
 MyTools::Vec3 MyTools::Add(const Vec3& v1, const Vec3& v2)
 {
@@ -50,7 +96,7 @@ MyTools::Vec3 MyTools::Add(const Vec3& v1, const Vec3& v2)
 }
 
 /// <summary>
-/// 減算
+/// 3次元ベクトル減算
 /// </summary>
 MyTools::Vec3 MyTools::Subtract(const Vec3& v1, const Vec3& v2)
 {
@@ -58,7 +104,7 @@ MyTools::Vec3 MyTools::Subtract(const Vec3& v1, const Vec3& v2)
 }
 
 /// <summary>
-/// スカラー倍
+/// 3次元ベクトルスカラー倍
 /// </summary>
 MyTools::Vec3 MyTools::Multiply(float scalar, const Vec3& v)
 {
@@ -66,7 +112,7 @@ MyTools::Vec3 MyTools::Multiply(float scalar, const Vec3& v)
 }
 
 /// <summary>
-/// 内積
+/// 3次元ベクトル内積
 /// </summary>
 float MyTools::Dot(const Vec3& v1, const Vec3& v2)
 {
@@ -74,7 +120,15 @@ float MyTools::Dot(const Vec3& v1, const Vec3& v2)
 }
 
 /// <summary>
-/// 長さ(ノルム)
+/// 3次元ベクトルクロス積(外積)
+/// </summary>
+MyTools::Vec3 MyTools::Cross(const Vec3& v1, const Vec3& v2)
+{
+	return Vec3{ v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
+}
+
+/// <summary>
+/// 3次元ベクトル長さ(ノルム)
 /// </summary>
 float MyTools::Length(const Vec3& v)
 {
@@ -82,7 +136,7 @@ float MyTools::Length(const Vec3& v)
 }
 
 /// <summary>
-/// 正規化
+/// 3次元ベクトル正規化
 /// </summary>
 MyTools::Vec3 MyTools::Normalize(const Vec3& v)
 {

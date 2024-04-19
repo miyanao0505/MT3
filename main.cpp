@@ -2,22 +2,47 @@
 #include "Script/Matrix.h"
 #include "Script/MyTools.h"
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_1_0_レンダリングパイプラインVer2_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_1_1_ポリゴンを描こう_確認課題";
+
+// ウィンドウサイズ
+const int kWindowWidth = 1280, kWindowHeight = 720;
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ライブラリの初期化
-	Novice::Initialize(kWindowTitle, 1280, 720);
+	Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
 
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
 	char preKeys[256] = {0};
 
-	// 結果
-	Matrix::Matrix4x4 orthographicMatrix = Matrix::MakeOrthographicMatrix(-160.f, 160.f, 200.0f, 300.0f, 0.0f, 1000.0f);
-	Matrix::Matrix4x4 perspectiveFovMatrix = Matrix::MakePerspectiveFovMatrix(0.63f, 1.33f, 0.1f, 1000.0f);
-	Matrix::Matrix4x4 viewportMatrix = Matrix::MakeViewportMatrix(100.0f, 200.0f, 600.0f, 300.0f, 0.0f, 1.0f);
+	// クロス積の確認用
+	MyBase::Vec3 v1 = { 1.2f, -3.9f, 2.5f };
+	MyBase::Vec3 v2 = { 2.8f, 0.4f, -1.3f };
+	MyBase::Vec3 cross = MyTools::Cross(v1, v2);
+
+	// 規定値
+	MyBase::Vec3 kLocalVertices[3] = {
+		{ 0.0f, 50.f, 0.0f },
+		{ 40.f, -25.f, 0.0f },
+		{ -40.f, -25.f, 0.0f }
+	};
+	MyBase::Vec3 cameraPosition = { 0.0f, 0.0f, 100.f };
+
+	// 変動値
+	MyBase::Vec3 rotate = { 0.0f, 0.0f, 0.0f };
+	MyBase::Vec3 translate = { 0.0f, 0.0f, 500.f };
+
+	// 各種行列の計算
+	MyBase::Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, rotate, translate);
+	MyBase::Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, cameraPosition);
+	MyBase::Matrix4x4 viewMatrix = Matrix::Inverse(cameraMatrix);
+	MyBase::Matrix4x4 projectionMatrix = Matrix::MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
+	MyBase::Matrix4x4 worldViewProjectionMatrix = Matrix::Multiply(worldMatrix, Matrix::Multiply(viewMatrix, projectionMatrix));
+	MyBase::Matrix4x4 viewportMatrix = Matrix::MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+	MyBase::Vec3 screenVertices[3];
+	MyBase::Vec3 ndcVertex;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -32,6 +57,44 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+		// 移動
+		if (keys[DIK_A])
+		{
+			translate.x -= 2.f;
+		}
+		if (keys[DIK_D])
+		{
+			translate.x += 2.f;
+		}
+		if (keys[DIK_W])
+		{
+			translate.z += 5.f;
+		}
+		if (keys[DIK_S])
+		{
+			translate.z -= 5.f;
+		}
+
+		// 回転
+		rotate.y += 1.f / 36 * float(M_PI);
+		if (rotate.y > float(M_PI))
+		{
+			rotate.y = 0.f;
+		}
+
+		// 各種行列の計算
+		worldMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, rotate, translate);
+		cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, cameraPosition);
+		viewMatrix = Matrix::Inverse(cameraMatrix);
+		projectionMatrix = Matrix::MakePerspectiveFovMatrix(0.45f, float(kWindowWidth) / float(kWindowHeight), 0.1f, 100.0f);
+		worldViewProjectionMatrix = Matrix::Multiply(worldMatrix, Matrix::Multiply(viewMatrix, projectionMatrix));
+		viewportMatrix = Matrix::MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
+
+		for (uint32_t i = 0; i < 3; ++i) {
+			ndcVertex = Matrix::Transform(kLocalVertices[i], worldViewProjectionMatrix);
+			screenVertices[i] = Matrix::Transform(ndcVertex, viewportMatrix);
+		}
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -40,9 +103,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		Matrix::MatrixScreenPrintf(0, 0, orthographicMatrix, "orthographicMatrix");
-		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5, perspectiveFovMatrix, "perspectiveFovMatrix");
-		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 10, viewportMatrix, "viewportMatrix");
+		// クロス積の確認用
+		MyTools::VectorScreenPrintf(0, 0, cross, "Cross");
+
+		// デバッグ用
+		/*for (uint32_t i = 0; i < 3; ++i)
+		{
+			MyTools::VectorScreenPrintf(0, 20 + 20 * i, screenVertices[i], "screenVertices");
+		}*/
+
+		// 三角の描画
+		Novice::DrawTriangle(
+			int(screenVertices[0].x), int(screenVertices[0].y),
+			int(screenVertices[1].x), int(screenVertices[1].y),
+			int(screenVertices[2].x), int(screenVertices[2].y),
+			0xFF0000FF, kFillModeSolid
+		);
 
 		///
 		/// ↑描画処理ここまで

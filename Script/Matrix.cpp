@@ -535,7 +535,7 @@ Matrix::Matrix4x4 Matrix::MakeAffineMatrix(const Vec3& scale, const Vec3& rotate
 /// <summary>
 /// 4x4透視投影行列の作成
 /// </summary>
-Matrix::Matrix4x4 Matrix::MakePerspectiveFovMatrix(const float& fovY, const float& aspectRatio, const float& nearClip, const float& farClip)
+Matrix::Matrix4x4 Matrix::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
 {
 	Matrix4x4 ans = { 0 };
 
@@ -551,7 +551,7 @@ Matrix::Matrix4x4 Matrix::MakePerspectiveFovMatrix(const float& fovY, const floa
 /// <summary>
 /// 4x4正射影行列の作成
 /// </summary>
-Matrix::Matrix4x4 Matrix::MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom, const float& nearClip, const float& farClip)
+Matrix::Matrix4x4 Matrix::MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip)
 {
 	Matrix4x4 ans = { 0 };
 
@@ -565,11 +565,11 @@ Matrix::Matrix4x4 Matrix::MakeOrthographicMatrix(const float& left, const float&
 
 	return ans;
 }
-
+	
 /// <summary>
 /// 4x4ビューポート変換行列の作成
 /// </summary>
-Matrix::Matrix4x4 Matrix::MakeViewportMatrix(const float& left, const float& top, const float& width, const float& height, const float& minDepth, const float& maxDepth)
+Matrix::Matrix4x4 Matrix::MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth)
 {
 	Matrix4x4 ans = { 0 };
 
@@ -668,7 +668,7 @@ Matrix::Matrix4x4 Matrix::Multiply(const Matrix4x4& matrix1, const Matrix4x4& ma
 	ans.m[3][0] = matrix1.m[3][0] * matrix2.m[0][0] + matrix1.m[3][1] * matrix2.m[1][0] + matrix1.m[3][2] * matrix2.m[2][0] + matrix1.m[3][3] * matrix2.m[3][0];
 	ans.m[3][1] = matrix1.m[3][0] * matrix2.m[0][1] + matrix1.m[3][1] * matrix2.m[1][1] + matrix1.m[3][2] * matrix2.m[2][1] + matrix1.m[3][3] * matrix2.m[3][1];
 	ans.m[3][2] = matrix1.m[3][0] * matrix2.m[0][2] + matrix1.m[3][1] * matrix2.m[1][2] + matrix1.m[3][2] * matrix2.m[2][2] + matrix1.m[3][3] * matrix2.m[3][2];
-	ans.m[3][3] = matrix1.m[3][0] * matrix2.m[0][3] + matrix1.m[3][1] * matrix2.m[1][3] + matrix1.m[3][3] * matrix2.m[2][3] + matrix1.m[3][3] * matrix2.m[3][3];
+	ans.m[3][3] = matrix1.m[3][0] * matrix2.m[0][3] + matrix1.m[3][1] * matrix2.m[1][3] + matrix1.m[3][2] * matrix2.m[2][3] + matrix1.m[3][3] * matrix2.m[3][3];
 
 	return ans;
 }

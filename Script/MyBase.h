@@ -22,6 +22,16 @@ public:
 	}Vec3;
 	
 	/// <summary>
+	/// 4次元ベクトル
+	/// </summary>
+	typedef struct Vector4 {
+		float x;
+		float y;
+		float z;
+		float w;
+	}Vec4;
+
+	/// <summary>
 	/// 2x2の行列
 	/// </summary>
 	struct Matrix2x2 {

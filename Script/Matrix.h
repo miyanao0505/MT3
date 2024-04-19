@@ -81,11 +81,11 @@ public:
 	// 3次元アフィン変換行列の作成
 	static Matrix4x4 MakeAffineMatrix(const Vec3& scale, const Vec3& rotate, const Vec3& translate);
 	// 透視投影行列の作成
-	static Matrix4x4 MakePerspectiveFovMatrix(const float& fovY, const float& aspectRatio, const float& nearClip, const float& farClip);
+	static Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
 	// 正射影行列の作成
-	static Matrix4x4 MakeOrthographicMatrix(const float& left, const float& top, const float& right, const float& bottom, const float& nearClip, const float& farClip);
+	static Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip);
 	// ビューポート変換行列の作成
-	static Matrix4x4 MakeViewportMatrix(const float& left, const float& top, const float& width, const float& height, const float& minDepth, const float& maxDepth);
+	static Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
 	// 単位行列の作成
 	static Matrix4x4 MakeIdentity4x4();
 	// 行列の加法
