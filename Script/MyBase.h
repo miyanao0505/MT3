@@ -7,29 +7,29 @@ public:
 	/// <summary>
 	/// 2次元ベクトル
 	/// </summary>
-	typedef struct Vector2 {
+	struct Vector2 {
 		float x;
 		float y;
-	}Vec2;
+	};
 
 	/// <summary>
 	/// 3次元ベクトル
 	/// </summary>
-	typedef struct Vector3 {
+	struct Vector3 {
 		float x;
 		float y;
 		float z;
-	}Vec3;
+	};
 	
 	/// <summary>
 	/// 4次元ベクトル
 	/// </summary>
-	typedef struct Vector4 {
+	struct Vector4 {
 		float x;
 		float y;
 		float z;
 		float w;
-	}Vec4;
+	};
 
 	/// <summary>
 	/// 2x2の行列
@@ -56,22 +56,22 @@ public:
 	/// 円
 	/// </summary>
 	struct Ball {
-		Vec2 pos;			// 位置
-		Vec2 velocity;		// 速度
-		Vec2 acceleration;	// 加速度
-		float mass;			// 質量
-		float radius;		// 半径
-		unsigned int color;	// 色
+		Vector2 pos;			// 位置
+		Vector2 velocity;		// 速度
+		Vector2 acceleration;	// 加速度
+		float mass;				// 質量
+		float radius;			// 半径
+		unsigned int color;		// 色
 	};
 
 	/// <summary>
 	/// 矩形
 	/// </summary>
 	struct Box {
-		Vec2 pos;				// 位置
-		Vec2 size;				// サイズ
-		Vec2 velocity;			// 速度
-		Vec2 accleration;		// 加速度
+		Vector2 pos;			// 位置
+		Vector2 size;			// サイズ
+		Vector2 velocity;		// 速度
+		Vector2 accleration;	// 加速度
 		float mass;				// 質量
 		unsigned int color;		// 色
 	};
@@ -90,8 +90,8 @@ public:
 	/// 線
 	/// </summary>
 	struct Line {
-		Vec2 start;
-		Vec2 end;
+		Vector2 start;
+		Vector2 end;
 	};
 };
 
