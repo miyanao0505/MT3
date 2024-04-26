@@ -2,6 +2,7 @@
 #include "Script/Matrix.h"
 #include "Script/MyTools.h"
 #include "Script/Draw.h"
+#include <imgui.h>
 
 const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_1_1_ポリゴンを描こう_応用課題";
 
@@ -24,7 +25,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-
+	MyBase::Sphere sphere = { { 0.0f, 0.0f, 0.0f }, 0.5f };
 
 	// 各種行列の計算
 	Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -46,6 +47,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+		ImGui::Begin("Window");
+		ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+		ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
+		ImGui::End();
+
 		// 各種行列の計算
 		cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
 		viewMatrix = Matrix::Inverse(cameraMatrix);
@@ -63,6 +71,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
+
+		// 球の描画
+		Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, 0x000000FF);
 
 		///
 		/// ↑描画処理ここまで

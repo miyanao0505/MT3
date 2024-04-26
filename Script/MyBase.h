@@ -8,6 +8,7 @@ class MyBase
 {
 public:
 	// 構造体
+	
 	/// <summary>
 	/// 2次元ベクトル
 	/// </summary>
@@ -60,7 +61,7 @@ public:
 	/// 円
 	/// </summary>
 	struct Ball {
-		Vector2 pos;			// 位置
+		Vector2 pos;			// 中心点
 		Vector2 velocity;		// 速度
 		Vector2 acceleration;	// 加速度
 		float mass;				// 質量
@@ -84,18 +85,26 @@ public:
 	/// 矩形の範囲
 	/// </summary>
 	struct Rect {
-		float Top;
-		float Bottom;
-		float Left;
-		float Right;
+		float Top;				// 上辺 Y座標
+		float Bottom;			// 下辺 Y座標
+		float Left;				// 左辺 X座標
+		float Right;			// 右辺 X座標
 	};
 
 	/// <summary>
 	/// 線
 	/// </summary>
 	struct Line {
-		Vector2 start;
-		Vector2 end;
+		Vector2 start;			// 始点座標
+		Vector2 end;			// 終点座標
+	};
+
+	/// <summary>
+	/// 球
+	/// </summary>
+	struct Sphere {
+		Vector3 center;		//!< 中心
+		float radius;		//!< 半径
 	};
 };
 

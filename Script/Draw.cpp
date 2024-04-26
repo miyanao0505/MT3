@@ -88,3 +88,49 @@ void Draw::DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& view
 /// デバッグ用関数 ここまで
 /// 
 
+/// 
+/// オブジェクト用 ここから
+/// 
+
+/// 球の描画
+void Draw::DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
+	const uint32_t kSubdivision = 10;							// 分割数
+	const float kLonEvery = 2.f * float(M_PI) / kSubdivision;	// 経度分割1つ分の角度
+	const float kLatEvery = float(M_PI) / kSubdivision;			// 緯度分割1つ分の角度
+	// 緯度の方向に分割 -π/2 ～ π/2
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -float(M_PI) / 2.0f + kLatEvery * latIndex;	// 現在の緯度
+		// 経度の方向に分割 0 ～ 2π
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			float lon = lonIndex * kLonEvery;					// 現在の経度
+			// world座標系でのa, b, cを求める
+			Vector3 a, b, c;
+			a = MyTools::Add(sphere.center, MyTools::Multiply(sphere.radius, { cos(lat) * cos(lon), sin(lat), cos(lat) * sin(lon) }));
+			b = MyTools::Add(sphere.center, MyTools::Multiply(sphere.radius, { cos(lat + kLatEvery) * cos(lon), sin(lat + kLatEvery), cos(lat + kLatEvery) * sin(lon) }));
+			c = MyTools::Add(sphere.center, MyTools::Multiply(sphere.radius, { cos(lat) * cos(lon + kLonEvery), sin(lat), cos(lat) * sin(lon + kLonEvery) }));
+			// a,b,cをScreen座標系まで変換
+			Matrix4x4 worldMatrixA = Matrix::MakeAffineMatrix({ 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f }, a);
+			Matrix4x4 worldViewProjectionMatrixA = Matrix::Multiply(worldMatrixA, viewProjectionMatrix);
+			Vector3 ndcVertexA = Matrix::Transform({ 0.f, 0.f, 0.f }, worldViewProjectionMatrixA);
+			Vector3 screenPositionA = Matrix::Transform(ndcVertexA, viewportMatrix);
+
+			Matrix4x4 worldMatrixB = Matrix::MakeAffineMatrix({ 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f }, b);
+			Matrix4x4 worldViewProjectionMatrixB = Matrix::Multiply(worldMatrixB, viewProjectionMatrix);
+			Vector3 ndcVertexB = Matrix::Transform({ 0.f, 0.f, 0.f }, worldViewProjectionMatrixB);
+			Vector3 screenPositionB = Matrix::Transform(ndcVertexB, viewportMatrix);
+			
+			Matrix4x4 worldMatrixC = Matrix::MakeAffineMatrix({ 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f }, c);
+			Matrix4x4 worldViewProjectionMatrixC = Matrix::Multiply(worldMatrixC, viewProjectionMatrix);
+			Vector3 ndcVertexC = Matrix::Transform({ 0.f, 0.f, 0.f }, worldViewProjectionMatrixC);
+			Vector3 screenPositionC = Matrix::Transform(ndcVertexC, viewportMatrix);
+			
+			// ab,acで線を引く
+			Novice::DrawLine(int(screenPositionA.x), int(screenPositionA.y), int(screenPositionB.x), int(screenPositionB.y), color);
+			Novice::DrawLine(int(screenPositionA.x), int(screenPositionA.y), int(screenPositionC.x), int(screenPositionC.y), color);
+		}
+	}
+}
+
+/// 
+/// オブジェクト用 ここから
+/// 
