@@ -70,7 +70,7 @@ void Draw::DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& view
 			Novice::DrawLine(
 				int(screenStartPosition.x), int(screenStartPosition.y),
 				int(screenEndPosition.x), int(screenEndPosition.y),
-				0xAAAAAAFF
+				0x000000FF
 			);
 		}
 		else
@@ -78,7 +78,7 @@ void Draw::DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& view
 			Novice::DrawLine(
 				int(screenStartPosition.x), int(screenStartPosition.y),
 				int(screenEndPosition.x), int(screenEndPosition.y),
-				0x000000FF
+				0xAAAAAAFF
 			);
 		}
 	}

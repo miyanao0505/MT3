@@ -126,6 +126,26 @@ Vector3 MyTools::Normalize(const Vector3& v)
 	return Vector3{ x, y, z };
 }
 
+/// 正射影ベクトル(ベクトル射影)を返す関数
+Vector3 MyTools::Project(const Vector3& v1, const Vector3& v2)
+{
+	float t;
+
+	t = Dot(v1, v2) / powf(Length(v2), 2);
+
+	return Multiply(t, v2);
+}
+
+/// 最近接点を返す関数
+Vector3 MyTools::ClosestPoint(const Vector3& point, const Segment& segment)
+{
+	Vector3 ans;
+
+	ans = Add(segment.origin, Project(Subtract(point, segment.origin), segment.diff));
+
+	return ans;
+}
+
 /// 
 /// 3次元ベクトル ここまで
 /// 

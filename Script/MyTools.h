@@ -125,6 +125,21 @@ public:
 	/// <param name="v">ベクトル</param>
 	static Vector3 Normalize(const Vector3& v);
 
+	/// <summary>
+	/// 正射影ベクトル(ベクトル射影)を返す関数
+	/// </summary>
+	/// <param name="v1">ベクトルA</param>
+	/// <param name="v2">ベクトルB</param>
+	static Vector3 Project(const Vector3& v1, const Vector3& v2);
+
+	/// <summary>
+	/// 最近接点を返す関数
+	/// </summary>
+	/// <param name="point">始点</param>
+	/// <param name="segment">線分</param>
+	/// <returns></returns>
+	static Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
+
 	/// 
 	/// 3次元ベクトル ここまで
 	/// 

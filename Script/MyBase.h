@@ -94,9 +94,9 @@ public:
 	/// <summary>
 	/// 線
 	/// </summary>
-	struct Line {
-		Vector2 start;			// 始点座標
-		Vector2 end;			// 終点座標
+	struct Line2 {
+		Vector2 origin;			//!< 始点
+		Vector2 diff;			//!< 終点への差分ベクトル
 	};
 
 	/// <summary>
@@ -105,6 +105,30 @@ public:
 	struct Sphere {
 		Vector3 center;		//!< 中心
 		float radius;		//!< 半径
+	};
+
+	/// <summary>
+	/// 直線
+	/// </summary>
+	struct Line {
+		Vector3 origin;		//!< 始点
+		Vector3 diff;		//!< 終点への差分ベクトル
+	};
+
+	/// <summary>
+	/// 半直線
+	/// </summary>
+	struct Ray {
+		Vector3 origin;		//!< 始点
+		Vector3 diff;		//!< 終点への差分ベクトル
+	};
+
+	/// <summary>
+	/// 線分
+	/// </summary>
+	struct Segment {
+		Vector3 origin;		//!< 始点
+		Vector3 diff;		//!< 終点への差分ベクトル
 	};
 };
 
