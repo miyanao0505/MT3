@@ -1,4 +1,6 @@
 ﻿#include "MyTools.h"
+#include "Matrix.h"
+#include <iostream>
 #include "Novice.h"
 
 using namespace std;
@@ -6,6 +8,26 @@ using namespace std;
 /// 
 /// ツール関数 ここから
 /// 
+
+/// マウスカーソルの座標を取得する関数
+Vector3 MyTools::GetMousePosition(const float& kWindowWidth, const float& kWindowHeight, const Matrix4x4& viewMatrix, const Matrix4x4& projectionMatrix)
+{
+	int x = 0, y = 0;
+	Novice::GetMousePosition(&x, &y);
+
+	// クリップ座標に変換
+	float clipX = (2.0f * float(x)) / kWindowWidth - 1.0f;
+	float clipY = 1.0f - (2.0f * float(y)) / kWindowHeight;
+	float clipZ = 0.0f; // スクリーン座標からは深度情報が得られないので適当な値を指定します
+
+	// クリップ座標をカメラ座標に逆変換
+	Vector3 eyeCoords = Matrix::Transform(Vector3(clipX, clipY, clipZ), Matrix::Inverse(projectionMatrix));
+
+	// カメラ座標をワールド座標に逆変換
+	Vector3 worldCoords = Matrix::Transform(eyeCoords, Matrix::Inverse(viewMatrix));
+
+	return worldCoords;
+}
 
 /// 範囲内の値を返す関数
 float MyTools::Clamp(const float& num, const float& min, const float& max)
@@ -22,6 +44,20 @@ float MyTools::Clamp(const float& num, const float& min, const float& max)
 	{
 		return num;
 	}
+}
+
+/// 球と球の衝突判定を返す関数
+bool MyTools::IsCollison(const MyBase::Sphere& sphere1, const MyBase::Sphere& sphere2)
+{
+	// 2つの球の中心点間の距離を求める
+	float distance = Length(Subtract(sphere2.center, sphere1.center));
+
+	// 半径の合計よりも短ければ衝突
+	if (distance <= sphere1.radius + sphere2.radius) {
+		return true;
+	}
+
+	return false;
 }
 
 /// 

@@ -17,6 +17,16 @@ public:
 	/// 
 	/// ツール関数 ここから
 	/// 
+
+	/// <summary>
+	/// マウスカーソルの座標を取得する関数
+	/// </summary>
+	/// <param name="kWindowWidth">ウィンドウの横幅</param>
+	/// <param name="kWindowHeight">ウィンドウの縦幅</param>
+	/// <param name="viewMatrix">ビュー行列</param>
+	/// <param name="projectionMatrix">プロジェクション行列</param>
+	/// <returns></returns>
+	static Vector3 GetMousePosition(const float& kWindowWidth, const float& kWindowHeight, const Matrix4x4& viewMatrix, const Matrix4x4& projectionMatrix);
 	
 	/// <summary>
 	/// 範囲内の値を返す関数
@@ -26,6 +36,14 @@ public:
 	/// <param name="max">最大値</param>
 	/// <returns>範囲内の値</returns>
 	static float Clamp(const float& num, const float& min, const float& max);
+
+	/// <summary>
+	/// 球と球の衝突判定を返す関数
+	/// </summary>
+	/// <param name="sphere1">球A</param>
+	/// <param name="sphere2">球B</param>
+	/// <returns></returns>
+	static bool IsCollison(const MyBase::Sphere& sphere1, const MyBase::Sphere& sphere2);
 
 	/// 
 	/// ツール関数 ここまで
