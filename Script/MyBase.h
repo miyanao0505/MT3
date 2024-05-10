@@ -130,5 +130,13 @@ public:
 		Vector3 origin;		//!< 始点
 		Vector3 diff;		//!< 終点への差分ベクトル
 	};
+
+	/// <summary>
+	/// 平面
+	/// </summary>
+	struct Plane {
+		Vector3 normal;		//!< 法線
+		float distance;		//!< 距離
+	};
 };
 

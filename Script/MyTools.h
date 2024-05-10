@@ -43,7 +43,15 @@ public:
 	/// <param name="sphere1">球A</param>
 	/// <param name="sphere2">球B</param>
 	/// <returns></returns>
-	static bool IsCollison(const MyBase::Sphere& sphere1, const MyBase::Sphere& sphere2);
+	static bool IsCollison(const Sphere& sphere1, const Sphere& sphere2);
+
+	/// <summary>
+	/// 球と平面の衝突判定を返す関数
+	/// </summary>
+	/// <param name="sphere">球</param>
+	/// <param name="plane">平面</param>
+	/// <returns></returns>
+	static bool IsCollison(const Sphere& sphere, const Plane& plane);
 
 	/// 
 	/// ツール関数 ここまで
@@ -157,6 +165,13 @@ public:
 	/// <param name="segment">線分</param>
 	/// <returns></returns>
 	static Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
+
+	/// <summary>
+	/// 垂直なベクトルを求める関数
+	/// </summary>
+	/// <param name="vector"></param>
+	/// <returns></returns>
+	static Vector3 Perpendicular(const Vector3& vector);
 
 	/// 
 	/// 3次元ベクトル ここまで

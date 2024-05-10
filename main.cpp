@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_01_3次元衝突判定(球と球)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_02_3次元衝突判定(平面と球)_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -24,10 +24,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	MyBase::Sphere sphere[2] = { 
-		{ { 0.0f, 0.0f, 0.0f }, 0.5f },		// 球体1
-		{ { 0.8f, 0.0f, 1.0f }, 0.4f }		// 球体2
-	};
+	MyBase::Sphere sphere = { { 0.0f, 0.0f, 0.0f }, 0.5f };		// 球体1
+	MyBase::Plane plane = { { 0.0f, 1.0f, 0.0f }, 1.0f };		// 平面
+
 
 	// 各種行列の計算
 	Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -60,10 +59,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowSize(ImVec2(500, 150), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("Window");
-		ImGui::SliderFloat3("Sphere[0].Center", &sphere[0].center.x, -2.f, 2.f);
-		ImGui::SliderFloat("Sphere[0].Radius", &sphere[0].radius, 0.2f, 2.f);
-		ImGui::SliderFloat3("Sphere[1].Center", &sphere[1].center.x, -2.f, 2.f);
-		ImGui::SliderFloat("Sphere[1].Radius", &sphere[1].radius, 0.2f, 2.f);
+		ImGui::DragFloat3("Sphere.Center", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("Sphere.Radius", &sphere.radius, 0.01f);
+		ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
+		plane.normal = MyTools::Normalize(plane.normal);
+		ImGui::DragFloat("Plane.Distance", &plane.distance, 0.01f);
 		ImGui::End();
 
 		// 各種行列の計算
@@ -143,8 +143,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
 			// 球体
-			sphere[0] = { { 0.0f, 0.0f, 0.0f }, 0.5f };
-			sphere[1] = { { 0.8f, 0.0f, 1.0f }, 0.4f };
+			sphere = { { 0.0f, 0.0f, 0.0f }, 0.5f };
+
+			// 平面
+			plane = { { 0.0f, 1.0f, 0.0f }, 1.0f };
 
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
@@ -174,15 +176,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		// 球の描画
-		if (MyTools::IsCollison(sphere[0], sphere[1]))
+		if (MyTools::IsCollison(sphere, plane))
 		{
-			Draw::DrawSphere(sphere[0], viewProjectionMatrix, viewportMatrix, RED);
+			Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, RED);
 		}
 		else
 		{
-			Draw::DrawSphere(sphere[0], viewProjectionMatrix, viewportMatrix, WHITE);
+			Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
 		}
-		Draw::DrawSphere(sphere[1], viewProjectionMatrix, viewportMatrix, WHITE);
+		Draw::DrawPlane(plane, viewProjectionMatrix, viewportMatrix, WHITE);
 
 		///
 		/// ↑描画処理ここまで

@@ -47,13 +47,29 @@ float MyTools::Clamp(const float& num, const float& min, const float& max)
 }
 
 /// 球と球の衝突判定を返す関数
-bool MyTools::IsCollison(const MyBase::Sphere& sphere1, const MyBase::Sphere& sphere2)
+bool MyTools::IsCollison(const Sphere& sphere1, const Sphere& sphere2)
 {
 	// 2つの球の中心点間の距離を求める
 	float distance = Length(Subtract(sphere2.center, sphere1.center));
 
 	// 半径の合計よりも短ければ衝突
 	if (distance <= sphere1.radius + sphere2.radius) {
+		return true;
+	}
+
+	return false;
+}
+
+/// 球と平面の衝突判定を返す関数
+bool MyTools::IsCollison(const Sphere& sphere, const Plane& plane)
+{
+	// 平面と球の中心点との距離
+	float k = Dot(plane.normal, sphere.center) - plane.distance;
+	// 絶対値
+	if (k < 0) { k *= -1.f; };
+
+	if (k <= sphere.radius)
+	{
 		return true;
 	}
 
@@ -165,11 +181,7 @@ Vector3 MyTools::Normalize(const Vector3& v)
 /// 正射影ベクトル(ベクトル射影)を返す関数
 Vector3 MyTools::Project(const Vector3& v1, const Vector3& v2)
 {
-	float t;
-
-	t = Dot(v1, v2) / powf(Length(v2), 2);
-
-	return Multiply(t, v2);
+	return Multiply(Dot(v1, Normalize(v2)), Normalize(v2));
 }
 
 /// 最近接点を返す関数
@@ -180,6 +192,17 @@ Vector3 MyTools::ClosestPoint(const Vector3& point, const Segment& segment)
 	ans = Add(segment.origin, Project(Subtract(point, segment.origin), segment.diff));
 
 	return ans;
+}
+
+/// 垂直なベクトルを求める関数
+Vector3 MyTools::Perpendicular(const Vector3& vector)
+{
+	if (vector.x != 0.0f || vector.y != 0.0f)
+	{
+		return { -vector.y, vector.x, 0.0f };
+	}
+
+	return { 0.0f, -vector.z, vector.y };
 }
 
 /// 
