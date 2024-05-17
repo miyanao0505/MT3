@@ -71,6 +71,15 @@ public:
 	/// <param name="color">色</param>
 	static void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
+	/// <summary>
+	/// 三角形の描画
+	/// </summary>
+	/// <param name="triangle">三角形の情報</param>
+	/// <param name="viewProjectionMatrix">ビュープロジェクション行列</param>
+	/// <param name="viewportMatrix">ビューポート行列</param>
+	/// <param name="color">色</param>
+	static void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
 	/// 
 	/// オブジェクト用 ここから
 	/// 

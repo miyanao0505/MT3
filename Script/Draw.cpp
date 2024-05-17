@@ -209,6 +209,30 @@ void Draw::DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, 
 	Novice::DrawLine(int(points[3].x), int(points[3].y), int(points[0].x), int(points[0].y), color);
 }
 
+/// 三角形の描画
+void Draw::DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	// screen座標系の3頂点
+	Vector3 screenPosition[3];
+
+	// screen座標系まで変換
+	for (int32_t i = 0; i < 3; ++i)
+	{
+		Matrix4x4 worldMatrixOrigin = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, triangle.vertices[i]);
+		Matrix4x4 worldViewProjectionMatrixOrigin = Matrix::Multiply(worldMatrixOrigin, viewProjectionMatrix);
+		Vector3 ndcVectorOrigin = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixOrigin);
+		screenPosition[i] = Matrix::Transform(ndcVectorOrigin, viewportMatrix);
+	}
+
+	// 描画
+	Novice::DrawTriangle(
+		int(screenPosition[0].x), int(screenPosition[0].y),
+		int(screenPosition[1].x), int(screenPosition[1].y),
+		int(screenPosition[2].x), int(screenPosition[2].y),
+		color, kFillModeWireFrame
+	);
+}
+
 /// 
 /// オブジェクト用 ここから
 /// 

@@ -38,6 +38,13 @@ public:
 	static float Clamp(const float& num, const float& min, const float& max);
 
 	/// <summary>
+	/// 三角形の存在する平面情報を求める関数
+	/// </summary>
+	/// <param name="triangle"></param>
+	/// <returns></returns>
+	static Plane TriangleToPlane(const Triangle& triangle);
+
+	/// <summary>
 	/// 球と球の衝突判定を返す関数
 	/// </summary>
 	/// <param name="sphere1">球A</param>
@@ -76,6 +83,14 @@ public:
 	/// <param name="plane">平面</param>
 	/// <returns></returns>
 	static bool IsCollision(const Segment& segment, const Plane& plane);
+
+	/// <summary>
+	/// 三角形と線分の衝突判定を返す関数
+	/// </summary>
+	/// <param name="triangle">三角形</param>
+	/// <param name="segment">線分</param>
+	/// <returns></returns>
+	static bool IsCollision(const Triangle& triangle, const Segment& segment);
 
 	/// 
 	/// ツール関数 ここまで

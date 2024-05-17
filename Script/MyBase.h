@@ -138,5 +138,12 @@ public:
 		Vector3 normal;		//!< 法線
 		float distance;		//!< 距離
 	};
+
+	/// <summary>
+	/// 三角形
+	/// </summary>
+	struct Triangle {
+		Vector3 vertices[3];	//!< 頂点
+	};
 };
 

@@ -46,6 +46,22 @@ float MyTools::Clamp(const float& num, const float& min, const float& max)
 	}
 }
 
+/// 三角形の存在する平面情報を求める関数
+MyTools::Plane MyTools::TriangleToPlane(const Triangle& triangle)
+{
+	// ベクトルv1,v2を求める
+	Vector3 v1 = Subtract(triangle.vertices[1], triangle.vertices[0]);
+	Vector3 v2 = Subtract(triangle.vertices[2], triangle.vertices[1]);
+
+	// 法線nを算出
+	Vector3 n = Normalize(Cross(v1, v2));
+
+	// 距離を求める
+	float d = Dot(triangle.vertices[0], n);
+
+	return Plane{ n, d };
+}
+
 /// 球と球の衝突判定を返す関数
 bool MyTools::IsCollision(const Sphere& sphere1, const Sphere& sphere2)
 {
@@ -137,6 +153,37 @@ bool MyTools::IsCollision(const Segment& segment, const Plane& plane)
 	if (t >= 0.f && t <= 1.f)
 	{
 		return true;
+	}
+	return false;
+}
+
+/// 三角形と線分の衝突判定を返す関数
+bool MyTools::IsCollision(const Triangle& triangle, const Segment& segment)
+{
+	// 三角形の存在する平面を求める
+	Plane plane = TriangleToPlane(triangle);
+
+	// 線と平面との衝突判定を行う
+	if (IsCollision(segment, plane))
+	{
+		// 衝突点を求める
+		float dot = Dot(plane.normal, segment.diff);
+		float t = (plane.distance - Dot(segment.origin, plane.normal)) / dot;
+		Vector3 p = Add(segment.origin, Multiply(t, segment.diff));
+
+		// 各辺を結んだベクトルと、頂点と衝突点pを結んだベクトルのクロス積を取る
+		Vector3 cross01 = Cross(Subtract(triangle.vertices[1], triangle.vertices[0]), Subtract(p, triangle.vertices[1]));
+		Vector3 cross12 = Cross(Subtract(triangle.vertices[2], triangle.vertices[1]), Subtract(p, triangle.vertices[2]));
+		Vector3 cross20 = Cross(Subtract(triangle.vertices[0], triangle.vertices[2]), Subtract(p, triangle.vertices[0]));
+
+		// すべての小三角形のクロス積と法線が同じ方向を向いていたら衝突
+		if (Dot(cross01, plane.normal) >= 0.0f &&
+			Dot(cross12, plane.normal) >= 0.0f &&
+			Dot(cross20, plane.normal) >= 0.0f)
+		{
+			return true;
+		}
+		return false;
 	}
 	return false;
 }

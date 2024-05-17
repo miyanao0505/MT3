@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_03_3次元衝突判定(線と平面)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_04_3次元衝突判定(三角形と線)_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -24,11 +24,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	MyBase::Segment segment = {									// 線分
-		{ -0.45f, 0.41f, 0.0f }, 
-		{ 1.0f, 0.58f, 0.0f } 
+	MyBase::Segment segment = {					// 線分
+		{ 0.0f, 0.5f, -1.0f }, 
+		{ 0.0f, 0.5f, 2.0f } 
 	};
-	MyBase::Plane plane = { { 0.0f, 1.0f, 0.0f }, 1.0f };		// 平面
+	MyBase::Triangle triangle = { {				// 三角形
+		{ -1.0f, 0.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f },
+		{ 1.0f, 0.0f, 0.0f }
+	} };
 
 	// 各種行列の計算
 	Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -61,9 +65,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowSize(ImVec2(500, 150), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("Window");
-		ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
-		plane.normal = MyTools::Normalize(plane.normal);
-		ImGui::DragFloat("Plane.Distance", &plane.distance, 0.01f);
+		ImGui::DragFloat3("Triangle.v0", &triangle.vertices[0].x, 0.01f);
+		ImGui::DragFloat3("Triangle.v1", &triangle.vertices[1].x, 0.01f);
+		ImGui::DragFloat3("Triangle.v2", &triangle.vertices[2].x, 0.01f);
 		ImGui::DragFloat3("Segment.Origin", &segment.origin.x, 0.01f);
 		ImGui::DragFloat3("Segment.Diff", &segment.diff.x, 0.01f);
 		ImGui::End();
@@ -144,11 +148,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			// 球体
-			segment = { { 0.0f, 0.0f, 0.0f }, 0.5f };
+			// 線分
+			segment = {					
+				{ 0.0f, 0.5f, -1.0f },
+				{ 0.0f, 0.5f, 2.0f }
+			};
 
-			// 平面
-			plane = { { 0.0f, 1.0f, 0.0f }, 1.0f };
+			// 三角形
+			triangle = { {				
+				{ -1.0f, 0.0f, 0.0f },
+				{ 0.0f, 1.0f, 0.0f },
+				{ 1.0f, 0.0f, 0.0f }
+			} };
 
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
@@ -159,8 +170,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowSize(ImVec2(400, 80), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("camera");
-		ImGui::SliderFloat3("translate", &cameraTranslate.x, -6.5f, 6.5f);
-		ImGui::SliderFloat3("rotate", &cameraRotate.x, -3.14f, 3.14f);
+		ImGui::DragFloat3("translate", &cameraTranslate.x, 0.01f);
+		ImGui::DragFloat3("rotate", &cameraRotate.x, 0.01f);
 		ImGui::End();
 
 #endif // _DEBUG
@@ -177,8 +188,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		// 球の描画
-		if (MyTools::IsCollision(segment, plane))
+		// 線の描画
+		if (MyTools::IsCollision(triangle, segment))
 		{
 			Draw::DrawSegment(segment, viewProjectionMatrix, viewportMatrix, RED);
 		}
@@ -186,7 +197,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{
 			Draw::DrawSegment(segment, viewProjectionMatrix, viewportMatrix, WHITE);
 		}
-		Draw::DrawPlane(plane, viewProjectionMatrix, viewportMatrix, WHITE);
+		// 三角形の描画
+		Draw::DrawTriangle(triangle, viewProjectionMatrix, viewportMatrix, WHITE);
 
 		///
 		/// ↑描画処理ここまで
