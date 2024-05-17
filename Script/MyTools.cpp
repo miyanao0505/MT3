@@ -47,7 +47,7 @@ float MyTools::Clamp(const float& num, const float& min, const float& max)
 }
 
 /// 球と球の衝突判定を返す関数
-bool MyTools::IsCollison(const Sphere& sphere1, const Sphere& sphere2)
+bool MyTools::IsCollision(const Sphere& sphere1, const Sphere& sphere2)
 {
 	// 2つの球の中心点間の距離を求める
 	float distance = Length(Subtract(sphere2.center, sphere1.center));
@@ -61,7 +61,7 @@ bool MyTools::IsCollison(const Sphere& sphere1, const Sphere& sphere2)
 }
 
 /// 球と平面の衝突判定を返す関数
-bool MyTools::IsCollison(const Sphere& sphere, const Plane& plane)
+bool MyTools::IsCollision(const Sphere& sphere, const Plane& plane)
 {
 	// 平面と球の中心点との距離
 	float k = Dot(plane.normal, sphere.center) - plane.distance;
@@ -73,6 +73,71 @@ bool MyTools::IsCollison(const Sphere& sphere, const Plane& plane)
 		return true;
 	}
 
+	return false;
+}
+
+/// 直線と平面の衝突判定を返す関数
+bool MyTools::IsCollision(const Line& line, const Plane& plane)
+{
+	// まず垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, line.diff);
+
+	// 垂直=並行であるので、衝突しているはずがない
+	if (dot == 0)
+	{
+		return false;
+	}
+
+	// tを求める
+	//float t = (plane.distance - Dot(line.origin, plane.normal)) / dot;
+
+	// tの値と線の種類によって衝突しているかを判断する
+	return true;
+}
+
+/// 半直線と平面の衝突判定を返す関数
+bool MyTools::IsCollision(const Ray& ray, const Plane& plane)
+{
+	// まず垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, ray.diff);
+
+	// 垂直=並行であるので、衝突しているはずがない
+	if (dot == 0)
+	{
+		return false;
+	}
+
+	// tを求める
+	float t = (plane.distance - Dot(ray.origin, plane.normal)) / dot;
+
+	// tの値と線の種類によって衝突しているかを判断する
+	if (t > 0.f)
+	{
+		return true;
+	}
+	return false;
+}
+
+/// 線分と平面の衝突判定を返す関数
+bool MyTools::IsCollision(const Segment& segment, const Plane& plane)
+{
+	// まず垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, segment.diff);
+
+	// 垂直=並行であるので、衝突しているはずがない
+	if (dot == 0)
+	{
+		return false;
+	}
+
+	// tを求める
+	float t = (plane.distance - Dot(segment.origin, plane.normal)) / dot;
+
+	// tの値と線の種類によって衝突しているかを判断する
+	if (t >= 0.f && t <= 1.f)
+	{
+		return true;
+	}
 	return false;
 }
 

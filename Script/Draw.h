@@ -27,6 +27,33 @@ public:
 	/// 
 	
 	/// <summary>
+	/// 直線の描画
+	/// </summary>
+	/// <param name="line">直線の情報</param>
+	/// <param name="viewProjectionMatrix">ビュープロジェクション行列</param>
+	/// <param name="viewportMatrix">ビューポート行列</param>
+	/// <param name="color">色</param>
+	static void DrawLine(const Line& line, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+	/// <summary>
+	/// 半直線の描画
+	/// </summary>
+	/// <param name="ray">半直線の情報</param>
+	/// <param name="viewProjectionMatrix">ビュープロジェクション行列</param>
+	/// <param name="viewportMatrix">ビューポート行列</param>
+	/// <param name="color">色</param>
+	static void DrawRay(const Ray& ray, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+	/// <summary>
+	/// 線分の描画
+	/// </summary>
+	/// <param name="segment">線分の情報</param>
+	/// <param name="viewProjectionMatrix">ビュープロジェクション行列</param>
+	/// <param name="viewportMatrix">ビューポート行列</param>
+	/// <param name="color">色</param>
+	static void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+	/// <summary>
 	/// 球の描画
 	/// </summary>
 	/// <param name="sphere">球の情報</param>

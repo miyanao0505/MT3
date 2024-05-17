@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_02_3次元衝突判定(平面と球)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_03_3次元衝突判定(線と平面)_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -24,9 +24,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	MyBase::Sphere sphere = { { 0.0f, 0.0f, 0.0f }, 0.5f };		// 球体1
+	MyBase::Segment segment = {									// 線分
+		{ -0.45f, 0.41f, 0.0f }, 
+		{ 1.0f, 0.58f, 0.0f } 
+	};
 	MyBase::Plane plane = { { 0.0f, 1.0f, 0.0f }, 1.0f };		// 平面
-
 
 	// 各種行列の計算
 	Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -59,11 +61,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowSize(ImVec2(500, 150), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("Window");
-		ImGui::DragFloat3("Sphere.Center", &sphere.center.x, 0.01f);
-		ImGui::DragFloat("Sphere.Radius", &sphere.radius, 0.01f);
 		ImGui::DragFloat3("Plane.Normal", &plane.normal.x, 0.01f);
 		plane.normal = MyTools::Normalize(plane.normal);
 		ImGui::DragFloat("Plane.Distance", &plane.distance, 0.01f);
+		ImGui::DragFloat3("Segment.Origin", &segment.origin.x, 0.01f);
+		ImGui::DragFloat3("Segment.Diff", &segment.diff.x, 0.01f);
 		ImGui::End();
 
 		// 各種行列の計算
@@ -143,7 +145,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
 			// 球体
-			sphere = { { 0.0f, 0.0f, 0.0f }, 0.5f };
+			segment = { { 0.0f, 0.0f, 0.0f }, 0.5f };
 
 			// 平面
 			plane = { { 0.0f, 1.0f, 0.0f }, 1.0f };
@@ -176,13 +178,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		// 球の描画
-		if (MyTools::IsCollison(sphere, plane))
+		if (MyTools::IsCollision(segment, plane))
 		{
-			Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, RED);
+			Draw::DrawSegment(segment, viewProjectionMatrix, viewportMatrix, RED);
 		}
 		else
 		{
-			Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
+			Draw::DrawSegment(segment, viewProjectionMatrix, viewportMatrix, WHITE);
 		}
 		Draw::DrawPlane(plane, viewProjectionMatrix, viewportMatrix, WHITE);
 

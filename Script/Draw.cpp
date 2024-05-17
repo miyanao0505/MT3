@@ -92,6 +92,60 @@ void Draw::DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& view
 /// オブジェクト用 ここから
 /// 
 
+/// 直線の描画
+void Draw::DrawLine(const Line& line, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	// Screen座標系まで変換
+	Matrix4x4 worldMatrixOrigin = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, line.origin);
+	Matrix4x4 worldViewProjectionMatrixOrigin = Matrix::Multiply(worldMatrixOrigin, viewProjectionMatrix);
+	Vector3 ndcVectorOrigin = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixOrigin);
+	Vector3 screenPositionOrigin = Matrix::Transform(ndcVectorOrigin, viewportMatrix);
+	
+	Matrix4x4 worldMatrixEnd = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, MyTools::Add(line.origin, line.diff));
+	Matrix4x4 worldViewProjectionMatrixEnd = Matrix::Multiply(worldMatrixEnd, viewProjectionMatrix);
+	Vector3 ndcVectorEnd = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixEnd);
+	Vector3 screenPositionEnd = Matrix::Transform(ndcVectorEnd, viewportMatrix);
+
+	// 線を描画する
+	Novice::DrawLine(int(screenPositionOrigin.x), int(screenPositionOrigin.y), int(screenPositionEnd.x), int(screenPositionEnd.y), color);
+}
+
+/// 半直線の描画
+void Draw::DrawRay(const Ray& ray, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	// Screen座標系まで変換
+	Matrix4x4 worldMatrixOrigin = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, ray.origin);
+	Matrix4x4 worldViewProjectionMatrixOrigin = Matrix::Multiply(worldMatrixOrigin, viewProjectionMatrix);
+	Vector3 ndcVectorOrigin = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixOrigin);
+	Vector3 screenPositionOrigin = Matrix::Transform(ndcVectorOrigin, viewportMatrix);
+
+	Matrix4x4 worldMatrixEnd = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, MyTools::Add(ray.origin, ray.diff));
+	Matrix4x4 worldViewProjectionMatrixEnd = Matrix::Multiply(worldMatrixEnd, viewProjectionMatrix);
+	Vector3 ndcVectorEnd = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixEnd);
+	Vector3 screenPositionEnd = Matrix::Transform(ndcVectorEnd, viewportMatrix);
+
+	// 線を描画する
+	Novice::DrawLine(int(screenPositionOrigin.x), int(screenPositionOrigin.y), int(screenPositionEnd.x), int(screenPositionEnd.y), color);
+}
+
+/// 線分の描画
+void Draw::DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	// Screen座標系まで変換
+	Matrix4x4 worldMatrixOrigin = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, segment.origin);
+	Matrix4x4 worldViewProjectionMatrixOrigin = Matrix::Multiply(worldMatrixOrigin, viewProjectionMatrix);
+	Vector3 ndcVectorOrigin = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixOrigin);
+	Vector3 screenPositionOrigin = Matrix::Transform(ndcVectorOrigin, viewportMatrix);
+
+	Matrix4x4 worldMatrixEnd = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, MyTools::Add(segment.origin, segment.diff));
+	Matrix4x4 worldViewProjectionMatrixEnd = Matrix::Multiply(worldMatrixEnd, viewProjectionMatrix);
+	Vector3 ndcVectorEnd = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixEnd);
+	Vector3 screenPositionEnd = Matrix::Transform(ndcVectorEnd, viewportMatrix);
+
+	// 線を描画する
+	Novice::DrawLine(int(screenPositionOrigin.x), int(screenPositionOrigin.y), int(screenPositionEnd.x), int(screenPositionEnd.y), color);
+}
+
 /// 球の描画
 void Draw::DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
 	const uint32_t kSubdivision = 10;							// 分割数

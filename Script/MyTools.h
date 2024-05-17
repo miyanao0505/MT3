@@ -43,7 +43,7 @@ public:
 	/// <param name="sphere1">球A</param>
 	/// <param name="sphere2">球B</param>
 	/// <returns></returns>
-	static bool IsCollison(const Sphere& sphere1, const Sphere& sphere2);
+	static bool IsCollision(const Sphere& sphere1, const Sphere& sphere2);
 
 	/// <summary>
 	/// 球と平面の衝突判定を返す関数
@@ -51,7 +51,31 @@ public:
 	/// <param name="sphere">球</param>
 	/// <param name="plane">平面</param>
 	/// <returns></returns>
-	static bool IsCollison(const Sphere& sphere, const Plane& plane);
+	static bool IsCollision(const Sphere& sphere, const Plane& plane);
+
+	/// <summary>
+	/// 直線と平面の衝突判定を返す関数
+	/// </summary>
+	/// <param name="line">直線</param>
+	/// <param name="plane">平面</param>
+	/// <returns></returns>
+	static bool IsCollision(const Line& line, const Plane& plane);
+
+	/// <summary>
+	/// 半直線と平面の衝突判定を返す関数
+	/// </summary>
+	/// <param name="ray">半直線</param>
+	/// <param name="plane">平面</param>
+	/// <returns></returns>
+	static bool IsCollision(const Ray& ray, const Plane& plane);
+
+	/// <summary>
+	/// 線分と平面の衝突判定を返す関数
+	/// </summary>
+	/// <param name="segment">線分</param>
+	/// <param name="plane">平面</param>
+	/// <returns></returns>
+	static bool IsCollision(const Segment& segment, const Plane& plane);
 
 	/// 
 	/// ツール関数 ここまで
