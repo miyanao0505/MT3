@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_04_3次元衝突判定(三角形と線)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_05_3次元衝突判定(AABBとAABB)_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -24,15 +24,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	MyBase::Segment segment = {					// 線分
-		{ 0.0f, 0.5f, -1.0f }, 
-		{ 0.0f, 0.5f, 2.0f } 
+	MyBase::AABB aabb1 = {
+		.min{ -0.5f, -0.5f, -0.5f },
+		.max{ 0.0f, 0.0f, 0.0f },
 	};
-	MyBase::Triangle triangle = { {				// 三角形
-		{ -1.0f, 0.0f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f },
-		{ 1.0f, 0.0f, 0.0f }
-	} };
+	MyBase::AABB aabb2 = {
+		.min{ 0.2f, 0.2f, 0.2f },
+		.max{ 1.0f, 1.0f, 1.0f },
+	};
 
 	// 各種行列の計算
 	Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -65,11 +64,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowSize(ImVec2(500, 150), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("Window");
-		ImGui::DragFloat3("Triangle.v0", &triangle.vertices[0].x, 0.01f);
-		ImGui::DragFloat3("Triangle.v1", &triangle.vertices[1].x, 0.01f);
-		ImGui::DragFloat3("Triangle.v2", &triangle.vertices[2].x, 0.01f);
-		ImGui::DragFloat3("Segment.Origin", &segment.origin.x, 0.01f);
-		ImGui::DragFloat3("Segment.Diff", &segment.diff.x, 0.01f);
+		ImGui::DragFloat3("aabb1.min", &aabb1.min.x, 0.01f);
+		ImGui::DragFloat3("aabb1.max", &aabb1.max.x, 0.01f);
+		aabb1.min.x = (std::min)(aabb1.min.x, aabb1.max.x);
+		aabb1.max.x = (std::max)(aabb1.min.x, aabb1.max.x);
+		aabb1.min.y = (std::min)(aabb1.min.y, aabb1.max.y);
+		aabb1.max.y = (std::max)(aabb1.min.y, aabb1.max.y);
+		aabb1.min.z = (std::min)(aabb1.min.z, aabb1.max.z);
+		aabb1.max.z = (std::max)(aabb1.min.z, aabb1.max.z);
+		ImGui::DragFloat3("aabb2.min", &aabb2.min.x, 0.01f);
+		ImGui::DragFloat3("aabb2.max", &aabb2.max.x, 0.01f);
+		aabb2.min.x = (std::min)(aabb2.min.x, aabb2.max.x);
+		aabb2.max.x = (std::max)(aabb2.min.x, aabb2.max.x);
+		aabb2.min.y = (std::min)(aabb2.min.y, aabb2.max.y);
+		aabb2.max.y = (std::max)(aabb2.min.y, aabb2.max.y);
+		aabb2.min.z = (std::min)(aabb2.min.z, aabb2.max.z);
+		aabb2.max.z = (std::max)(aabb2.min.z, aabb2.max.z);
+
 		ImGui::End();
 
 		// 各種行列の計算
@@ -148,18 +159,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			// 線分
-			segment = {					
-				{ 0.0f, 0.5f, -1.0f },
-				{ 0.0f, 0.5f, 2.0f }
+			aabb1 = {
+				.min{ -0.5f, -0.5f, -0.5f },
+				.max{ 0.0f, 0.0f, 0.0f },
 			};
 
-			// 三角形
-			triangle = { {				
-				{ -1.0f, 0.0f, 0.0f },
-				{ 0.0f, 1.0f, 0.0f },
-				{ 1.0f, 0.0f, 0.0f }
-			} };
+			aabb2 = {
+				.min{ 0.2f, 0.2f, 0.2f },
+				.max{ 1.0f, 1.0f, 1.0f },
+			};
 
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
@@ -189,16 +197,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		// 線の描画
-		if (MyTools::IsCollision(triangle, segment))
+		if (MyTools::IsCollision(aabb1, aabb2))
 		{
-			Draw::DrawSegment(segment, viewProjectionMatrix, viewportMatrix, RED);
+			Draw::DrawAABB(aabb1, viewProjectionMatrix, viewportMatrix, RED);
 		}
 		else
 		{
-			Draw::DrawSegment(segment, viewProjectionMatrix, viewportMatrix, WHITE);
+			Draw::DrawAABB(aabb1, viewProjectionMatrix, viewportMatrix, WHITE);
 		}
 		// 三角形の描画
-		Draw::DrawTriangle(triangle, viewProjectionMatrix, viewportMatrix, WHITE);
+		Draw::DrawAABB(aabb2, viewProjectionMatrix, viewportMatrix, WHITE);
 
 		///
 		/// ↑描画処理ここまで

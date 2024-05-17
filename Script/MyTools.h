@@ -85,12 +85,36 @@ public:
 	static bool IsCollision(const Segment& segment, const Plane& plane);
 
 	/// <summary>
+	/// 三角形と直線の衝突判定を返す関数
+	/// </summary>
+	/// <param name="triangle">三角形</param>
+	/// <param name="line">直線</param>
+	/// <returns></returns>
+	static bool IsCollision(const Triangle& triangle, const Line& line);
+
+	/// <summary>
+	/// 三角形と半直線の衝突判定を返す関数
+	/// </summary>
+	/// <param name="triangle">三角形</param>
+	/// <param name="ray">半直線</param>
+	/// <returns></returns>
+	static bool IsCollision(const Triangle& triangle, const Ray& ray);
+
+	/// <summary>
 	/// 三角形と線分の衝突判定を返す関数
 	/// </summary>
 	/// <param name="triangle">三角形</param>
 	/// <param name="segment">線分</param>
 	/// <returns></returns>
 	static bool IsCollision(const Triangle& triangle, const Segment& segment);
+
+	/// <summary>
+	/// AABB同士の衝突判定を返す関数
+	/// </summary>
+	/// <param name="aabb1">aabbA</param>
+	/// <param name="aabb2">aabbB</param>
+	/// <returns></returns>
+	static bool IsCollision(const AABB& aabb1, const AABB& aabb2);
 
 	/// 
 	/// ツール関数 ここまで

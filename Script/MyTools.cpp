@@ -157,6 +157,68 @@ bool MyTools::IsCollision(const Segment& segment, const Plane& plane)
 	return false;
 }
 
+/// 三角形と直線の衝突判定を返す関数
+bool MyTools::IsCollision(const Triangle& triangle, const Line& line)
+{
+	// 三角形の存在する平面を求める
+	Plane plane = TriangleToPlane(triangle);
+
+	// 線と平面との衝突判定を行う
+	if (IsCollision(line, plane))
+	{
+		// 衝突点を求める
+		float dot = Dot(plane.normal, line.diff);
+		float t = (plane.distance - Dot(line.origin, plane.normal)) / dot;
+		Vector3 p = Add(line.origin, Multiply(t, line.diff));
+
+		// 各辺を結んだベクトルと、頂点と衝突点pを結んだベクトルのクロス積を取る
+		Vector3 cross01 = Cross(Subtract(triangle.vertices[1], triangle.vertices[0]), Subtract(p, triangle.vertices[1]));
+		Vector3 cross12 = Cross(Subtract(triangle.vertices[2], triangle.vertices[1]), Subtract(p, triangle.vertices[2]));
+		Vector3 cross20 = Cross(Subtract(triangle.vertices[0], triangle.vertices[2]), Subtract(p, triangle.vertices[0]));
+
+		// すべての小三角形のクロス積と法線が同じ方向を向いていたら衝突
+		if (Dot(cross01, plane.normal) >= 0.0f &&
+			Dot(cross12, plane.normal) >= 0.0f &&
+			Dot(cross20, plane.normal) >= 0.0f)
+		{
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+/// 三角形と半直線の衝突判定を返す関数
+bool MyTools::IsCollision(const Triangle& triangle, const Ray& ray)
+{
+	// 三角形の存在する平面を求める
+	Plane plane = TriangleToPlane(triangle);
+
+	// 線と平面との衝突判定を行う
+	if (IsCollision(ray, plane))
+	{
+		// 衝突点を求める
+		float dot = Dot(plane.normal, ray.diff);
+		float t = (plane.distance - Dot(ray.origin, plane.normal)) / dot;
+		Vector3 p = Add(ray.origin, Multiply(t, ray.diff));
+
+		// 各辺を結んだベクトルと、頂点と衝突点pを結んだベクトルのクロス積を取る
+		Vector3 cross01 = Cross(Subtract(triangle.vertices[1], triangle.vertices[0]), Subtract(p, triangle.vertices[1]));
+		Vector3 cross12 = Cross(Subtract(triangle.vertices[2], triangle.vertices[1]), Subtract(p, triangle.vertices[2]));
+		Vector3 cross20 = Cross(Subtract(triangle.vertices[0], triangle.vertices[2]), Subtract(p, triangle.vertices[0]));
+
+		// すべての小三角形のクロス積と法線が同じ方向を向いていたら衝突
+		if (Dot(cross01, plane.normal) >= 0.0f &&
+			Dot(cross12, plane.normal) >= 0.0f &&
+			Dot(cross20, plane.normal) >= 0.0f)
+		{
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
 /// 三角形と線分の衝突判定を返す関数
 bool MyTools::IsCollision(const Triangle& triangle, const Segment& segment)
 {
@@ -184,6 +246,18 @@ bool MyTools::IsCollision(const Triangle& triangle, const Segment& segment)
 			return true;
 		}
 		return false;
+	}
+	return false;
+}
+
+/// AABB同士の衝突判定を返す関数
+bool MyTools::IsCollision(const AABB& aabb1, const AABB& aabb2)
+{
+	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) && 
+		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && 
+		(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z))
+	{
+		return true;
 	}
 	return false;
 }
