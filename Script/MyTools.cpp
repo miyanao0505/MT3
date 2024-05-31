@@ -46,6 +46,12 @@ float MyTools::Clamp(const float& num, const float& min, const float& max)
 	}
 }
 
+/// 線形補間
+float MyTools::Lerp(const float& num1, const float& num2, const float& t)
+{ 
+	return num1 * (1 - t) + num2 * t;
+}
+
 /// 三角形の存在する平面情報を求める関数
 MyTools::Plane MyTools::TriangleToPlane(const Triangle& triangle)
 {
@@ -183,7 +189,6 @@ bool MyTools::IsCollision(const Triangle& triangle, const Line& line)
 		{
 			return true;
 		}
-		return false;
 	}
 	return false;
 }
@@ -214,7 +219,6 @@ bool MyTools::IsCollision(const Triangle& triangle, const Ray& ray)
 		{
 			return true;
 		}
-		return false;
 	}
 	return false;
 }
@@ -245,7 +249,6 @@ bool MyTools::IsCollision(const Triangle& triangle, const Segment& segment)
 		{
 			return true;
 		}
-		return false;
 	}
 	return false;
 }
@@ -257,6 +260,27 @@ bool MyTools::IsCollision(const AABB& aabb1, const AABB& aabb2)
 		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && 
 		(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z))
 	{
+		return true;
+	}
+	return false;
+}
+
+/// AABBと球の衝突判定を返す関数
+bool MyTools::IsCollision(const AABB& aabb, const Sphere& sphere)
+{
+	// 最近接点を求める
+	Vector3 closestPoint{ 
+		std::clamp(sphere.center.x, aabb.min.x, aabb.max.x),
+		std::clamp(sphere.center.y, aabb.min.y, aabb.max.y), 
+		std::clamp(sphere.center.z, aabb.min.z, aabb.max.z) };
+
+	// 最近接点と球の中心との距離を求める
+	float distance = Length(Subtract(closestPoint, sphere.center));
+
+	// 距離が半径より小さければ衝突
+	if (distance <= sphere.radius)
+	{
+		// 衝突
 		return true;
 	}
 	return false;
@@ -362,6 +386,119 @@ Vector3 MyTools::Normalize(const Vector3& v)
 	}
 
 	return Vector3{ x, y, z };
+}
+
+/// 線形補間
+Vector3 MyTools::Lerp(const Vector3& vector1, const Vector3& vector2, float t)
+{ 
+	return Add(vector1, Multiply(t, Subtract(vector2, vector1)));
+}
+
+/// 球面線形補間
+Vector3 MyTools::Slerp(const Vector3& vector1, const Vector3& vector2, float t) 
+{ 
+	// 正規化ベクトルを求める
+	Vector3 start = Normalize(vector1);
+	Vector3 end = Normalize(vector2);
+
+	// 内積を求める
+	float dot = Dot(start, end);
+	// 誤差により1.0fを超えるのを防ぐ
+	dot = Clamp(dot, dot, 1.0f);
+
+	// s－九コサインでθの角度を求める
+	float theta = std::acosf(dot); 
+
+	// θの角度からsinθを求める
+	float sinTheta = std::sin(theta);
+
+	// サイン(θ(1-t))を求める
+	float sinThetaFrom = std::sin((1 - t) * theta);
+	// サインθtを求める
+	float sinThetaTo = std::sin(t * theta);
+
+	Vector3 normalizeVector;
+	// ゼロ除算を防ぐ
+	if (sinTheta < 1.0e-5)
+	{
+		normalizeVector = start;
+	}
+	else
+	{
+		// 球面線形補間したベクトル(単位ベクトル)
+		normalizeVector = Add(Multiply(sinThetaFrom / sinTheta, start), Multiply(sinThetaTo / sinTheta, end));
+	}
+	
+	// ベクトルの長さはstartとendの長さを線形補間
+	float length1 = Length(start);
+	float length2 = Length(end);
+	// Lerpで補間ベクトルの長さを求める
+	float length = Lerp(length1, length2, t);
+
+	// 長さを反映
+	return Multiply(length, normalizeVector);
+}
+
+/// CatmullRom補間
+Vector3 MyTools::CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) 
+{ 
+	const float s = 0.5f;	// 数式に出てくる 1/2 のこと。
+
+	float t2 = t * t;	// t の2乗
+	float t3 = t2 * t;	// t の3乗
+	
+	Vector3 e3 = Subtract(Add(Multiply(-1.f, p0), Multiply(3.f, p1)), Add(Multiply(3.f, p2), p3));
+	Vector3 e2 = Add(Subtract(Multiply(2.f, p0), Multiply(5.f, p1)), Subtract(Multiply(4.f, p2), p3));
+	Vector3 e1 = Add(Multiply(-1.f, p0), p2);
+	Vector3 e0 = Multiply(2.f, p1);
+
+	return Multiply(s, Add(Add(Add(Multiply(t3, e3), Multiply(t2, e2)), Multiply(t, e1)), e0));
+}
+
+/// CatmullRomスプライン曲線上の座標を得る
+Vector3 MyTools::CatmullRomPosition(const std::vector<Vector3>& points, float t) 
+{ 
+	assert(points.size() >= 4 && "制御点は4点以上必要です");
+
+	// 区間数は制御点の数-1
+	size_t division = points.size() - 1;
+	// 1区間の長さ(全体を1.0とした割合)
+	float areaWidth = 1.0f / division;
+
+	// 区間内の始点を0.0f、終点を1.0fとしたときの現在位置
+	float t_2 = std::fmod(t, areaWidth) * division;
+	// 下限(0.0f)と上限(1.0f)の範囲に収める
+	t_2 = Clamp(t_2, 0.0f, 1.0f);
+
+	// 区間番号
+	size_t index = static_cast<size_t>(t / areaWidth);
+	// 区間番号が上限を超えないように収める
+	index >= points.size() ? index = points.size() - 2 : index;
+
+	// 4点分のインデックス
+	size_t index0 = index - 1;
+	size_t index1 = index;
+	size_t index2 = index + 1;
+	size_t index3 = index + 2;
+
+	// 最初の区間のp0はp1を重複使用する
+	if (index == 0) {
+		index0 = index1;
+	}
+	
+	// 最後の区間のp3はp2を重複使用する
+	if (index >= points.size()) {
+		index3 = index2;
+	}
+
+	// 4点の座標
+	const Vector3& p0 = points.at(index0);
+	const Vector3& p1 = points.at(index1);
+	const Vector3& p2 = points.at(index2);
+	const Vector3& p3 = points.at(index3);
+
+	// 4点を指定してCatmul-Rom補間
+	return CatmullRomInterpolation(p0, p1, p2, p3, t_2);
 }
 
 /// 正射影ベクトル(ベクトル射影)を返す関数

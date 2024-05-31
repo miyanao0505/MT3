@@ -58,6 +58,23 @@ public:
 	};*/
 
 	/// <summary>
+	/// Transform
+	/// </summary>
+	struct Transform {
+		Vector3 scale;
+		Vector3 rotate;
+		Vector3 translate;
+	};
+
+	/// <summary>
+	/// 頂点データ
+	/// </summary>
+	struct VertexData {
+		Vector4 position;
+		Vector2 texcoord;
+	};
+
+	/// <summary>
 	/// 円
 	/// </summary>
 	struct Ball {

@@ -1,6 +1,9 @@
 ﻿#pragma once
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <vector>
+#include <assert.h>
+#include <algorithm>
 #include "MyBase.h"
 
 class MyTools :
@@ -36,6 +39,15 @@ public:
 	/// <param name="max">最大値</param>
 	/// <returns>範囲内の値</returns>
 	static float Clamp(const float& num, const float& min, const float& max);
+
+	/// <summary>
+	/// 線形補間
+	/// </summary>
+	/// <param name="num1">数値1</param>
+	/// <param name="num2">数値2</param>
+	/// <param name="t">媒介変数</param>
+	/// <returns></returns>
+	static float Lerp(const float& num1, const float& num2, const float& t);
 
 	/// <summary>
 	/// 三角形の存在する平面情報を求める関数
@@ -115,6 +127,14 @@ public:
 	/// <param name="aabb2">aabbB</param>
 	/// <returns></returns>
 	static bool IsCollision(const AABB& aabb1, const AABB& aabb2);
+
+	/// <summary>
+	/// AABBと球の衝突判定を返す関数
+	/// </summary>
+	/// <param name="aabb">aabb</param>
+	/// <param name="sphere">球</param>
+	/// <returns></returns>
+	static bool IsCollision(const AABB& aabb, const Sphere& sphere);
 
 	/// 
 	/// ツール関数 ここまで
@@ -213,6 +233,43 @@ public:
 	/// </summary>
 	/// <param name="v">ベクトル</param>
 	static Vector3 Normalize(const Vector3& v);
+
+	/// <summary>
+	/// 線形補間
+	/// </summary>
+	/// <param name="vector1">ベクトルA</param>
+	/// <param name="vector2">ベクトルB</param>
+	/// <param name="t">媒介変数</param>
+	/// <returns></returns>
+	static Vector3 Lerp(const Vector3& vector1, const Vector3& vector2, float t);
+
+	/// <summary>
+	/// 球面線形補間
+	/// </summary>
+	/// <param name="vector1">ベクトルA</param>
+	/// <param name="vector2">ベクトルB</param>
+	/// <param name="t">媒介変数</param>
+	/// <returns></returns>
+	static Vector3 Slerp(const Vector3& vector1, const Vector3& vector2, float t);
+
+	/// <summary>
+	/// CatmullRom補間
+	/// </summary>
+	/// <param name="p0">点0の座標</param>
+	/// <param name="p1">点1の座標</param>
+	/// <param name="p2">点2の座標</param>
+	/// <param name="p3">点3の座標</param>
+	/// <param name="t">点1を0.0f、点2を1.0fとした割合指定</param>
+	/// <returns>点1と点2の間で指定された座標</returns>
+	static Vector3 CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
+
+	/// <summary>
+	/// CatmullRomスプライン曲線上の座標を得る
+	/// </summary>
+	/// <param name="points">制御点の集合</param>
+	/// <param name="t">スプラインの全区間の中での割合指定[0, 1]</param>
+	/// <returns>座標</returns>
+	static Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t);
 
 	/// <summary>
 	/// 正射影ベクトル(ベクトル射影)を返す関数

@@ -286,11 +286,26 @@ public:
 	static Matrix4x4 Multiply(const float& scalar, const Matrix4x4& matrix);
 
 	/// <summary>
+	/// 3次元ベクトルと4x4行列の積を返す関数
+	/// </summary>
+	/// <param name="vector">ベクトル</param>
+	/// <param name="matrix">行列</param>
+	/// <returns></returns>
+	static Vector3 Multiply(const Vector3& vector, const Matrix4x4& matrix);
+
+	/// <summary>
 	/// 3次元ベクトルを同時座標として変換する
 	/// </summary>
 	/// <param name="vector">ベクトル</param>
 	/// <param name="matrix">行列</param>
 	static Vector3 Transform(const Vector3& vector, const Matrix4x4 matrix);
+
+	/// <summary>
+	/// 4x4行列をスケールと回転の3次元ベクトルに変換して取得
+	/// </summary>
+	/// <param name="vector">ベクトル</param>
+	/// <param name="matrix">行列</param>
+	static Vector3 TransformNormal(const Vector3& vector, const Matrix4x4& matrix);
 
 	/// <summary>
 	/// 4x4逆行列の作成
@@ -311,7 +326,7 @@ public:
 	static Matrix4x4 Transpose(const Matrix4x4& matrix);
 
 	/// 
-	/// 4x4の行列 ここから
+	/// 4x4の行列 ここまで
 	/// 
 
 	/// 

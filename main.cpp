@@ -24,13 +24,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	MyBase::AABB aabb1 = {
+	MyBase::AABB aabb = {
 		.min{ -0.5f, -0.5f, -0.5f },
 		.max{ 0.0f, 0.0f, 0.0f },
 	};
-	MyBase::AABB aabb2 = {
-		.min{ 0.2f, 0.2f, 0.2f },
-		.max{ 1.0f, 1.0f, 1.0f },
+	MyBase::Sphere sphere = {
+		.center{ 1.0f, 1.0f, 1.0f },
+		.radius{ 1.0f },
 	};
 
 	// 各種行列の計算
@@ -60,28 +60,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 		 
+#ifdef _DEBUG
+
 		ImGui::SetNextWindowPos(ImVec2(750, 50), ImGuiCond_Once);							// ウィンドウの座標(プログラム起動時のみ読み込み)
 		ImGui::SetNextWindowSize(ImVec2(500, 150), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("Window");
-		ImGui::DragFloat3("aabb1.min", &aabb1.min.x, 0.01f);
-		ImGui::DragFloat3("aabb1.max", &aabb1.max.x, 0.01f);
-		aabb1.min.x = (std::min)(aabb1.min.x, aabb1.max.x);
-		aabb1.max.x = (std::max)(aabb1.min.x, aabb1.max.x);
-		aabb1.min.y = (std::min)(aabb1.min.y, aabb1.max.y);
-		aabb1.max.y = (std::max)(aabb1.min.y, aabb1.max.y);
-		aabb1.min.z = (std::min)(aabb1.min.z, aabb1.max.z);
-		aabb1.max.z = (std::max)(aabb1.min.z, aabb1.max.z);
-		ImGui::DragFloat3("aabb2.min", &aabb2.min.x, 0.01f);
-		ImGui::DragFloat3("aabb2.max", &aabb2.max.x, 0.01f);
-		aabb2.min.x = (std::min)(aabb2.min.x, aabb2.max.x);
-		aabb2.max.x = (std::max)(aabb2.min.x, aabb2.max.x);
-		aabb2.min.y = (std::min)(aabb2.min.y, aabb2.max.y);
-		aabb2.max.y = (std::max)(aabb2.min.y, aabb2.max.y);
-		aabb2.min.z = (std::min)(aabb2.min.z, aabb2.max.z);
-		aabb2.max.z = (std::max)(aabb2.min.z, aabb2.max.z);
+		ImGui::DragFloat3("aabb1.min", &aabb.min.x, 0.01f);
+		ImGui::DragFloat3("aabb1.max", &aabb.max.x, 0.01f);
+		aabb.min.x = (std::min)(aabb.min.x, aabb.max.x);
+		aabb.max.x = (std::max)(aabb.min.x, aabb.max.x);
+		aabb.min.y = (std::min)(aabb.min.y, aabb.max.y);
+		aabb.max.y = (std::max)(aabb.min.y, aabb.max.y);
+		aabb.min.z = (std::min)(aabb.min.z, aabb.max.z);
+		aabb.max.z = (std::max)(aabb.min.z, aabb.max.z);
+		ImGui::DragFloat3("sphere.center", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("sphere.radius", &sphere.radius, 0.01f);
 
 		ImGui::End();
+
+#endif // _DEBUG
 
 		// 各種行列の計算
 		cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -159,14 +157,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			aabb1 = {
+			aabb = {
 				.min{ -0.5f, -0.5f, -0.5f },
 				.max{ 0.0f, 0.0f, 0.0f },
 			};
 
-			aabb2 = {
-				.min{ 0.2f, 0.2f, 0.2f },
-				.max{ 1.0f, 1.0f, 1.0f },
+			sphere = {
+				.center{ 1.0f, 1.0f, 1.0f },
+				.radius{ 1.0f },
 			};
 
 			// カメラ
@@ -197,16 +195,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		// 線の描画
-		if (MyTools::IsCollision(aabb1, aabb2))
+		if (MyTools::IsCollision(aabb, sphere))
 		{
-			Draw::DrawAABB(aabb1, viewProjectionMatrix, viewportMatrix, RED);
+			Draw::DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, RED);
 		}
 		else
 		{
-			Draw::DrawAABB(aabb1, viewProjectionMatrix, viewportMatrix, WHITE);
+			Draw::DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, WHITE);
 		}
 		// 三角形の描画
-		Draw::DrawAABB(aabb2, viewProjectionMatrix, viewportMatrix, WHITE);
+		Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
 
 		///
 		/// ↑描画処理ここまで
