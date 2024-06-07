@@ -136,6 +136,30 @@ public:
 	/// <returns></returns>
 	static bool IsCollision(const AABB& aabb, const Sphere& sphere);
 
+	/// <summary>
+	/// AABBと直線の衝突判定を返す関数
+	/// </summary>
+	/// <param name="aabb">aabb</param>
+	/// <param name="line">直線</param>
+	/// <returns></returns>
+	static bool IsCollision(const AABB& aabb, const Line& line);
+
+	/// <summary>
+	/// AABBと半直線の衝突判定を返す関数
+	/// </summary>
+	/// <param name="aabb">aabb</param>
+	/// <param name="ray">半直線</param>
+	/// <returns></returns>
+	static bool IsCollision(const AABB& aabb, const Ray& ray);
+
+	/// <summary>
+	/// AABBと線分の衝突判定を返す関数
+	/// </summary>
+	/// <param name="aabb">aabb</param>
+	/// <param name="segment">線分</param>
+	/// <returns></returns>
+	static bool IsCollision(const AABB& aabb, const Segment& segment);
+
 	/// 
 	/// ツール関数 ここまで
 	///

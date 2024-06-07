@@ -286,6 +286,98 @@ bool MyTools::IsCollision(const AABB& aabb, const Sphere& sphere)
 	return false;
 }
 
+/// AABBと直線の衝突判定を返す関数
+bool MyTools::IsCollision(const AABB& aabb, const Line& line)
+{
+	// 近い方(tが小さい)
+	float tNearX = min((aabb.min.x - line.origin.x) / line.diff.x, (aabb.max.x - line.origin.x) / line.diff.x);
+	float tNearY = min((aabb.min.y - line.origin.y) / line.diff.y, (aabb.max.y - line.origin.y) / line.diff.y);
+	float tNearZ = min((aabb.min.z - line.origin.z) / line.diff.z, (aabb.max.z - line.origin.z) / line.diff.z);
+
+	// 遠い方(tが大きい)
+	float tFarX = max((aabb.min.x - line.origin.x) / line.diff.x, (aabb.max.x - line.origin.x) / line.diff.x);
+	float tFarY = max((aabb.min.y - line.origin.y) / line.diff.y, (aabb.max.y - line.origin.y) / line.diff.y);
+	float tFarZ = max((aabb.min.z - line.origin.z) / line.diff.z, (aabb.max.z - line.origin.z) / line.diff.z);
+
+	// AABBとの衝突点(貫通点)のtが小さい方
+	float tmin = max(max(tNearX, tNearY), tNearZ);
+	// AABBとの衝突点(貫通点)のtが大きい方
+	float tmax = min(min(tFarX, tFarY), tFarZ);
+
+	if (tmin <= tmax)
+	{
+		// 衝突
+		return true;
+	}
+	return false;
+}
+
+/// AABBと半直線の衝突判定を返す関数
+bool MyTools::IsCollision(const AABB& aabb, const Ray& ray)
+{
+	// 近い方(tが小さい)
+	float tNearX = min((aabb.min.x - ray.origin.x) / ray.diff.x, (aabb.max.x - ray.origin.x) / ray.diff.x);
+	float tNearY = min((aabb.min.y - ray.origin.y) / ray.diff.y, (aabb.max.y - ray.origin.y) / ray.diff.y);
+	float tNearZ = min((aabb.min.z - ray.origin.z) / ray.diff.z, (aabb.max.z - ray.origin.z) / ray.diff.z);
+
+	// 遠い方(tが大きい)
+	float tFarX = max((aabb.min.x - ray.origin.x) / ray.diff.x, (aabb.max.x - ray.origin.x) / ray.diff.x);
+	float tFarY = max((aabb.min.y - ray.origin.y) / ray.diff.y, (aabb.max.y - ray.origin.y) / ray.diff.y);
+	float tFarZ = max((aabb.min.z - ray.origin.z) / ray.diff.z, (aabb.max.z - ray.origin.z) / ray.diff.z);
+
+	// AABBとの衝突点(貫通点)のtが小さい方
+	float tmin = max(max(tNearX, tNearY), tNearZ);
+	// AABBとの衝突点(貫通点)のtが大きい方
+	float tmax = min(min(tFarX, tFarY), tFarZ);
+
+	if (tmin <= tmax)
+	{
+		if (tmax >= 0.0f && tmax <= 1.0f)
+		{
+			// 衝突
+			return true;
+		}
+	}
+	return false;
+}
+
+/// AABBと線分の衝突判定を返す関数
+bool MyTools::IsCollision(const AABB& aabb, const Segment& segment)
+{
+	// 各衝突点の媒介変数
+	float tXmin = (aabb.min.x - segment.origin.x) / segment.diff.x;
+	float tXmax = (aabb.max.x - segment.origin.x) / segment.diff.x;
+	float tYmin = (aabb.min.y - segment.origin.y) / segment.diff.y;
+	float tYmax = (aabb.max.y - segment.origin.y) / segment.diff.y;
+	float tZmin = (aabb.min.z - segment.origin.z) / segment.diff.z;
+	float tZmax = (aabb.max.z - segment.origin.z) / segment.diff.z;
+
+	// 近い方(tが小さい)
+	float tNearX = min(tXmin, tXmax);
+	float tNearY = min(tYmin, tYmax);
+	float tNearZ = min(tZmin, tZmax);
+
+	// 遠い方(tが大きい)
+	float tFarX = max(tXmin, tXmax);
+	float tFarY = max(tYmin, tYmax);
+	float tFarZ = max(tZmin, tZmax);
+
+	// AABBとの衝突点(貫通点)のtが小さい方
+	float tmin = max(max(tNearX, tNearY), tNearZ);
+	// AABBとの衝突点(貫通点)のtが大きい方
+	float tmax = min(min(tFarX, tFarY), tFarZ);
+
+	if (tmin <= tmax)
+	{
+		if ((tmin >= 0.0f && tmin <= 1.0f) || (tmax >= 0.0f && tmax <= 1.0f))
+		{
+			// 衝突
+			return true;
+		}
+	}
+	return false;
+}
+
 /// 
 /// ツール関数 ここまで
 /// 
