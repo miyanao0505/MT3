@@ -367,9 +367,11 @@ bool MyTools::IsCollision(const AABB& aabb, const Segment& segment)
 	// AABBとの衝突点(貫通点)のtが大きい方
 	float tmax = min(min(tFarX, tFarY), tFarZ);
 
+	Novice::ScreenPrintf(20, 700, "tmin = %.2f, tmax = %.2f", tmin, tmax);
+
 	if (tmin <= tmax)
 	{
-		if ((tmin >= 0.0f && tmin <= 1.0f) || (tmax >= 0.0f && tmax <= 1.0f))
+		if ((tmin >= 0.0f && tmin <= 1.0f) || (tmax >= 0.0f && tmax <= 1.0f) || (tmin <= 0 && tmax >= 1))
 		{
 			// 衝突
 			return true;
