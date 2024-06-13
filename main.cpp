@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_09_3次元衝突判定(OBBと線)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_10_3次元衝突判定(OBBとOBB/AABB)_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
