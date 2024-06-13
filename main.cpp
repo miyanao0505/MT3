@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_05_3次元衝突判定(AABBとAABB)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_08_3次元衝突判定(OBBと球)_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -24,13 +24,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	MyBase::AABB aabb = {
-		.min{ -0.5f, -0.5f, -0.5f },
-		.max{ 0.5f, 0.5f, 0.5f },
+	Vector3 rotate{ 0.0f, 0.0f, 0.0f };
+	MyBase::OBB obb{
+		.center{-1.0f, 0.0f, 0.0f},
+		.orientations = {{1.0f, 0.0f, 0.0f},
+						 {0.0f, 1.0f, 0.0f},
+						 {0.0f, 0.0f, 1.0f}},
+		.size{0.5f, 0.5f, 0.5f}
 	};
-	MyBase::Segment segment = {
-		.origin{ -0.7f, 0.3f, 0.0f },
-		.diff{ 2.0f, -0.5f, 0.0f },
+	MyBase::Sphere sphere{
+		.center{0.0f, 0.0f, 0.0f},
+		.radius{0.5f}
 	};
 
 	// 各種行列の計算
@@ -63,19 +67,36 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #ifdef _DEBUG
 
 		ImGui::SetNextWindowPos(ImVec2(750, 50), ImGuiCond_Once);							// ウィンドウの座標(プログラム起動時のみ読み込み)
-		ImGui::SetNextWindowSize(ImVec2(500, 150), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
+		ImGui::SetNextWindowSize(ImVec2(450, 400), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("Window");
-		ImGui::DragFloat3("aabb1.min", &aabb.min.x, 0.01f);
-		ImGui::DragFloat3("aabb1.max", &aabb.max.x, 0.01f);
-		aabb.min.x = (std::min)(aabb.min.x, aabb.max.x);
-		aabb.max.x = (std::max)(aabb.min.x, aabb.max.x);
-		aabb.min.y = (std::min)(aabb.min.y, aabb.max.y);
-		aabb.max.y = (std::max)(aabb.min.y, aabb.max.y);
-		aabb.min.z = (std::min)(aabb.min.z, aabb.max.z);
-		aabb.max.z = (std::max)(aabb.min.z, aabb.max.z);
-		ImGui::DragFloat3("segment.origin", &segment.origin.x, 0.01f);
-		ImGui::DragFloat3("segment.diff", &segment.diff.x, 0.01f);
+		ImGui::DragFloat3("obb.center", &obb.center.x, 0.01f);
+		ImGui::DragFloat("rotateX", &rotate.x, 0.01f);
+		ImGui::DragFloat("rotateY", &rotate.y, 0.01f);
+		ImGui::DragFloat("rotateZ", &rotate.z, 0.01f);
+
+		// 回転行列の生成
+		Matrix4x4 rotateMatrix = Matrix::Multiply(Matrix::MakeRotateXMatrix4x4(rotate.x), Matrix::Multiply(Matrix::MakeRotateYMatrix4x4(rotate.y), Matrix::MakeRotateZMatrix4x4(rotate.z)));
+
+		// 回転行列から軸を抽出
+		obb.orientations[0].x = rotateMatrix.m[0][0];
+		obb.orientations[0].y = rotateMatrix.m[0][1];
+		obb.orientations[0].z = rotateMatrix.m[0][2];
+
+		obb.orientations[1].x = rotateMatrix.m[1][0];
+		obb.orientations[1].y = rotateMatrix.m[1][1];
+		obb.orientations[1].z = rotateMatrix.m[1][2];
+
+		obb.orientations[2].x = rotateMatrix.m[2][0];
+		obb.orientations[2].y = rotateMatrix.m[2][1];
+		obb.orientations[2].z = rotateMatrix.m[2][2];
+
+		ImGui::DragFloat3("obb.orientations[0]", &obb.orientations[0].x, 0.01f);
+		ImGui::DragFloat3("obb.orientations[1]", &obb.orientations[1].x, 0.01f);
+		ImGui::DragFloat3("obb.orientations[2]", &obb.orientations[2].x, 0.01f);
+		ImGui::DragFloat3("obb.size", &obb.size.x, 0.01f);
+		ImGui::DragFloat3("sphere.center", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("sphere.radius", &sphere.radius, 0.01f);
 
 		ImGui::End();
 
@@ -157,14 +178,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			aabb = {
-				.min{ -0.5f, -0.5f, -0.5f },
-				.max{ 0.5f, 0.5f, 0.5f },
+			obb = {
+				.center{-1.0f, 0.0f, 0.0f},
+				.orientations = {{1.0f, 0.0f, 0.0f},
+								{0.0f, 1.0f, 0.0f},
+							 {0.0f, 0.0f, 1.0f}},
+				.size{0.5f, 0.5f, 0.5f}
 			};
 
-			segment = {
-				.origin{ -0.7f, 0.3f, 0.0f },
-				.diff{ 2.0f, -0.5f, 0.0f },
+			sphere = {
+				.center{0.0f, 0.0f, 0.0f},
+				.radius{0.5f}
 			};
 
 			// カメラ
@@ -194,17 +218,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		// 線の描画
-		if (MyTools::IsCollision(aabb, segment))
+		// OBBの描画
+		if (MyTools::IsCollision(obb, sphere))
 		{
-			Draw::DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, RED);
+			Draw::DrawOBB(obb, viewProjectionMatrix, viewportMatrix, RED);
 		}
 		else
 		{
-			Draw::DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, WHITE);
+			Draw::DrawOBB(obb, viewProjectionMatrix, viewportMatrix, WHITE);
 		}
-		// 三角形の描画
-		Draw::DrawSegment(segment, viewProjectionMatrix, viewportMatrix, WHITE);
+		// Sphereの描画
+		Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
 
 		///
 		/// ↑描画処理ここまで

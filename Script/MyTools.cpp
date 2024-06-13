@@ -48,7 +48,7 @@ float MyTools::Clamp(const float& num, const float& min, const float& max)
 
 /// 線形補間
 float MyTools::Lerp(const float& num1, const float& num2, const float& t)
-{ 
+{
 	return num1 * (1 - t) + num2 * t;
 }
 
@@ -256,8 +256,8 @@ bool MyTools::IsCollision(const Triangle& triangle, const Segment& segment)
 /// AABB同士の衝突判定を返す関数
 bool MyTools::IsCollision(const AABB& aabb1, const AABB& aabb2)
 {
-	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) && 
-		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && 
+	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) &&
+		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) &&
 		(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z))
 	{
 		return true;
@@ -269,9 +269,9 @@ bool MyTools::IsCollision(const AABB& aabb1, const AABB& aabb2)
 bool MyTools::IsCollision(const AABB& aabb, const Sphere& sphere)
 {
 	// 最近接点を求める
-	Vector3 closestPoint{ 
+	Vector3 closestPoint{
 		std::clamp(sphere.center.x, aabb.min.x, aabb.max.x),
-		std::clamp(sphere.center.y, aabb.min.y, aabb.max.y), 
+		std::clamp(sphere.center.y, aabb.min.y, aabb.max.y),
 		std::clamp(sphere.center.z, aabb.min.z, aabb.max.z) };
 
 	// 最近接点と球の中心との距離を求める
@@ -380,6 +380,27 @@ bool MyTools::IsCollision(const AABB& aabb, const Segment& segment)
 	return false;
 }
 
+/// OBBと球の衝突判定を返す関数
+bool MyTools::IsCollision(const OBB& obb, const Sphere& sphere)
+{
+	// ワールド行列
+	Matrix4x4 obbWorldMatrix = {
+		obb.orientations[0].x, obb.orientations[0].y, obb.orientations[0].z, 0,
+		obb.orientations[1].x, obb.orientations[1].y, obb.orientations[1].z, 0,
+		obb.orientations[2].x, obb.orientations[2].y, obb.orientations[2].z, 0,
+		obb.center.x, obb.center.y, obb.center.z, 1
+	};
+	// ワールド逆行列
+	Matrix4x4 obbWorldMatrixInverse = Matrix::Inverse(obbWorldMatrix);
+
+	Vector3 centerInOBBLocalSpace = Matrix::Transform(sphere.center, obbWorldMatrixInverse);
+	AABB aabbOBBLocal = { .min = { -obb.size.x, -obb.size.y, -obb.size.z }, .max = obb.size };
+	Sphere sphereOBBLocal = { centerInOBBLocalSpace, sphere.radius };
+
+	// ローカル空間で衝突判定
+	return IsCollision(aabbOBBLocal, sphereOBBLocal);
+}
+
 /// 
 /// ツール関数 ここまで
 /// 
@@ -484,13 +505,13 @@ Vector3 MyTools::Normalize(const Vector3& v)
 
 /// 線形補間
 Vector3 MyTools::Lerp(const Vector3& vector1, const Vector3& vector2, float t)
-{ 
+{
 	return Add(vector1, Multiply(t, Subtract(vector2, vector1)));
 }
 
 /// 球面線形補間
-Vector3 MyTools::Slerp(const Vector3& vector1, const Vector3& vector2, float t) 
-{ 
+Vector3 MyTools::Slerp(const Vector3& vector1, const Vector3& vector2, float t)
+{
 	// 正規化ベクトルを求める
 	Vector3 start = Normalize(vector1);
 	Vector3 end = Normalize(vector2);
@@ -501,7 +522,7 @@ Vector3 MyTools::Slerp(const Vector3& vector1, const Vector3& vector2, float t)
 	dot = Clamp(dot, dot, 1.0f);
 
 	// s－九コサインでθの角度を求める
-	float theta = std::acosf(dot); 
+	float theta = std::acosf(dot);
 
 	// θの角度からsinθを求める
 	float sinTheta = std::sin(theta);
@@ -522,7 +543,7 @@ Vector3 MyTools::Slerp(const Vector3& vector1, const Vector3& vector2, float t)
 		// 球面線形補間したベクトル(単位ベクトル)
 		normalizeVector = Add(Multiply(sinThetaFrom / sinTheta, start), Multiply(sinThetaTo / sinTheta, end));
 	}
-	
+
 	// ベクトルの長さはstartとendの長さを線形補間
 	float length1 = Length(start);
 	float length2 = Length(end);
@@ -534,13 +555,13 @@ Vector3 MyTools::Slerp(const Vector3& vector1, const Vector3& vector2, float t)
 }
 
 /// CatmullRom補間
-Vector3 MyTools::CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) 
-{ 
+Vector3 MyTools::CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t)
+{
 	const float s = 0.5f;	// 数式に出てくる 1/2 のこと。
 
 	float t2 = t * t;	// t の2乗
 	float t3 = t2 * t;	// t の3乗
-	
+
 	Vector3 e3 = Subtract(Add(Multiply(-1.f, p0), Multiply(3.f, p1)), Add(Multiply(3.f, p2), p3));
 	Vector3 e2 = Add(Subtract(Multiply(2.f, p0), Multiply(5.f, p1)), Subtract(Multiply(4.f, p2), p3));
 	Vector3 e1 = Add(Multiply(-1.f, p0), p2);
@@ -550,8 +571,8 @@ Vector3 MyTools::CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, c
 }
 
 /// CatmullRomスプライン曲線上の座標を得る
-Vector3 MyTools::CatmullRomPosition(const std::vector<Vector3>& points, float t) 
-{ 
+Vector3 MyTools::CatmullRomPosition(const std::vector<Vector3>& points, float t)
+{
 	assert(points.size() >= 4 && "制御点は4点以上必要です");
 
 	// 区間数は制御点の数-1
@@ -579,7 +600,7 @@ Vector3 MyTools::CatmullRomPosition(const std::vector<Vector3>& points, float t)
 	if (index == 0) {
 		index0 = index1;
 	}
-	
+
 	// 最後の区間のp3はp2を重複使用する
 	if (index >= points.size()) {
 		index3 = index2;

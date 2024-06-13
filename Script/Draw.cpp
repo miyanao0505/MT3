@@ -100,7 +100,7 @@ void Draw::DrawLine(const Line& line, const Matrix4x4& viewProjectionMatrix, con
 	Matrix4x4 worldViewProjectionMatrixOrigin = Matrix::Multiply(worldMatrixOrigin, viewProjectionMatrix);
 	Vector3 ndcVectorOrigin = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixOrigin);
 	Vector3 screenPositionOrigin = Matrix::Transform(ndcVectorOrigin, viewportMatrix);
-	
+
 	Matrix4x4 worldMatrixEnd = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, MyTools::Add(line.origin, line.diff));
 	Matrix4x4 worldViewProjectionMatrixEnd = Matrix::Multiply(worldMatrixEnd, viewProjectionMatrix);
 	Vector3 ndcVectorEnd = Matrix::Transform({ 0.0f, 0.0f, 0.0f }, worldViewProjectionMatrixEnd);
@@ -172,12 +172,12 @@ void Draw::DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatri
 			Matrix4x4 worldViewProjectionMatrixB = Matrix::Multiply(worldMatrixB, viewProjectionMatrix);
 			Vector3 ndcVertexB = Matrix::Transform({ 0.f, 0.f, 0.f }, worldViewProjectionMatrixB);
 			Vector3 screenPositionB = Matrix::Transform(ndcVertexB, viewportMatrix);
-			
+
 			Matrix4x4 worldMatrixC = Matrix::MakeAffineMatrix({ 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f }, c);
 			Matrix4x4 worldViewProjectionMatrixC = Matrix::Multiply(worldMatrixC, viewProjectionMatrix);
 			Vector3 ndcVertexC = Matrix::Transform({ 0.f, 0.f, 0.f }, worldViewProjectionMatrixC);
 			Vector3 screenPositionC = Matrix::Transform(ndcVertexC, viewportMatrix);
-			
+
 			// ab,acで線を引く
 			Novice::DrawLine(int(screenPositionA.x), int(screenPositionA.y), int(screenPositionB.x), int(screenPositionB.y), color);
 			Novice::DrawLine(int(screenPositionA.x), int(screenPositionA.y), int(screenPositionC.x), int(screenPositionC.y), color);
@@ -274,6 +274,58 @@ void Draw::DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, con
 	Novice::DrawLine(int(screenVertex[1].x), int(screenVertex[1].y), int(screenVertex[5].x), int(screenVertex[5].y), color);
 	Novice::DrawLine(int(screenVertex[2].x), int(screenVertex[2].y), int(screenVertex[6].x), int(screenVertex[6].y), color);
 	Novice::DrawLine(int(screenVertex[3].x), int(screenVertex[3].y), int(screenVertex[7].x), int(screenVertex[7].y), color);
+}
+
+/// OBBの描画
+void Draw::DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	// AABBでの各頂点座標(ローカル座標)を求める
+	Vector3 vertex[8] =
+	{
+		{ -obb.size.x, obb.size.y, -obb.size.z },	// 左上前
+		{ obb.size.x, obb.size.y, -obb.size.z },	// 右上前
+		{ -obb.size.x, -obb.size.y, -obb.size.z },	// 左下前
+		{ obb.size.x, -obb.size.y, -obb.size.z },	// 右下前
+		{ -obb.size.x, obb.size.y, obb.size.z },	// 左上奥
+		{ obb.size.x, obb.size.y, obb.size.z },		// 右上奥
+		{ -obb.size.x, -obb.size.y, obb.size.z },	// 左下奥
+		{ obb.size.x, -obb.size.y, obb.size.z },	// 右下奥
+	};
+	Vector3 screenVertex[8];						// スクリーン座標
+	Matrix4x4 worldMatrix =
+	{
+		{
+			obb.orientations[0].x, obb.orientations[0].y, obb.orientations[0].z, 0,
+			obb.orientations[1].x, obb.orientations[1].y, obb.orientations[1].z, 0,
+			obb.orientations[2].x, obb.orientations[2].y, obb.orientations[2].z, 0,
+			obb.center.x, obb.center.y, obb.center.z, 1
+		}
+	};
+
+	// screen座標系まで変換
+	for (int32_t i = 0; i < 8; i++)
+	{
+		Matrix4x4 worldViewProjectionMatrix = Matrix::Multiply(worldMatrix, viewProjectionMatrix);
+		Vector3 ndcVector = Matrix::Transform(vertex[i], worldViewProjectionMatrix);
+		screenVertex[i] = Matrix::Transform(ndcVector, viewportMatrix);
+	}
+
+	// 描画
+	// 手前
+	Novice::DrawLine(int(screenVertex[0].x), int(screenVertex[0].y), int(screenVertex[1].x), int(screenVertex[1].y), color);	// 上辺
+	Novice::DrawLine(int(screenVertex[0].x), int(screenVertex[0].y), int(screenVertex[2].x), int(screenVertex[2].y), color);	// 左辺
+	Novice::DrawLine(int(screenVertex[1].x), int(screenVertex[1].y), int(screenVertex[3].x), int(screenVertex[3].y), color);	// 右辺
+	Novice::DrawLine(int(screenVertex[2].x), int(screenVertex[2].y), int(screenVertex[3].x), int(screenVertex[3].y), color);	// 下辺
+	// 奥
+	Novice::DrawLine(int(screenVertex[4].x), int(screenVertex[4].y), int(screenVertex[5].x), int(screenVertex[5].y), color);	// 上辺
+	Novice::DrawLine(int(screenVertex[4].x), int(screenVertex[4].y), int(screenVertex[6].x), int(screenVertex[6].y), color);	// 左辺
+	Novice::DrawLine(int(screenVertex[5].x), int(screenVertex[5].y), int(screenVertex[7].x), int(screenVertex[7].y), color);	// 右辺
+	Novice::DrawLine(int(screenVertex[6].x), int(screenVertex[6].y), int(screenVertex[7].x), int(screenVertex[7].y), color);	// 下辺
+	// 横
+	Novice::DrawLine(int(screenVertex[0].x), int(screenVertex[0].y), int(screenVertex[4].x), int(screenVertex[4].y), color);	// 左上
+	Novice::DrawLine(int(screenVertex[1].x), int(screenVertex[1].y), int(screenVertex[5].x), int(screenVertex[5].y), color);	// 右上
+	Novice::DrawLine(int(screenVertex[2].x), int(screenVertex[2].y), int(screenVertex[6].x), int(screenVertex[6].y), color);	// 左下
+	Novice::DrawLine(int(screenVertex[3].x), int(screenVertex[3].y), int(screenVertex[7].x), int(screenVertex[7].y), color);	// 右下
 }
 
 /// 

@@ -16,7 +16,7 @@ public:
 	/// 
 	/// 2x2の行列 ここから
 	/// 
-	
+
 	/// <summary>
 	/// 2x2回転行列の作成関数
 	/// </summary>
@@ -29,35 +29,35 @@ public:
 	/// <param name="matrix1">行列A</param>
 	/// <param name="matrix2">行列B</param>
 	static Matrix2x2 Add(const Matrix2x2& matrix1, const Matrix2x2& matrix2);
-	
+
 	/// <summary>
 	/// 2x2行列の減算を返す関数
 	/// </summary>
 	/// <param name="matrix1">行列A</param>
 	/// <param name="matrix2">行列B</param>
 	static Matrix2x2 Subtract(const Matrix2x2& matrix1, const Matrix2x2& matrix2);
-	
+
 	/// <summary>
 	/// 2x2行列の積を返す関数
 	/// </summary>
 	/// <param name="matrix1">行列A</param>
 	/// <param name="matrix2">行列B</param>
 	static Matrix2x2 Multiply(const Matrix2x2& matrix1, const Matrix2x2& matrix2);
-	
+
 	/// <summary>
 	/// スカラーと2x2行列の積を返す関数
 	/// </summary>
 	/// <param name="scalar">スカラー値</param>
 	/// <param name="matrix">行列</param>
 	static Matrix2x2 Multiply(const float& scalar, const Matrix2x2& matrix);
-	
+
 	/// <summary>
 	/// 2次元ベクトルと2x2行列の積を返す関数
 	/// </summary>
 	/// <param name="vector">ベクトル</param>
 	/// <param name="matrix">行列</param>
 	static Vector2 Multiply(const Vector2& vector, const Matrix2x2& matrix);
-	
+
 	/// <summary>
 	/// 2x2逆行列を取得する関数
 	/// </summary>
@@ -77,7 +77,7 @@ public:
 	/// 
 	/// 3x3の行列 ここから
 	/// 
-	
+
 	/// <summary>
 	/// 3x3拡縮行列の作成
 	/// </summary>
@@ -176,7 +176,7 @@ public:
 	/// 
 	/// 4x4の行列 ここから
 	/// 
-	
+
 	/// <summary>
 	/// 4x4拡縮行列の作成
 	/// </summary>
@@ -332,7 +332,7 @@ public:
 	/// 
 	/// 描画 ここから
 	/// 
-	
+
 	/// <summary>
 	/// 2x2行列の表示
 	/// </summary>

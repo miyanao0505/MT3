@@ -25,7 +25,7 @@ public:
 	/// 
 	/// オブジェクト用 ここから
 	/// 
-	
+
 	/// <summary>
 	/// 直線の描画
 	/// </summary>
@@ -88,6 +88,15 @@ public:
 	/// <param name="viewportMatrix">ビューポート行列</param>
 	/// <param name="color">色</param>
 	static void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+	/// <summary>
+	/// OBBの描画
+	/// </summary>
+	/// <param name="obb">obbの情報</param>
+	/// <param name="viewProjectionMatrix">ビュープロジェクション行列</param>
+	/// <param name="viewportMatrix">ビューポート行列</param>
+	/// <param name="color">色</param>
+	static void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
 	/// 
 	/// オブジェクト用 ここから

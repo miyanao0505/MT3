@@ -30,7 +30,7 @@ public:
 	/// <param name="projectionMatrix">プロジェクション行列</param>
 	/// <returns></returns>
 	static Vector3 GetMousePosition(const float& kWindowWidth, const float& kWindowHeight, const Matrix4x4& viewMatrix, const Matrix4x4& projectionMatrix);
-	
+
 	/// <summary>
 	/// 範囲内の値を返す関数
 	/// </summary>
@@ -160,6 +160,14 @@ public:
 	/// <returns></returns>
 	static bool IsCollision(const AABB& aabb, const Segment& segment);
 
+	/// <summary>
+	/// OBBと球の衝突判定を返す関数
+	/// </summary>
+	/// <param name="obb">OBB</param>
+	/// <param name="sphere">球</param>
+	/// <returns></returns>
+	static bool IsCollision(const OBB& obb, const Sphere& sphere);
+
 	/// 
 	/// ツール関数 ここまで
 	///
@@ -167,7 +175,7 @@ public:
 	/// 
 	/// 2次元ベクトル ここから
 	///
-	
+
 	/// <summary>
 	/// 2次元ベクトルの内積を返す関数
 	/// </suumary>
@@ -210,7 +218,7 @@ public:
 	/// 
 	/// 3次元ベクトル ここから
 	/// 
-	
+
 	/// <summary>
 	/// 3次元ベクトルの加算を返す関数
 	/// </summary>
@@ -324,7 +332,7 @@ public:
 	/// 
 	/// 描画 ここから
 	/// 
-	
+
 	/// <summary>
 	/// 2次元ベクトルの表示
 	/// </summary>

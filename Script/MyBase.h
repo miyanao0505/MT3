@@ -8,7 +8,7 @@ class MyBase
 {
 public:
 	// 構造体
-	
+
 	/// <summary>
 	/// 2次元ベクトル
 	/// </summary>
@@ -25,7 +25,7 @@ public:
 		float y;
 		float z;
 	};*/
-	
+
 	/// <summary>
 	/// 4次元ベクトル
 	/// </summary>
@@ -42,7 +42,7 @@ public:
 	struct Matrix2x2 {
 		float m[2][2];
 	};
-	
+
 	/// <summary>
 	/// 3x3の行列
 	/// </summary>
@@ -170,5 +170,13 @@ public:
 		Vector3 min;			//!< 最小点
 		Vector3 max;			//!< 最大点
 	};
-};
 
+	/// <summary>
+	/// OBB
+	/// </summary>
+	struct OBB {
+		Vector3 center;				//!< 中心点
+		Vector3 orientations[3];	//!< 座標軸。正規化・直交必須
+		Vector3 size;				//!< 座標軸方向の長さの半分。中心から面までの距離
+	};
+};
