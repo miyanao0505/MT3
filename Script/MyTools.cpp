@@ -401,6 +401,72 @@ bool MyTools::IsCollision(const OBB& obb, const Sphere& sphere)
 	return IsCollision(aabbOBBLocal, sphereOBBLocal);
 }
 
+/// OBBと直線の衝突判定を返す関数
+bool MyTools::IsCollision(const OBB& obb, const Line& line)
+{
+	// ワールド行列
+	Matrix4x4 obbWorldMatrix = {
+		obb.orientations[0].x, obb.orientations[0].y, obb.orientations[0].z, 0,
+		obb.orientations[1].x, obb.orientations[1].y, obb.orientations[1].z, 0,
+		obb.orientations[2].x, obb.orientations[2].y, obb.orientations[2].z, 0,
+		obb.center.x, obb.center.y, obb.center.z, 1
+	};
+	// ワールド逆行列
+	Matrix4x4 obbWorldMatrixInverse = Matrix::Inverse(obbWorldMatrix);
+
+
+	Vector3 centerInOBBLocalLine = Matrix::Transform(line.origin, obbWorldMatrixInverse);
+	AABB aabbOBBLocal = { .min = { -obb.size.x, -obb.size.y, -obb.size.z }, .max = obb.size };
+	Line lineOBBLocal = { centerInOBBLocalLine, line.diff };
+
+	// ローカル空間で衝突判定
+	return IsCollision(aabbOBBLocal, lineOBBLocal);
+}
+
+/// OBBと半直線の衝突判定を返す関数
+bool MyTools::IsCollision(const OBB& obb, const Ray& ray)
+{
+	// ワールド行列
+	Matrix4x4 obbWorldMatrix = {
+		obb.orientations[0].x, obb.orientations[0].y, obb.orientations[0].z, 0,
+		obb.orientations[1].x, obb.orientations[1].y, obb.orientations[1].z, 0,
+		obb.orientations[2].x, obb.orientations[2].y, obb.orientations[2].z, 0,
+		obb.center.x, obb.center.y, obb.center.z, 1
+	};
+	// ワールド逆行列
+	Matrix4x4 obbWorldMatrixInverse = Matrix::Inverse(obbWorldMatrix);
+
+
+	Vector3 centerInOBBLocalRay = Matrix::Transform(ray.origin, obbWorldMatrixInverse);
+	AABB aabbOBBLocal = { .min = { -obb.size.x, -obb.size.y, -obb.size.z }, .max = obb.size };
+	Ray rayOBBLocal = { centerInOBBLocalRay, ray.diff };
+
+	// ローカル空間で衝突判定
+	return IsCollision(aabbOBBLocal, rayOBBLocal);
+}
+
+/// OBBと線分の衝突判定を返す関数
+bool MyTools::IsCollision(const OBB& obb, const Segment& segment)
+{
+	// ワールド行列
+	Matrix4x4 obbWorldMatrix = {
+		obb.orientations[0].x, obb.orientations[0].y, obb.orientations[0].z, 0,
+		obb.orientations[1].x, obb.orientations[1].y, obb.orientations[1].z, 0,
+		obb.orientations[2].x, obb.orientations[2].y, obb.orientations[2].z, 0,
+		obb.center.x, obb.center.y, obb.center.z, 1
+	};
+	// ワールド逆行列
+	Matrix4x4 obbWorldMatrixInverse = Matrix::Inverse(obbWorldMatrix);
+
+
+	Vector3 centerInOBBLocalSegment = Matrix::Transform(segment.origin, obbWorldMatrixInverse);
+	AABB aabbOBBLocal = { .min = { -obb.size.x, -obb.size.y, -obb.size.z }, .max = obb.size };
+	Segment segmentOBBLocal = { centerInOBBLocalSegment, segment.diff };
+
+	// ローカル空間で衝突判定
+	return IsCollision(aabbOBBLocal, segmentOBBLocal);
+}
+
 /// 
 /// ツール関数 ここまで
 /// 

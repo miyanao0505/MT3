@@ -168,6 +168,30 @@ public:
 	/// <returns></returns>
 	static bool IsCollision(const OBB& obb, const Sphere& sphere);
 
+	/// <summary>
+	/// OBBと直線の衝突判定を返す関数
+	/// </summary>
+	/// <param name="obb">OBB</param>
+	/// <param name="line">直線</param>
+	/// <returns></returns>
+	static bool IsCollision(const OBB& obb, const Line& line);
+
+	/// <summary>
+	/// OBBと半直線の衝突判定を返す関数
+	/// </summary>
+	/// <param name="obb">OBB</param>
+	/// <param name="ray">半直線</param>
+	/// <returns></returns>
+	static bool IsCollision(const OBB& obb, const Ray& ray);
+
+	/// <summary>
+	/// OBBと線分の衝突判定を返す関数
+	/// </summary>
+	/// <param name="obb">OBB</param>
+	/// <param name="segment">線分</param>
+	/// <returns></returns>
+	static bool IsCollision(const OBB& obb, const Segment& segment);
+
 	/// 
 	/// ツール関数 ここまで
 	///

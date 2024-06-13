@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_09_3次元衝突判定(OBBと球)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_09_3次元衝突判定(OBBと線)_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -32,9 +32,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						 {0.0f, 0.0f, 1.0f}},
 		.size{0.5f, 0.5f, 0.5f}
 	};
-	MyBase::Sphere sphere{
-		.center{0.0f, 0.0f, 0.0f},
-		.radius{0.5f}
+	MyBase::Segment segment{
+		.origin{-0.8f, -0.3f, 0.0f},
+		.diff{0.5f, 0.5f, 0.5f},
 	};
 
 	// 各種行列の計算
@@ -95,8 +95,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("obb.orientations[1]", &obb.orientations[1].x, 0.01f);
 		ImGui::DragFloat3("obb.orientations[2]", &obb.orientations[2].x, 0.01f);
 		ImGui::DragFloat3("obb.size", &obb.size.x, 0.01f);
-		ImGui::DragFloat3("sphere.center", &sphere.center.x, 0.01f);
-		ImGui::DragFloat("sphere.radius", &sphere.radius, 0.01f);
+		ImGui::DragFloat3("segment.origin", &segment.origin.x, 0.01f);
+		ImGui::DragFloat("segment.diff", &segment.diff.x, 0.01f);
 
 		ImGui::End();
 
@@ -186,9 +186,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				.size{0.5f, 0.5f, 0.5f}
 			};
 
-			sphere = {
-				.center{0.0f, 0.0f, 0.0f},
-				.radius{0.5f}
+			segment = {
+				.origin{-0.8f, -0.3f, 0.0f},
+				.diff{0.5f, 0.5f, 0.5f},
 			};
 
 			// カメラ
@@ -219,7 +219,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		// OBBの描画
-		if (MyTools::IsCollision(obb, sphere))
+		if (MyTools::IsCollision(obb, segment))
 		{
 			Draw::DrawOBB(obb, viewProjectionMatrix, viewportMatrix, RED);
 		}
@@ -228,7 +228,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Draw::DrawOBB(obb, viewProjectionMatrix, viewportMatrix, WHITE);
 		}
 		// Sphereの描画
-		Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE);
+		Draw::DrawSegment(segment, viewProjectionMatrix, viewportMatrix, WHITE);
 
 		///
 		/// ↑描画処理ここまで
