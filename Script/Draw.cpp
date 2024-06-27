@@ -35,7 +35,7 @@ void Draw::DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& view
 			Novice::DrawLine(
 				int(screenStartPosition.x), int(screenStartPosition.y),
 				int(screenEndPosition.x), int(screenEndPosition.y),
-				0xAAAAAAFF
+				0x000000FF
 			);
 		}
 		else
@@ -43,7 +43,7 @@ void Draw::DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& view
 			Novice::DrawLine(
 				int(screenStartPosition.x), int(screenStartPosition.y),
 				int(screenEndPosition.x), int(screenEndPosition.y),
-				0x000000FF
+				0xAAAAAAFF
 			);
 		}
 	}
@@ -184,6 +184,19 @@ void Draw::DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatri
 		}
 	}
 }
+
+/// 円の描画
+void Draw::DrawEllipse(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	Matrix4x4 worldMatrix = Matrix::MakeAffineMatrix({ 1.f, 1.f, 1.f }, { 0.f, 0.f, 0.f }, sphere.center);
+	Matrix4x4 worldViewProjectionMatrix = Matrix::Multiply(worldMatrix, viewProjectionMatrix);
+	Vector3 ndcVErtex = Matrix::Transform({ 0.f, 0.f, 0.f }, worldViewProjectionMatrix);
+	Vector3 screenPosition = Matrix::Transform(ndcVErtex, viewportMatrix);
+
+	// 円の描画
+	Novice::DrawEllipse(int(screenPosition.x), int(screenPosition.y), int(sphere.radius), int(sphere.radius), 0.0f, color, kFillModeSolid);
+}
+
 
 /// 平面の描画
 void Draw::DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)

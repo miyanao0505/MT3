@@ -75,6 +75,13 @@ public:
 	};
 
 	/// <summary>
+	/// 頂点
+	/// </summary>
+	struct Vertex {
+		Vector3 position;
+	};
+
+	/// <summary>
 	/// 円
 	/// </summary>
 	struct Ball {

@@ -315,7 +315,7 @@ public:
 
 	/// <summary>
 	/// 4x4行列式の作成
-	/// </sumary>
+	/// </summary>
 	/// <param name="matrix">行列</param>
 	static float Determinant(const Matrix4x4& matrix);
 

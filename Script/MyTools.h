@@ -192,6 +192,24 @@ public:
 	/// <returns></returns>
 	static bool IsCollision(const OBB& obb, const Segment& segment);
 
+	/// <summary>
+	/// OBBとOBBの衝突判定を返す関数
+	/// </summary>
+	/// <param name="obb1">OBB1</param>
+	/// <param name="obb2">OBB2</param>
+	/// <returns></returns>
+	static bool IsCollision(const OBB& obb1, const OBB& obb2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+
+	/// <summary>
+	/// 分離軸に投影された軸成分から投影線分長を算出
+	/// </summary>
+	/// <param name="Seg"></param>
+	/// <param name="e1"></param>
+	/// <param name="e2"></param>
+	/// <param name="e3"></param>
+	/// <returns></returns>
+	static float LenSegOnSeparateAxis(const Vector3* Seg, const Vector3* e1, const Vector3* e2, const Vector3 *e3);
+
 	/// 
 	/// ツール関数 ここまで
 	///
@@ -289,6 +307,13 @@ public:
 	/// </summary>
 	/// <param name="v">ベクトル</param>
 	static Vector3 Normalize(const Vector3& v);
+
+	/// <summary>
+	/// 3次元ベクトルを標準化して返す関数
+	/// </summary>
+	/// <param name="v">ベクトル</param>
+	/// <returns></returns>
+	static Vector3 Standardization(const Vector3& v);
 
 	/// <summary>
 	/// 線形補間

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "MyTools.h"
 #include "Matrix.h"
+#include "Novice.h"
 
 class Draw :
 	public MyBase
@@ -61,6 +62,16 @@ public:
 	/// <param name="viewportMatrix">ビューポート行列</param>
 	/// <param name="color">色</param>
 	static void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+	/// <summary>
+	/// 円の描画
+	/// </summary>
+	/// <param name="sphere">円の情報</param>
+	/// <param name="viewProjectionMatrix">ビュープロジェクション行列</param>
+	/// <param name="viewportMatrix">ビューポート行列</param>
+	/// <param name="color">色</param>
+	static void DrawEllipse(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
 
 	/// <summary>
 	/// 平面の描画

@@ -2,6 +2,7 @@
 #include "Matrix.h"
 #include <iostream>
 #include "Novice.h"
+#include "Draw.h"
 
 using namespace std;
 
@@ -467,6 +468,149 @@ bool MyTools::IsCollision(const OBB& obb, const Segment& segment)
 	return IsCollision(aabbOBBLocal, segmentOBBLocal);
 }
 
+/// OBBとOBBの衝突判定を返す関数
+bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix)
+{
+	// AABBでの各頂点座標(ローカル座標)を求める
+	Vector3 obb1Vertex[8] =
+	{
+		{ -obb1.size.x, obb1.size.y, -obb1.size.z },	// 左上前
+		{ obb1.size.x, obb1.size.y, -obb1.size.z },		// 右上前
+		{ -obb1.size.x, -obb1.size.y, -obb1.size.z },	// 左下前
+		{ obb1.size.x, -obb1.size.y, -obb1.size.z },	// 右下前
+		{ -obb1.size.x, obb1.size.y, obb1.size.z },		// 左上奥
+		{ obb1.size.x, obb1.size.y, obb1.size.z },		// 右上奥
+		{ -obb1.size.x, -obb1.size.y, obb1.size.z },	// 左下奥
+		{ obb1.size.x, -obb1.size.y, obb1.size.z },		// 右下奥
+	};
+	Vector3 obb2Vertex[8] =
+	{
+		{ -obb2.size.x, obb2.size.y, -obb2.size.z },	// 左上前
+		{ obb2.size.x, obb2.size.y, -obb2.size.z },		// 右上前
+		{ -obb2.size.x, -obb2.size.y, -obb2.size.z },	// 左下前
+		{ obb2.size.x, -obb2.size.y, -obb2.size.z },	// 右下前
+		{ -obb2.size.x, obb2.size.y, obb2.size.z },		// 左上奥
+		{ obb2.size.x, obb2.size.y, obb2.size.z },		// 右上奥
+		{ -obb2.size.x, -obb2.size.y, obb2.size.z },	// 左下奥
+		{ obb2.size.x, -obb2.size.y, obb2.size.z },		// 右下奥
+	};
+
+	// ワールド行列
+	Matrix4x4 obb1WorldMatrix = {
+		obb1.orientations[0].x, obb1.orientations[0].y, obb1.orientations[0].z, 0,
+		obb1.orientations[1].x, obb1.orientations[1].y, obb1.orientations[1].z, 0,
+		obb1.orientations[2].x, obb1.orientations[2].y, obb1.orientations[2].z, 0,
+		obb1.center.x, obb1.center.y, obb1.center.z, 1
+	};
+	Matrix4x4 obb2WorldMatrix = {
+		obb2.orientations[0].x, obb2.orientations[0].y, obb2.orientations[0].z, 0,
+		obb2.orientations[1].x, obb2.orientations[1].y, obb2.orientations[1].z, 0,
+		obb2.orientations[2].x, obb2.orientations[2].y, obb2.orientations[2].z, 0,
+		obb2.center.x, obb2.center.y, obb2.center.z, 1
+	};
+
+	// 各頂点座標(ワールド座標)
+	Vector3 obb1WorldVertex[8];
+	Vector3 obb2WorldVertex[8];
+	for (uint32_t i = 0; i < 8; i++)
+	{
+		obb1WorldVertex[i] = Matrix::Transform(obb1Vertex[i], obb1WorldMatrix);
+		obb2WorldVertex[i] = Matrix::Transform(obb2Vertex[i], obb2WorldMatrix);
+	}
+
+	// 面法線
+	Vector3 obb1NormalX = Matrix::Transform({ obb1.size.x, 0.0f, 0.0f }, obb1WorldMatrix);
+	Vector3 obb1NormalY = Matrix::Transform({ 0.0f, obb1.size.y, 0.0f }, obb1WorldMatrix);
+	Vector3 obb1NormalZ = Matrix::Transform({ 0.0f, 0.0f, obb1.size.z }, obb1WorldMatrix);
+	Vector3 obb2NormalX = Matrix::Transform({ obb2.size.x, 0.0f, 0.0f }, obb2WorldMatrix);
+	Vector3 obb2NormalY = Matrix::Transform({ 0.0f, obb2.size.y, 0.0f }, obb2WorldMatrix);
+	Vector3 obb2NormalZ = Matrix::Transform({ 0.0f, 0.0f, obb2.size.z }, obb2WorldMatrix);
+	// 各辺の組み合わせのクロス積
+	Vector3 cross1 = Cross(obb1NormalX, obb2NormalX);
+	Vector3 cross2 = Cross(obb1NormalX, obb2NormalY);
+	Vector3 cross3 = Cross(obb1NormalX, obb2NormalZ);
+	Vector3 cross4 = Cross(obb1NormalY, obb2NormalX);
+	Vector3 cross5 = Cross(obb1NormalY, obb2NormalY);
+	Vector3 cross6 = Cross(obb1NormalY, obb2NormalZ);
+	Vector3 cross7 = Cross(obb1NormalZ, obb2NormalX);
+	Vector3 cross8 = Cross(obb1NormalZ, obb2NormalY);
+	Vector3 cross9 = Cross(obb1NormalZ, obb2NormalZ);
+
+	// 各方向ベクトルを設定する
+	Vector3 axisOfSeparation[15] = {
+		obb1NormalX, obb1NormalY, obb1NormalZ,
+		obb2NormalX, obb2NormalY, obb2NormalZ,
+		cross1, cross2, cross3,
+		cross4, cross5, cross6,
+		cross7, cross8, cross9
+	};
+	// 標準化
+	Vector3 NAxisOfSeparation[15];
+	for (uint32_t i = 0; i < 15; i++)
+	{
+		NAxisOfSeparation[i] = Normalize(axisOfSeparation[i]);
+	}
+
+	for (uint32_t i = 0; i < 15; i++)
+	{
+		//Draw::DrawLine(Line{ .origin = Multiply(-5.f, NAxisOfSeparation[i]), .diff = Subtract(Multiply(5.f, NAxisOfSeparation[i]), Multiply(-5.f, NAxisOfSeparation[i])) }, viewProjectionMatrix, viewportMatrix, 0xFF0000FF);
+	}
+	Draw::DrawLine(Line{ .origin = Multiply(-5.f, NAxisOfSeparation[0]), .diff = Subtract(Multiply(5.f, NAxisOfSeparation[0]), Multiply(-5.f, NAxisOfSeparation[0])) }, viewProjectionMatrix, viewportMatrix, 0xFFFFFFFF);
+
+	float obb1Projection[8];
+	float obb2Projection[8];
+	float min1 = 0.0f, max1 = 0.0f, L1 = 0.0f;
+	float min2 = 0.0f, max2 = 0.0f, L2 = 0.0f;
+	float sumSpan = 0.0f, longSpan = 0.0f;
+
+	for (uint32_t i = 0; i < 15; i++)
+	{
+		for (uint32_t l = 0; l < 8; l++)
+		{
+			obb1Projection[l] = Dot(NAxisOfSeparation[i], obb1WorldVertex[l]);
+			obb2Projection[l] = Dot(NAxisOfSeparation[i], obb2WorldVertex[l]);
+		}
+		min1 = obb1Projection[0]; max1 = obb1Projection[0];
+		min2 = obb2Projection[0]; max2 = obb2Projection[0];
+		for (uint32_t l = 1; l < 8; l++)
+		{
+			min1 = (std::min)(min1, obb1Projection[l]);
+			max1 = (std::max)(max1, obb1Projection[l]);
+			min2 = (std::min)(min2, obb2Projection[l]);
+			max2 = (std::max)(max2, obb2Projection[l]);
+		}
+
+		if (i == 0)
+		{
+			Draw::DrawEllipse(Sphere{ .center = Multiply(min1, NAxisOfSeparation[0]), .radius = 5.0f }, viewProjectionMatrix, viewportMatrix, 0xFF0000FF);
+			Draw::DrawEllipse(Sphere{ .center = Multiply(max1, NAxisOfSeparation[0]), .radius = 5.0f }, viewProjectionMatrix, viewportMatrix, 0x00FF00FF);
+			Draw::DrawEllipse(Sphere{ .center = Multiply(min2, NAxisOfSeparation[0]), .radius = 5.0f }, viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
+			Draw::DrawEllipse(Sphere{ .center = Multiply(max2, NAxisOfSeparation[0]), .radius = 5.0f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
+		}
+
+		L1 = max1 - min1;
+		L2 = max2 - min2;
+		sumSpan = L1 + L2;
+		longSpan = (std::max)(max1, max2) - (std::min)(min1, min2);
+		if (sumSpan < longSpan)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/// 分離軸に投影された軸成分から投影線分長を算出
+float MyTools::LenSegOnSeparateAxis(const Vector3* Seg, const Vector3* e1, const Vector3* e2, const Vector3* e3 = 0)
+{
+	float r1 = fabsf(Dot(*Seg, *e1));
+	float r2 = fabsf(Dot(*Seg, *e2));
+	float r3 = e3 ? (fabsf(Dot(*Seg, *e3))) : 0;
+
+	return r1 + r2 + r3;
+}
+
 /// 
 /// ツール関数 ここまで
 /// 
@@ -567,6 +711,25 @@ Vector3 MyTools::Normalize(const Vector3& v)
 	}
 
 	return Vector3{ x, y, z };
+}
+
+/// 3次元ベクトルを標準化して返す関数
+Vector3 MyTools::Standardization(const Vector3& v)
+{
+	float mean = 0.f;					// 平均
+	float standardDeviation = 1.0f;		// 標準偏差
+
+	float meanValue = (v.x + v.y + v.z) / 3.0f;	// 平均値
+
+	// 答え
+	Vector3 ans;
+
+	// 標準化
+	ans.x = (v.x - meanValue) / standardDeviation * standardDeviation + mean;
+	ans.y = (v.y - meanValue) / standardDeviation * standardDeviation + mean;
+	ans.z = (v.z - meanValue) / standardDeviation * standardDeviation + mean;
+
+	return ans;
 }
 
 /// 線形補間
