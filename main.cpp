@@ -250,7 +250,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
 		// OBBの描画
-		if (MyTools::IsCollision(obb1, obb2, viewProjectionMatrix, viewportMatrix))
+		if (MyTools::IsCollision(obb1, obb2))
 		{
 			Draw::DrawOBB(obb1, viewProjectionMatrix, viewportMatrix, RED);
 		}

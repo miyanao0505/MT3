@@ -469,7 +469,7 @@ bool MyTools::IsCollision(const OBB& obb, const Segment& segment)
 }
 
 /// OBBとOBBの衝突判定を返す関数
-bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix)
+bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2)
 {
 	// AABBでの各頂点座標(ローカル座標)を求める
 	Vector3 obb1Vertex[8] =
@@ -519,12 +519,12 @@ bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2, const Matrix4x4& vie
 	}
 
 	// 面法線
-	Vector3 obb1NormalX = Matrix::Transform({ obb1.size.x, 0.0f, 0.0f }, obb1WorldMatrix);
-	Vector3 obb1NormalY = Matrix::Transform({ 0.0f, obb1.size.y, 0.0f }, obb1WorldMatrix);
-	Vector3 obb1NormalZ = Matrix::Transform({ 0.0f, 0.0f, obb1.size.z }, obb1WorldMatrix);
-	Vector3 obb2NormalX = Matrix::Transform({ obb2.size.x, 0.0f, 0.0f }, obb2WorldMatrix);
-	Vector3 obb2NormalY = Matrix::Transform({ 0.0f, obb2.size.y, 0.0f }, obb2WorldMatrix);
-	Vector3 obb2NormalZ = Matrix::Transform({ 0.0f, 0.0f, obb2.size.z }, obb2WorldMatrix);
+	Vector3 obb1NormalX = Matrix::TransformNormal({ obb1.size.x, 0.0f, 0.0f }, obb1WorldMatrix);
+	Vector3 obb1NormalY = Matrix::TransformNormal({ 0.0f, obb1.size.y, 0.0f }, obb1WorldMatrix);
+	Vector3 obb1NormalZ = Matrix::TransformNormal({ 0.0f, 0.0f, obb1.size.z }, obb1WorldMatrix);
+	Vector3 obb2NormalX = Matrix::TransformNormal({ obb2.size.x, 0.0f, 0.0f }, obb2WorldMatrix);
+	Vector3 obb2NormalY = Matrix::TransformNormal({ 0.0f, obb2.size.y, 0.0f }, obb2WorldMatrix);
+	Vector3 obb2NormalZ = Matrix::TransformNormal({ 0.0f, 0.0f, obb2.size.z }, obb2WorldMatrix);
 	// 各辺の組み合わせのクロス積
 	Vector3 cross1 = Cross(obb1NormalX, obb2NormalX);
 	Vector3 cross2 = Cross(obb1NormalX, obb2NormalY);
@@ -544,18 +544,12 @@ bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2, const Matrix4x4& vie
 		cross4, cross5, cross6,
 		cross7, cross8, cross9
 	};
-	// 標準化
+	// 正規化
 	Vector3 NAxisOfSeparation[15];
 	for (uint32_t i = 0; i < 15; i++)
 	{
 		NAxisOfSeparation[i] = Normalize(axisOfSeparation[i]);
 	}
-
-	for (uint32_t i = 0; i < 15; i++)
-	{
-		//Draw::DrawLine(Line{ .origin = Multiply(-5.f, NAxisOfSeparation[i]), .diff = Subtract(Multiply(5.f, NAxisOfSeparation[i]), Multiply(-5.f, NAxisOfSeparation[i])) }, viewProjectionMatrix, viewportMatrix, 0xFF0000FF);
-	}
-	Draw::DrawLine(Line{ .origin = Multiply(-5.f, NAxisOfSeparation[0]), .diff = Subtract(Multiply(5.f, NAxisOfSeparation[0]), Multiply(-5.f, NAxisOfSeparation[0])) }, viewProjectionMatrix, viewportMatrix, 0xFFFFFFFF);
 
 	float obb1Projection[8];
 	float obb2Projection[8];
@@ -578,14 +572,6 @@ bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2, const Matrix4x4& vie
 			max1 = (std::max)(max1, obb1Projection[l]);
 			min2 = (std::min)(min2, obb2Projection[l]);
 			max2 = (std::max)(max2, obb2Projection[l]);
-		}
-
-		if (i == 0)
-		{
-			Draw::DrawEllipse(Sphere{ .center = Multiply(min1, NAxisOfSeparation[0]), .radius = 5.0f }, viewProjectionMatrix, viewportMatrix, 0xFF0000FF);
-			Draw::DrawEllipse(Sphere{ .center = Multiply(max1, NAxisOfSeparation[0]), .radius = 5.0f }, viewProjectionMatrix, viewportMatrix, 0x00FF00FF);
-			Draw::DrawEllipse(Sphere{ .center = Multiply(min2, NAxisOfSeparation[0]), .radius = 5.0f }, viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
-			Draw::DrawEllipse(Sphere{ .center = Multiply(max2, NAxisOfSeparation[0]), .radius = 5.0f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
 		}
 
 		L1 = max1 - min1;

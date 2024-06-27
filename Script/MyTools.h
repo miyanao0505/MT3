@@ -198,7 +198,7 @@ public:
 	/// <param name="obb1">OBB1</param>
 	/// <param name="obb2">OBB2</param>
 	/// <returns></returns>
-	static bool IsCollision(const OBB& obb1, const OBB& obb2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+	static bool IsCollision(const OBB& obb1, const OBB& obb2);
 
 	/// <summary>
 	/// 分離軸に投影された軸成分から投影線分長を算出
