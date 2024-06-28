@@ -518,6 +518,7 @@ bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2)
 		obb2WorldVertex[i] = Matrix::Transform(obb2Vertex[i], obb2WorldMatrix);
 	}
 
+	// 分離軸
 	// 面法線
 	Vector3 obb1NormalX = Matrix::TransformNormal({ obb1.size.x, 0.0f, 0.0f }, obb1WorldMatrix);
 	Vector3 obb1NormalY = Matrix::TransformNormal({ 0.0f, obb1.size.y, 0.0f }, obb1WorldMatrix);
@@ -551,21 +552,26 @@ bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2)
 		NAxisOfSeparation[i] = Normalize(axisOfSeparation[i]);
 	}
 
-	float obb1Projection[8];
-	float obb2Projection[8];
-	float min1 = 0.0f, max1 = 0.0f, L1 = 0.0f;
-	float min2 = 0.0f, max2 = 0.0f, L2 = 0.0f;
-	float sumSpan = 0.0f, longSpan = 0.0f;
+	// 変数の用意
+	float obb1Projection[8];			// obb1の各頂点の射影した値
+	float obb2Projection[8];			// obb2の各頂点の射影した値
+	float min1 = 0.0f, max1 = 0.0f, L1 = 0.0f;		// obb1 のデータ
+	float min2 = 0.0f, max2 = 0.0f, L2 = 0.0f;		// obb2 のデータ
+	float sumSpan = 0.0f, longSpan = 0.0f;			// 比較用
 
+	// 分離軸の分ループ
 	for (uint32_t i = 0; i < 15; i++)
 	{
+		// 各頂点を分離軸で射影
 		for (uint32_t l = 0; l < 8; l++)
 		{
 			obb1Projection[l] = Dot(NAxisOfSeparation[i], obb1WorldVertex[l]);
 			obb2Projection[l] = Dot(NAxisOfSeparation[i], obb2WorldVertex[l]);
 		}
+		// 初期値をセット
 		min1 = obb1Projection[0]; max1 = obb1Projection[0];
 		min2 = obb2Projection[0]; max2 = obb2Projection[0];
+		// 各頂点分比較
 		for (uint32_t l = 1; l < 8; l++)
 		{
 			min1 = (std::min)(min1, obb1Projection[l]);
@@ -573,17 +579,22 @@ bool MyTools::IsCollision(const OBB& obb1, const OBB& obb2)
 			min2 = (std::min)(min2, obb2Projection[l]);
 			max2 = (std::max)(max2, obb2Projection[l]);
 		}
-
+		// obb1 と obb2 各射影の長さ
 		L1 = max1 - min1;
 		L2 = max2 - min2;
+
+		// obb1とobb2の合計の長さ
 		sumSpan = L1 + L2;
+		// 最大値と最低値の差分
 		longSpan = (std::max)(max1, max2) - (std::min)(min1, min2);
+		// 分離軸が引けるかどうか
+		// 引ける時、未衝突
 		if (sumSpan < longSpan)
 		{
 			return false;
 		}
 	}
-
+	// 全ての分離軸が引けない時、衝突判定
 	return true;
 }
 
