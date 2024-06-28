@@ -788,12 +788,31 @@ Vector3 MyTools::CatmullRomInterpolation(const Vector3& p0, const Vector3& p1, c
 	float t2 = t * t;	// t の2乗
 	float t3 = t2 * t;	// t の3乗
 
-	Vector3 e3 = Subtract(Add(Multiply(-1.f, p0), Multiply(3.f, p1)), Add(Multiply(3.f, p2), p3));
-	Vector3 e2 = Add(Subtract(Multiply(2.f, p0), Multiply(5.f, p1)), Subtract(Multiply(4.f, p2), p3));
-	Vector3 e1 = Add(Multiply(-1.f, p0), p2);
-	Vector3 e0 = Multiply(2.f, p1);
 
-	return Multiply(s, Add(Add(Add(Multiply(t3, e3), Multiply(t2, e2)), Multiply(t, e1)), e0));
+	Vector3 e3 = Multiply(-1.f, p0);
+	e3 = Add(e3, Multiply(3.0f, p1));
+	e3 = Subtract(e3, Multiply(3.0f, p2));
+	e3 = Add(e3, p3);
+	/*Subtract(Add(Multiply(-1.f, p0), Multiply(3.f, p1)), Add(Multiply(3.f, p2), p3));*/
+
+	Vector3 e2 = Multiply(2.0f, p0);
+	e2 = Subtract(e2, Multiply(5.0f, p1));
+	e2 = Add(e2, Multiply(4.0f, p2));
+	e2 = Subtract(e2, p3);
+	/*Add(Subtract(Multiply(2.f, p0), Multiply(5.f, p1)), Subtract(Multiply(4.f, p2), p3));*/
+
+	Vector3 e1 = Multiply(-1.0f, p0);
+	e1 = Add(e1, p2);
+	/*Add(Multiply(-1.f, p0), p2);*/
+
+	Vector3 e0 = Multiply(2.0f, p1);
+
+	Vector3 ans = Multiply(t3, e3);
+	ans = Add(ans, Multiply(t2, e2));
+	ans = Add(ans, Multiply(t, e1));
+	ans = Add(ans, e0);
+
+	return /*Multiply(s, Add(Add(Add(Multiply(t3, e3), Multiply(t2, e2)), Multiply(t, e1)), e0))*/ Multiply(s, ans);
 }
 
 /// CatmullRomスプライン曲線上の座標を得る
@@ -814,7 +833,7 @@ Vector3 MyTools::CatmullRomPosition(const std::vector<Vector3>& points, float t)
 	// 区間番号
 	size_t index = static_cast<size_t>(t / areaWidth);
 	// 区間番号が上限を超えないように収める
-	index >= points.size() ? index = points.size() - 2 : index;
+	index = index + 1 >= points.size() ? points.size() - 2 : index;
 
 	// 4点分のインデックス
 	size_t index0 = index - 1;
@@ -828,7 +847,7 @@ Vector3 MyTools::CatmullRomPosition(const std::vector<Vector3>& points, float t)
 	}
 
 	// 最後の区間のp3はp2を重複使用する
-	if (index >= points.size()) {
+	if (index3 >= points.size()) {
 		index3 = index2;
 	}
 

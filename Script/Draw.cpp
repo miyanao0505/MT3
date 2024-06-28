@@ -1,5 +1,6 @@
 ﻿#include "Draw.h"
 #include "Novice.h"
+#include <vector>
 
 ///
 /// デバッグ用関数 ここから
@@ -376,6 +377,41 @@ void Draw::DrawBezier(const Vector3& controlPoint0, const Vector3& controlPoint1
 	Draw::DrawSphere(Sphere{ .center = controlPoint0, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
 	Draw::DrawSphere(Sphere{ .center = controlPoint1, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
 	Draw::DrawSphere(Sphere{ .center = controlPoint2, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
+}
+
+/// Catmull-rom曲線の描画
+void Draw::DrawCatmullRom(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2, const Vector3& controlPoint3, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	const size_t kSubdivision = 400;
+	std::vector<Vector3> drawPoints;
+
+	std::vector<Vector3> controlPoints = {
+		controlPoint0, controlPoint1, controlPoint2, controlPoint3
+	};
+
+	for (size_t i = 0; i < kSubdivision + 1; i++)
+	{
+		float t = 1.0f / kSubdivision * i;
+
+		// 座標計算
+		Vector3 pos = MyTools::CatmullRomPosition(controlPoints, t);
+
+		// 描画用リストにセット
+		drawPoints.push_back(pos);
+	}
+
+	// 描画！
+	// 線
+	// 線
+	for (size_t i = 0; i < drawPoints.size() - 1; i++)
+	{
+		Draw::DrawSegment(Segment{ .origin = drawPoints.at(i), .diff = MyTools::Subtract(drawPoints.at(i + 1), drawPoints.at(i))}, viewProjectionMatrix, viewportMatrix, color);
+	}
+	// コントロールポイント
+	Draw::DrawSphere(Sphere{ .center = controlPoint0, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
+	Draw::DrawSphere(Sphere{ .center = controlPoint1, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
+	Draw::DrawSphere(Sphere{ .center = controlPoint2, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
+	Draw::DrawSphere(Sphere{ .center = controlPoint3, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
 }
 
 /// 

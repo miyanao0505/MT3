@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_03_00_曲線再び_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_03_00_曲線再び_応用課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -24,10 +24,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	Vector3 controlPoints[3] = {
+	Vector3 controlPoints[4] = {
 		{-0.8f, 0.58f, 1.0f},
 		{1.76f, 1.0f, -0.3f},
 		{0.94f, -0.7f, 2.3f},
+		{-0.53f, -0.26f, -0.15f},
 	};
 
 	// 各種行列の計算
@@ -67,6 +68,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("controlPoints[0]", &controlPoints[0].x, 0.01f);
 		ImGui::DragFloat3("controlPoints[1]", &controlPoints[1].x, 0.01f);
 		ImGui::DragFloat3("controlPoints[2]", &controlPoints[2].x, 0.01f);
+		ImGui::DragFloat3("controlPoints[3]", &controlPoints[3].x, 0.01f);
 
 		ImGui::End();
 
@@ -151,6 +153,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			controlPoints[0] = { -0.8f, 0.58f, 1.0f };
 			controlPoints[1] = { 1.76f, 1.0f, -0.3f };
 			controlPoints[2] = { 0.94f, -0.7f, 2.3f };
+			controlPoints[3] = { -0.53f, -0.26f, -0.15f };
 
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
@@ -179,8 +182,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 		
-		// ベジェ曲線の描画
-		Draw::DrawBezier(controlPoints[0], controlPoints[1], controlPoints[2], viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
+		// Catmull-rom曲線の描画
+		Draw::DrawCatmullRom(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3], viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
 
 		///
 		/// ↑描画処理ここまで
