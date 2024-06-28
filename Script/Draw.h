@@ -72,7 +72,6 @@ public:
 	/// <param name="color">色</param>
 	static void DrawEllipse(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
-
 	/// <summary>
 	/// 平面の描画
 	/// </summary>
@@ -108,6 +107,17 @@ public:
 	/// <param name="viewportMatrix">ビューポート行列</param>
 	/// <param name="color">色</param>
 	static void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+	/// <summary>
+	/// ベジェ曲線の描画
+	/// </summary>
+	/// <param name="controlPoint0">コントロールポイント0</param>
+	/// <param name="controlPoint1">コントロールポイント1</param>
+	/// <param name="controlPoint2">コントロールポイント2</param>
+	/// <param name="viewProjectionMatrix">ビュープロジェクション行列</param>
+	/// <param name="viewportMatrix">ビューポート行列</param>
+	/// <param name="color">色</param>
+	static void DrawBezier(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
 	/// 
 	/// オブジェクト用 ここから

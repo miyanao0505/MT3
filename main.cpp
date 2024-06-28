@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_02_10_3次元衝突判定(OBBとOBB/AABB)_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_03_00_曲線再び_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -24,21 +24,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	Vector3 rotate1{ 0.0f, 0.0f, 0.0f };
-	Vector3 rotate2{ -0.05f, -2.49f, 0.15f };
-	MyBase::OBB obb1{
-		.center{-0.0f, 0.0f, 0.0f},
-		.orientations = {{1.0f, 0.0f, 0.0f},
-						 {0.0f, 1.0f, 0.0f},
-						 {0.0f, 0.0f, 1.0f}},
-		.size{0.83f, 0.26f, 0.24f}
-	};
-	MyBase::OBB obb2{
-		.center{0.9f, 0.66f, 0.78f},
-		.orientations = {{1.0f, 0.0f, 0.0f},
-						 {0.0f, 1.0f, 0.0f},
-						 {0.0f, 0.0f, 1.0f}},
-		.size{0.5f, 0.37f, 0.5f}
+	Vector3 controlPoints[3] = {
+		{-0.8f, 0.58f, 1.0f},
+		{1.76f, 1.0f, -0.3f},
+		{0.94f, -0.7f, 2.3f},
 	};
 
 	// 各種行列の計算
@@ -74,57 +63,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowSize(ImVec2(450, 400), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("Window");
-		ImGui::DragFloat3("obb1.center", &obb1.center.x, 0.01f);
-		ImGui::DragFloat("rotate1X", &rotate1.x, 0.01f);
-		ImGui::DragFloat("rotate1Y", &rotate1.y, 0.01f);
-		ImGui::DragFloat("rotate1Z", &rotate1.z, 0.01f);
-
-		// 回転行列の生成
-		Matrix4x4 rotateMatrix1 = Matrix::Multiply(Matrix::MakeRotateXMatrix4x4(rotate1.x), Matrix::Multiply(Matrix::MakeRotateYMatrix4x4(rotate1.y), Matrix::MakeRotateZMatrix4x4(rotate1.z)));
-
-		// 回転行列から軸を抽出
-		obb1.orientations[0].x = rotateMatrix1.m[0][0];
-		obb1.orientations[0].y = rotateMatrix1.m[0][1];
-		obb1.orientations[0].z = rotateMatrix1.m[0][2];
-
-		obb1.orientations[1].x = rotateMatrix1.m[1][0];
-		obb1.orientations[1].y = rotateMatrix1.m[1][1];
-		obb1.orientations[1].z = rotateMatrix1.m[1][2];
-
-		obb1.orientations[2].x = rotateMatrix1.m[2][0];
-		obb1.orientations[2].y = rotateMatrix1.m[2][1];
-		obb1.orientations[2].z = rotateMatrix1.m[2][2];
-
-		ImGui::DragFloat3("obb1.orientations[0]", &obb1.orientations[0].x, 0.01f);
-		ImGui::DragFloat3("obb1.orientations[1]", &obb1.orientations[1].x, 0.01f);
-		ImGui::DragFloat3("obb1.orientations[2]", &obb1.orientations[2].x, 0.01f);
-		ImGui::DragFloat3("obb1.size", &obb1.size.x, 0.01f);
 		
-		ImGui::DragFloat3("obb2.center", &obb2.center.x, 0.01f);
-		ImGui::DragFloat("rotate2X", &rotate2.x, 0.01f);
-		ImGui::DragFloat("rotate2Y", &rotate2.y, 0.01f);
-		ImGui::DragFloat("rotate2Z", &rotate2.z, 0.01f);
-
-		// 回転行列の生成
-		Matrix4x4 rotateMatrix2 = Matrix::Multiply(Matrix::MakeRotateXMatrix4x4(rotate2.x), Matrix::Multiply(Matrix::MakeRotateYMatrix4x4(rotate2.y), Matrix::MakeRotateZMatrix4x4(rotate2.z)));
-
-		// 回転行列から軸を抽出
-		obb2.orientations[0].x = rotateMatrix2.m[0][0];
-		obb2.orientations[0].y = rotateMatrix2.m[0][1];
-		obb2.orientations[0].z = rotateMatrix2.m[0][2];
-
-		obb2.orientations[1].x = rotateMatrix2.m[1][0];
-		obb2.orientations[1].y = rotateMatrix2.m[1][1];
-		obb2.orientations[1].z = rotateMatrix2.m[1][2];
-
-		obb2.orientations[2].x = rotateMatrix2.m[2][0];
-		obb2.orientations[2].y = rotateMatrix2.m[2][1];
-		obb2.orientations[2].z = rotateMatrix2.m[2][2];
-
-		ImGui::DragFloat3("obb2.orientations[0]", &obb2.orientations[0].x, 0.01f);
-		ImGui::DragFloat3("obb2.orientations[1]", &obb2.orientations[1].x, 0.01f);
-		ImGui::DragFloat3("obb2.orientations[2]", &obb2.orientations[2].x, 0.01f);
-		ImGui::DragFloat3("obb2.size", &obb2.size.x, 0.01f);
+		ImGui::DragFloat3("controlPoints[0]", &controlPoints[0].x, 0.01f);
+		ImGui::DragFloat3("controlPoints[1]", &controlPoints[1].x, 0.01f);
+		ImGui::DragFloat3("controlPoints[2]", &controlPoints[2].x, 0.01f);
 
 		ImGui::End();
 
@@ -206,21 +148,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			obb1 = {
-				.center{-0.0f, 0.0f, 0.0f},
-				.orientations = {{1.0f, 0.0f, 0.0f},
-								 {0.0f, 1.0f, 0.0f},
-								 {0.0f, 0.0f, 1.0f}},
-				.size{0.83f, 0.26f, 0.24f}
-			};
-
-			obb2 = {
-				.center{0.9f, 0.66f, 0.78f},
-				.orientations = {{1.0f, 0.0f, 0.0f},
-								 {0.0f, 1.0f, 0.0f},
-								 {0.0f, 0.0f, 1.0f}},
-				.size{0.5f, 0.37f, 0.5f}
-			};
+			controlPoints[0] = { -0.8f, 0.58f, 1.0f };
+			controlPoints[1] = { 1.76f, 1.0f, -0.3f };
+			controlPoints[2] = { 0.94f, -0.7f, 2.3f };
 
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
@@ -248,18 +178,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
-
-		// OBBの描画
-		if (MyTools::IsCollision(obb1, obb2))
-		{
-			Draw::DrawOBB(obb1, viewProjectionMatrix, viewportMatrix, RED);
-		}
-		else
-		{
-			Draw::DrawOBB(obb1, viewProjectionMatrix, viewportMatrix, WHITE);
-		}
-		// Sphereの描画
-		Draw::DrawOBB(obb2, viewProjectionMatrix, viewportMatrix, WHITE);
+		
+		// ベジェ曲線の描画
+		Draw::DrawBezier(controlPoints[0], controlPoints[1], controlPoints[2], viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
 
 		///
 		/// ↑描画処理ここまで

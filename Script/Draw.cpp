@@ -341,6 +341,43 @@ void Draw::DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const 
 	Novice::DrawLine(int(screenVertex[3].x), int(screenVertex[3].y), int(screenVertex[7].x), int(screenVertex[7].y), color);	// 右下
 }
 
+/// ベジェ曲線の描画
+void Draw::DrawBezier(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color)
+{
+	float t = 0.0f;
+	const uint32_t kSubdivision = 100;
+	Vector3 drawPoints[(kSubdivision + 1)];
+
+	// 
+	for (uint32_t i = 0; i < kSubdivision + 1; i++)
+	{
+		// 制御点p0, p1を線形補間
+		Vector3 r0r1 = MyTools::Lerp(controlPoint0, controlPoint1, t);
+		// 制御点p1, p2を線形補間
+		Vector3 r1r2 = MyTools::Lerp(controlPoint1, controlPoint2, t);
+		// 補間店r0r1, r1r2をさらに線形補間
+		Vector3 p = MyTools::Lerp(r0r1, r1r2, t);
+
+		// 描画用配列にセット
+		drawPoints[i] = p;
+
+		// 媒介変数の更新
+		t = float(i) / float(kSubdivision);
+	}
+
+	// 描画！
+	// 線
+	for (uint32_t i = 0; i < kSubdivision; i++)
+	{
+		Draw::DrawSegment(Segment{ .origin = drawPoints[i], .diff = MyTools::Subtract(drawPoints[i + 1], drawPoints[i]) }, viewProjectionMatrix, viewportMatrix, color);
+	}
+	color;
+	// コントロールポイント
+	Draw::DrawSphere(Sphere{ .center = controlPoint0, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
+	Draw::DrawSphere(Sphere{ .center = controlPoint1, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
+	Draw::DrawSphere(Sphere{ .center = controlPoint2, .radius = 0.01f }, viewProjectionMatrix, viewportMatrix, 0x000000FF);
+}
+
 /// 
 /// オブジェクト用 ここから
 /// 
