@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_03_00_曲線再び_応用課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_03_01_階層構造_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -24,11 +24,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	Vector3 controlPoints[4] = {
-		{-0.8f, 0.58f, 1.0f},
-		{1.76f, 1.0f, -0.3f},
-		{0.94f, -0.7f, 2.3f},
-		{-0.53f, -0.26f, -0.15f},
+	Vector3 translates[3] = {
+		{0.2f, 1.0f, 0.0f},		// 肩
+		{0.4f, 0.0f, 0.0f},		// 肘
+		{0.3f, 0.0f, 0.0f},		// 手
+	};
+	Vector3 rotates[3] = {
+		{0.0f, 0.0f, -6.8f},	// 肩
+		{0.0f, 0.0f, -1.4f},	// 肘
+		{0.0f, 0.0f, 0.0f},		// 手
+	};
+	Vector3 scales[3] = {
+		{1.0f, 1.0f, 1.0f},		// 肩
+		{1.0f, 1.0f, 1.0f},		// 肘
+		{1.0f, 1.0f, 1.0f},		// 手
+	};
+	Matrix4x4 localMatrix[3] = {
+		Matrix::MakeAffineMatrix(scales[0], rotates[0], translates[0]),		// 肩
+		Matrix::MakeAffineMatrix(scales[1], rotates[1], translates[1]),		// 肘
+		Matrix::MakeAffineMatrix(scales[2], rotates[2], translates[2]),		// 手
+	};
+	Matrix4x4 worldMatrix[3] = {
+		localMatrix[0],														// 肩
+		Matrix::Multiply(localMatrix[1], worldMatrix[0]),					// 肘
+		Matrix::Multiply(localMatrix[2], worldMatrix[1]),					// 手
+	};
+	MyBase::Sphere spheres[3] = {
+		MyBase::Sphere{.center{worldMatrix[0].m[3][0], worldMatrix[0].m[3][1], worldMatrix[0].m[3][2]}, .radius{0.1f}},		// 肩
+		MyBase::Sphere{.center{worldMatrix[1].m[3][0], worldMatrix[1].m[3][1], worldMatrix[1].m[3][2]}, .radius{0.1f}},		// 肘
+		MyBase::Sphere{.center{worldMatrix[2].m[3][0], worldMatrix[2].m[3][1], worldMatrix[2].m[3][2]}, .radius{0.1f}},		// 手
 	};
 
 	// 各種行列の計算
@@ -65,10 +89,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		ImGui::Begin("Window");
 		
-		ImGui::DragFloat3("controlPoints[0]", &controlPoints[0].x, 0.01f);
-		ImGui::DragFloat3("controlPoints[1]", &controlPoints[1].x, 0.01f);
-		ImGui::DragFloat3("controlPoints[2]", &controlPoints[2].x, 0.01f);
-		ImGui::DragFloat3("controlPoints[3]", &controlPoints[3].x, 0.01f);
+		ImGui::DragFloat3("translates[0]", &translates[0].x, 0.01f);
+		ImGui::DragFloat3("rotates[0]", &rotates[0].x, 0.01f);
+		ImGui::DragFloat3("scales[0]", &scales[0].x, 0.01f);
+		localMatrix[0] = Matrix::MakeAffineMatrix(scales[0], rotates[0], translates[0]);
+
+		ImGui::DragFloat3("translates[1]", &translates[1].x, 0.01f);
+		ImGui::DragFloat3("rotates[1]", &rotates[1].x, 0.01f);
+		ImGui::DragFloat3("scales[1]", &scales[1].x, 0.01f);
+		localMatrix[1] = Matrix::MakeAffineMatrix(scales[1], rotates[1], translates[1]);
+
+		ImGui::DragFloat3("translates[2]", &translates[2].x, 0.01f);
+		ImGui::DragFloat3("rotates[2]", &rotates[2].x, 0.01f);
+		ImGui::DragFloat3("scales[2]", &scales[2].x, 0.01f);
+		localMatrix[2] = Matrix::MakeAffineMatrix(scales[2], rotates[2], translates[2]);
+
+		// ワールド
+		worldMatrix[0] = localMatrix[0];
+		worldMatrix[1] = Matrix::Multiply(localMatrix[1], worldMatrix[0]);
+		worldMatrix[2] = Matrix::Multiply(localMatrix[2], worldMatrix[1]);
+
+		// 球
+		spheres[0] = MyBase::Sphere{ .center{worldMatrix[0].m[3][0], worldMatrix[0].m[3][1], worldMatrix[0].m[3][2]}, .radius{0.1f} };
+		spheres[1] = MyBase::Sphere{ .center{worldMatrix[1].m[3][0], worldMatrix[1].m[3][1], worldMatrix[1].m[3][2]}, .radius{0.1f} };
+		spheres[2] = MyBase::Sphere{ .center{worldMatrix[2].m[3][0], worldMatrix[2].m[3][1], worldMatrix[2].m[3][2]}, .radius{0.1f} };
 
 		ImGui::End();
 
@@ -150,10 +194,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			controlPoints[0] = { -0.8f, 0.58f, 1.0f };
-			controlPoints[1] = { 1.76f, 1.0f, -0.3f };
-			controlPoints[2] = { 0.94f, -0.7f, 2.3f };
-			controlPoints[3] = { -0.53f, -0.26f, -0.15f };
+			// 肩
+			translates[0] = { 0.2f, 1.0f, 0.0f };
+			rotates[0] = { 0.0f, 0.0f, -6.8f };
+			scales[0] = { 1.0f, 1.0f, 1.0f };
+			
+			// 肘
+			translates[1] = { 0.4f, 0.0f, 0.0f };
+			rotates[1] = { 0.0f, 0.0f, -1.4f };
+			scales[1] = { 1.0f, 1.0f, 1.0f };
+
+			// 手
+			translates[2] = { 0.3f, 0.0f, 0.0f };
+			rotates[2] = { 0.0f, 0.0f, 0.0f };
+			scales[2] = { 1.0f, 1.0f, 1.0f };
+
+			// ローカル
+			localMatrix[0] = Matrix::MakeAffineMatrix(scales[0], rotates[0], translates[0]);
+			localMatrix[1] = Matrix::MakeAffineMatrix(scales[1], rotates[1], translates[1]);
+			localMatrix[2] = Matrix::MakeAffineMatrix(scales[2], rotates[2], translates[2]);
+
+			// ワールド
+			worldMatrix[0] = localMatrix[0];
+			worldMatrix[1] = Matrix::Multiply(localMatrix[1], worldMatrix[0]);
+			worldMatrix[2] = Matrix::Multiply(localMatrix[2], worldMatrix[1]);
+
+			// 球
+			spheres[0] = MyBase::Sphere{ .center{worldMatrix[0].m[3][0], worldMatrix[0].m[3][1], worldMatrix[0].m[3][2]}, .radius{0.1f} };
+			spheres[1] = MyBase::Sphere{ .center{worldMatrix[1].m[3][0], worldMatrix[1].m[3][1], worldMatrix[1].m[3][2]}, .radius{0.1f} };
+			spheres[2] = MyBase::Sphere{ .center{worldMatrix[2].m[3][0], worldMatrix[2].m[3][1], worldMatrix[2].m[3][2]}, .radius{0.1f} };
 
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
@@ -182,9 +251,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 		
-		// Catmull-rom曲線の描画
-		Draw::DrawCatmullRom(controlPoints[0], controlPoints[1], controlPoints[2], controlPoints[3], viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
+		// 肩の描画
+		Draw::DrawSphere(spheres[0], viewProjectionMatrix, viewportMatrix, 0xFF0000FF);
 
+		// 肘の描画
+		Draw::DrawSphere(spheres[1], viewProjectionMatrix, viewportMatrix, 0x00FF00FF);
+
+		// 手の描画
+		Draw::DrawSphere(spheres[2], viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
+
+		// 肩-肘の描画
+		Draw::DrawSegment(MyBase::Segment{ .origin = spheres[0].center, .diff = MyTools::Subtract(spheres[1].center, spheres[0].center) }, viewProjectionMatrix, viewportMatrix, 0xFFFFFFFF);
+
+		// 肘-手の描画
+		Draw::DrawSegment(MyBase::Segment{ .origin = spheres[1].center, .diff = MyTools::Subtract(spheres[2].center, spheres[1].center) }, viewProjectionMatrix, viewportMatrix, 0xFFFFFFFF);
+		
 		///
 		/// ↑描画処理ここまで
 		///
