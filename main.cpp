@@ -4,10 +4,24 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_03_01_階層構造_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_03_02_演算子オーバーロード_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
+
+/// 二項演算子
+Vector3 operator+(const Vector3& v1, const Vector3& v2) { return MyTools::Add(v1, v2); }
+Vector3 operator-(const Vector3& v1, const Vector3& v2) { return MyTools::Subtract(v1, v2); }
+Vector3 operator*(float s, const Vector3& v) { return MyTools::Multiply(s, v); }
+Vector3 operator*(const Vector3& v, float s) { return s * v; }
+Vector3 operator/(const Vector3& v, float s) { return MyTools::Multiply(1.0f / s, v); }
+Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Matrix::Add(m1, m2); }
+Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Matrix::Subtract(m1, m2); }
+Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Matrix::Multiply(m1, m2); }
+
+/// 単項演算子
+Vector3 operator-(const Vector3& v) { return { -v.x, -v.y, -v.z }; }
+Vector3 operator+(const Vector3& v) { return v; }
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -24,36 +38,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	Vector3 translates[3] = {
-		{0.2f, 1.0f, 0.0f},		// 肩
-		{0.4f, 0.0f, 0.0f},		// 肘
-		{0.3f, 0.0f, 0.0f},		// 手
-	};
-	Vector3 rotates[3] = {
-		{0.0f, 0.0f, -6.8f},	// 肩
-		{0.0f, 0.0f, -1.4f},	// 肘
-		{0.0f, 0.0f, 0.0f},		// 手
-	};
-	Vector3 scales[3] = {
-		{1.0f, 1.0f, 1.0f},		// 肩
-		{1.0f, 1.0f, 1.0f},		// 肘
-		{1.0f, 1.0f, 1.0f},		// 手
-	};
-	Matrix4x4 localMatrix[3] = {
-		Matrix::MakeAffineMatrix(scales[0], rotates[0], translates[0]),		// 肩
-		Matrix::MakeAffineMatrix(scales[1], rotates[1], translates[1]),		// 肘
-		Matrix::MakeAffineMatrix(scales[2], rotates[2], translates[2]),		// 手
-	};
-	Matrix4x4 worldMatrix[3] = {
-		localMatrix[0],														// 肩
-		Matrix::Multiply(localMatrix[1], worldMatrix[0]),					// 肘
-		Matrix::Multiply(localMatrix[2], worldMatrix[1]),					// 手
-	};
-	MyBase::Sphere spheres[3] = {
-		MyBase::Sphere{.center{worldMatrix[0].m[3][0], worldMatrix[0].m[3][1], worldMatrix[0].m[3][2]}, .radius{0.1f}},		// 肩
-		MyBase::Sphere{.center{worldMatrix[1].m[3][0], worldMatrix[1].m[3][1], worldMatrix[1].m[3][2]}, .radius{0.1f}},		// 肘
-		MyBase::Sphere{.center{worldMatrix[2].m[3][0], worldMatrix[2].m[3][1], worldMatrix[2].m[3][2]}, .radius{0.1f}},		// 手
-	};
+	Vector3 a{ 0.2f, 1.0f, 0.0f };
+	Vector3 b{ 2.4f, 3.1f, 1.2f };
+	Vector3 c = a + b;
+	Vector3 d = a - b;
+	Vector3 e = a * 10.f;
+	Vector3 f = 10.f * a;
+	Vector3 g = b / 10.0f;
+	Vector3 h = -a;
+	Vector3 i = +a;
+	Vector3 j = a;
+	j *= 10.f;
+	Vector3 k = a;
+	k += b;
+	Vector3 l = a;
+	l -= b;
+	Vector3 m = b;
+	m /= 10.f;
+
+	Vector3 rotate{ 0.4f, 1.43f, -0.8f };
+	Matrix4x4 rotateXMatrix = Matrix::MakeRotateXMatrix4x4(rotate.x);
+	Matrix4x4 rotateYMatrix = Matrix::MakeRotateYMatrix4x4(rotate.y);
+	Matrix4x4 rotateZMatrix = Matrix::MakeRotateZMatrix4x4(rotate.z);
+	Matrix4x4 rotateMatrix = rotateXMatrix * rotateYMatrix * rotateZMatrix;
 
 	// 各種行列の計算
 	Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -89,30 +96,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		ImGui::Begin("Window");
 		
-		ImGui::DragFloat3("translates[0]", &translates[0].x, 0.01f);
-		ImGui::DragFloat3("rotates[0]", &rotates[0].x, 0.01f);
-		ImGui::DragFloat3("scales[0]", &scales[0].x, 0.01f);
-		localMatrix[0] = Matrix::MakeAffineMatrix(scales[0], rotates[0], translates[0]);
+		ImGui::Text("a:%f, %f, %f", a.x, a.y, a.z);
+		ImGui::Text("b:%f, %f, %f", b.x, b.y, b.z);
 
-		ImGui::DragFloat3("translates[1]", &translates[1].x, 0.01f);
-		ImGui::DragFloat3("rotates[1]", &rotates[1].x, 0.01f);
-		ImGui::DragFloat3("scales[1]", &scales[1].x, 0.01f);
-		localMatrix[1] = Matrix::MakeAffineMatrix(scales[1], rotates[1], translates[1]);
+		ImGui::Text("\n");
 
-		ImGui::DragFloat3("translates[2]", &translates[2].x, 0.01f);
-		ImGui::DragFloat3("rotates[2]", &rotates[2].x, 0.01f);
-		ImGui::DragFloat3("scales[2]", &scales[2].x, 0.01f);
-		localMatrix[2] = Matrix::MakeAffineMatrix(scales[2], rotates[2], translates[2]);
-
-		// ワールド
-		worldMatrix[0] = localMatrix[0];
-		worldMatrix[1] = Matrix::Multiply(localMatrix[1], worldMatrix[0]);
-		worldMatrix[2] = Matrix::Multiply(localMatrix[2], worldMatrix[1]);
-
-		// 球
-		spheres[0] = MyBase::Sphere{ .center{worldMatrix[0].m[3][0], worldMatrix[0].m[3][1], worldMatrix[0].m[3][2]}, .radius{0.1f} };
-		spheres[1] = MyBase::Sphere{ .center{worldMatrix[1].m[3][0], worldMatrix[1].m[3][1], worldMatrix[1].m[3][2]}, .radius{0.1f} };
-		spheres[2] = MyBase::Sphere{ .center{worldMatrix[2].m[3][0], worldMatrix[2].m[3][1], worldMatrix[2].m[3][2]}, .radius{0.1f} };
+		ImGui::Text("c(a + b)  :%f, %f, %f", c.x, c.y, c.z);
+		ImGui::Text("d(a - b)  :%f, %f, %f", d.x, d.y, d.z);
+		ImGui::Text("e(a * 10) :%f, %f, %f", e.x, e.y, e.z);
+		ImGui::Text("f(10 * a) :%f, %f, %f", f.x, f.y, f.z);
+		ImGui::Text("g(b / 10) :%f, %f, %f", g.x, g.y, g.z);
+		ImGui::Text("h(-a)     :%f, %f, %f", h.x, h.y, h.z);
+		ImGui::Text("i(+a)     :%f, %f, %f", i.x, i.y, i.z);
+		ImGui::Text("j(a *= 10):%f, %f, %f", j.x, j.y, j.z);
+		ImGui::Text("k(a += b) :%f, %f, %f", k.x, k.y, k.z);
+		ImGui::Text("l(a -= b) :%f, %f, %f", l.x, l.y, l.z);
+		ImGui::Text("m(b /= 10):%f, %f, %f", m.x, m.y, m.z);
+		ImGui::Text(
+			"matrix:\n%f, %f, %f, %f\n%f, %f, %f, %f\n%f, %f, %f, %f\n%f, %f, %f, %f\n",
+			rotateMatrix.m[0][0], rotateMatrix.m[0][1], rotateMatrix.m[0][2], rotateMatrix.m[0][3],
+			rotateMatrix.m[1][0], rotateMatrix.m[1][1], rotateMatrix.m[1][2], rotateMatrix.m[1][3],
+			rotateMatrix.m[2][0], rotateMatrix.m[2][1], rotateMatrix.m[2][2], rotateMatrix.m[2][3],
+			rotateMatrix.m[3][0], rotateMatrix.m[3][1], rotateMatrix.m[3][2], rotateMatrix.m[3][3]
+		);
 
 		ImGui::End();
 
@@ -194,35 +200,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			// 肩
-			translates[0] = { 0.2f, 1.0f, 0.0f };
-			rotates[0] = { 0.0f, 0.0f, -6.8f };
-			scales[0] = { 1.0f, 1.0f, 1.0f };
 			
-			// 肘
-			translates[1] = { 0.4f, 0.0f, 0.0f };
-			rotates[1] = { 0.0f, 0.0f, -1.4f };
-			scales[1] = { 1.0f, 1.0f, 1.0f };
-
-			// 手
-			translates[2] = { 0.3f, 0.0f, 0.0f };
-			rotates[2] = { 0.0f, 0.0f, 0.0f };
-			scales[2] = { 1.0f, 1.0f, 1.0f };
-
-			// ローカル
-			localMatrix[0] = Matrix::MakeAffineMatrix(scales[0], rotates[0], translates[0]);
-			localMatrix[1] = Matrix::MakeAffineMatrix(scales[1], rotates[1], translates[1]);
-			localMatrix[2] = Matrix::MakeAffineMatrix(scales[2], rotates[2], translates[2]);
-
-			// ワールド
-			worldMatrix[0] = localMatrix[0];
-			worldMatrix[1] = Matrix::Multiply(localMatrix[1], worldMatrix[0]);
-			worldMatrix[2] = Matrix::Multiply(localMatrix[2], worldMatrix[1]);
-
-			// 球
-			spheres[0] = MyBase::Sphere{ .center{worldMatrix[0].m[3][0], worldMatrix[0].m[3][1], worldMatrix[0].m[3][2]}, .radius{0.1f} };
-			spheres[1] = MyBase::Sphere{ .center{worldMatrix[1].m[3][0], worldMatrix[1].m[3][1], worldMatrix[1].m[3][2]}, .radius{0.1f} };
-			spheres[2] = MyBase::Sphere{ .center{worldMatrix[2].m[3][0], worldMatrix[2].m[3][1], worldMatrix[2].m[3][2]}, .radius{0.1f} };
 
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
@@ -251,21 +229,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 		
-		// 肩の描画
-		Draw::DrawSphere(spheres[0], viewProjectionMatrix, viewportMatrix, 0xFF0000FF);
-
-		// 肘の描画
-		Draw::DrawSphere(spheres[1], viewProjectionMatrix, viewportMatrix, 0x00FF00FF);
-
-		// 手の描画
-		Draw::DrawSphere(spheres[2], viewProjectionMatrix, viewportMatrix, 0x0000FFFF);
-
-		// 肩-肘の描画
-		Draw::DrawSegment(MyBase::Segment{ .origin = spheres[0].center, .diff = MyTools::Subtract(spheres[1].center, spheres[0].center) }, viewProjectionMatrix, viewportMatrix, 0xFFFFFFFF);
-
-		// 肘-手の描画
-		Draw::DrawSegment(MyBase::Segment{ .origin = spheres[1].center, .diff = MyTools::Subtract(spheres[2].center, spheres[1].center) }, viewProjectionMatrix, viewportMatrix, 0xFFFFFFFF);
-		
+				
 		///
 		/// ↑描画処理ここまで
 		///
