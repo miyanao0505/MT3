@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_04_00_ばねを作ってみよう_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_04_00_ばねを作ってみよう_応用課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -39,18 +39,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 変動値
 	MyBase::Spring spring{};
-	spring.anchor = { 0.0f, 0.0f, 0.0f };
-	spring.naturalLength = 1.0f;
+	spring.anchor = { 0.0f, 1.0f, 0.0f };
+	spring.naturalLength = 0.7f;
 	spring.stiffness = 100.0f;
 	spring.dampungCoefficient = 2.0f;
 
 	MyBase::Ball ball{};
-	ball.position = { 1.2f, 0.0f, 0.0f };
+	ball.position = { 0.8f, 0.2f, 0.0f };
 	ball.mass = 2.0f;
 	ball.radius = 0.05f;
 	ball.color = BLUE;
 
 	float deltaTime = 1.0f / 60.0f;
+	const Vector3 kGravity{ 0.0f, -9.8f, 0.0f };
 
 	Vector3 diff = ball.position - spring.anchor;
 	Vector3 direction;
@@ -69,7 +70,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		dampingForce = -spring.dampungCoefficient * ball.velocity;
 		// 減衰抵抗も加味して、物体にかかるちからを決定する
 		force = restoringForce + dampingForce;
-		ball.acceleration = force / ball.mass;
+		ball.acceleration = force / ball.mass + kGravity;
 	}
 	// 加速度も速度もどちらも秒を基準とした値である
 	// それが、1/60秒間(deltaTime)適用されたと考える
@@ -118,12 +119,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				isPlay = !isPlay;
 
-				spring.anchor = { 0.0f, 0.0f, 0.0f };
-				spring.naturalLength = 1.0f;
+				spring.anchor = { 0.0f, 1.0f, 0.0f };
+				spring.naturalLength = 0.7f;
 				spring.stiffness = 100.0f;
 				spring.dampungCoefficient = 2.0f;
 
-				ball.position = { 1.2f, 0.0f, 0.0f };
+				ball.position = { 0.8f, 0.2f, 0.0f };
 				ball.mass = 2.0f;
 				ball.radius = 0.05f;
 				ball.color = BLUE;
@@ -171,7 +172,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				restoringForce = -spring.stiffness * displacement;
 				dampingForce = -spring.dampungCoefficient * ball.velocity;
 				force = restoringForce + dampingForce;
-				ball.acceleration = force / ball.mass;
+				ball.acceleration = force / ball.mass + kGravity;
 			}
 			// 加速度も速度もどちらも秒を基準とした値である
 			// それが、1/60秒間(deltaTime)適用されたと考える
