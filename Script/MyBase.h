@@ -97,9 +97,9 @@ public:
 	/// 円
 	/// </summary>
 	struct Ball {
-		Vector2 pos;			// 中心点
-		Vector2 velocity;		// 速度
-		Vector2 acceleration;	// 加速度
+		Vector3 position;		// ボールの位置
+		Vector3 velocity;		// 速度
+		Vector3 acceleration;	// 加速度
 		float mass;				// 質量
 		float radius;			// 半径
 		unsigned int color;		// 色
@@ -198,4 +198,16 @@ public:
 		Vector3 orientations[3];	//!< 座標軸。正規化・直交必須
 		Vector3 size;				//!< 座標軸方向の長さの半分。中心から面までの距離
 	};
+
+	/// <summary>
+	/// バネ
+	/// </summary>
+	struct Spring
+	{
+		Vector3 anchor;				// アンカー。固定された端の位置
+		float naturalLength;		// 自然長
+		float stiffness;			// 剛性。バネ定数k
+		float dampungCoefficient;	// 減衰係数
+	};
+
 };

@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_03_02_演算子オーバーロード_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_04_00_ばねを作ってみよう_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -38,29 +38,45 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	Vector3 a{ 0.2f, 1.0f, 0.0f };
-	Vector3 b{ 2.4f, 3.1f, 1.2f };
-	Vector3 c = a + b;
-	Vector3 d = a - b;
-	Vector3 e = a * 10.f;
-	Vector3 f = 10.f * a;
-	Vector3 g = b / 10.0f;
-	Vector3 h = -a;
-	Vector3 i = +a;
-	Vector3 j = a;
-	j *= 10.f;
-	Vector3 k = a;
-	k += b;
-	Vector3 l = a;
-	l -= b;
-	Vector3 m = b;
-	m /= 10.f;
+	MyBase::Spring spring{};
+	spring.anchor = { 0.0f, 0.0f, 0.0f };
+	spring.naturalLength = 1.0f;
+	spring.stiffness = 100.0f;
+	spring.dampungCoefficient = 2.0f;
 
-	Vector3 rotate{ 0.4f, 1.43f, -0.8f };
-	Matrix4x4 rotateXMatrix = Matrix::MakeRotateXMatrix4x4(rotate.x);
-	Matrix4x4 rotateYMatrix = Matrix::MakeRotateYMatrix4x4(rotate.y);
-	Matrix4x4 rotateZMatrix = Matrix::MakeRotateZMatrix4x4(rotate.z);
-	Matrix4x4 rotateMatrix = rotateXMatrix * rotateYMatrix * rotateZMatrix;
+	MyBase::Ball ball{};
+	ball.position = { 1.2f, 0.0f, 0.0f };
+	ball.mass = 2.0f;
+	ball.radius = 0.05f;
+	ball.color = BLUE;
+
+	float deltaTime = 1.0f / 60.0f;
+
+	Vector3 diff = ball.position - spring.anchor;
+	Vector3 direction;
+	Vector3 restPosition;
+	Vector3 displacement;
+	Vector3 restoringForce;
+	Vector3 dampingForce;
+	Vector3 force;
+	float length = MyTools::Length(diff);
+	if (length != 0.0f) {
+		direction = MyTools::Normalize(diff);
+		restPosition = spring.anchor + direction * spring.naturalLength;
+		displacement = length * (ball.position - restPosition);
+		restoringForce = -spring.stiffness * displacement;
+		// 減衰抵抗を計算する
+		dampingForce = -spring.dampungCoefficient * ball.velocity;
+		// 減衰抵抗も加味して、物体にかかるちからを決定する
+		force = restoringForce + dampingForce;
+		ball.acceleration = force / ball.mass;
+	}
+	// 加速度も速度もどちらも秒を基準とした値である
+	// それが、1/60秒間(deltaTime)適用されたと考える
+	ball.velocity += ball.acceleration * deltaTime;
+	ball.position += ball.velocity * deltaTime;
+
+	bool isPlay = false;
 
 	// 各種行列の計算
 	Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -96,33 +112,72 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		ImGui::Begin("Window");
 		
-		ImGui::Text("a:%f, %f, %f", a.x, a.y, a.z);
-		ImGui::Text("b:%f, %f, %f", b.x, b.y, b.z);
+		if (!isPlay)
+		{
+			if (ImGui::Button("Start", { 50.f, 20.f }))
+			{
+				isPlay = !isPlay;
 
-		ImGui::Text("\n");
+				spring.anchor = { 0.0f, 0.0f, 0.0f };
+				spring.naturalLength = 1.0f;
+				spring.stiffness = 100.0f;
+				spring.dampungCoefficient = 2.0f;
 
-		ImGui::Text("c(a + b)  :%f, %f, %f", c.x, c.y, c.z);
-		ImGui::Text("d(a - b)  :%f, %f, %f", d.x, d.y, d.z);
-		ImGui::Text("e(a * 10) :%f, %f, %f", e.x, e.y, e.z);
-		ImGui::Text("f(10 * a) :%f, %f, %f", f.x, f.y, f.z);
-		ImGui::Text("g(b / 10) :%f, %f, %f", g.x, g.y, g.z);
-		ImGui::Text("h(-a)     :%f, %f, %f", h.x, h.y, h.z);
-		ImGui::Text("i(+a)     :%f, %f, %f", i.x, i.y, i.z);
-		ImGui::Text("j(a *= 10):%f, %f, %f", j.x, j.y, j.z);
-		ImGui::Text("k(a += b) :%f, %f, %f", k.x, k.y, k.z);
-		ImGui::Text("l(a -= b) :%f, %f, %f", l.x, l.y, l.z);
-		ImGui::Text("m(b /= 10):%f, %f, %f", m.x, m.y, m.z);
-		ImGui::Text(
-			"matrix:\n%f, %f, %f, %f\n%f, %f, %f, %f\n%f, %f, %f, %f\n%f, %f, %f, %f\n",
-			rotateMatrix.m[0][0], rotateMatrix.m[0][1], rotateMatrix.m[0][2], rotateMatrix.m[0][3],
-			rotateMatrix.m[1][0], rotateMatrix.m[1][1], rotateMatrix.m[1][2], rotateMatrix.m[1][3],
-			rotateMatrix.m[2][0], rotateMatrix.m[2][1], rotateMatrix.m[2][2], rotateMatrix.m[2][3],
-			rotateMatrix.m[3][0], rotateMatrix.m[3][1], rotateMatrix.m[3][2], rotateMatrix.m[3][3]
-		);
+				ball.position = { 1.2f, 0.0f, 0.0f };
+				ball.mass = 2.0f;
+				ball.radius = 0.05f;
+				ball.color = BLUE;
+
+				ball.acceleration = { 0.0f, 0.0f, 0.0f };
+				ball.velocity = { 0.0f, 0.0f, 0.0f };
+			}
+		}
+		else
+		{
+			if (ImGui::Button("Stop", { 50.f, 20.f }) || MyTools::Length(ball.velocity) == 0.0f)
+			{
+				isPlay = !isPlay;
+			}
+			ImGui::Text("\n");
+
+			ImGui::Text("BallPos : %.2f, %.2f, %.2f", ball.position.x, ball.position.y, ball.position.z);
+			ImGui::Text("BallVelocity : %.2f, %.2f, %.2f", ball.velocity.x, ball.velocity.y, ball.velocity.z);
+			ImGui::Text("BallAcceleration : %.2f, %.2f, %.2f", ball.acceleration.x, ball.acceleration.y, ball.acceleration.z);
+			ImGui::Text("BallMass : %.2f", ball.mass);
+			ImGui::Text("BallRadius : %.2f", ball.radius);
+
+			ImGui::Text("\n");
+
+			ImGui::Text("SpringAnchor : %.2f, %.2f, %.2f", spring.anchor.x, spring.anchor.y, spring.anchor.z);
+			ImGui::Text("SpringNaturalLength : %.2f", spring.naturalLength);
+			ImGui::Text("SpringStiffness : %.2f", spring.stiffness);
+			ImGui::Text("SpringDampungCoefficient : %.2f", spring.dampungCoefficient);
+		}
+
+		
 
 		ImGui::End();
 
 #endif // _DEBUG
+
+		if (isPlay)
+		{
+			diff = ball.position - spring.anchor;
+			length = MyTools::Length(diff);
+			if (length != 0.0f) {
+				direction = MyTools::Normalize(diff);
+				restPosition = spring.anchor + direction * spring.naturalLength;
+				displacement = length * (ball.position - restPosition);
+				restoringForce = -spring.stiffness * displacement;
+				dampingForce = -spring.dampungCoefficient * ball.velocity;
+				force = restoringForce + dampingForce;
+				ball.acceleration = force / ball.mass;
+			}
+			// 加速度も速度もどちらも秒を基準とした値である
+			// それが、1/60秒間(deltaTime)適用されたと考える
+			ball.velocity += ball.acceleration * deltaTime;
+			ball.position += ball.velocity * deltaTime;
+		}
 
 		// 各種行列の計算
 		cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -200,8 +255,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			
-
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
 			cameraRotate = { 0.26f, 0.0f, 0.0f };
@@ -229,6 +282,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 		
+		// 球の描画
+		Draw::DrawSphere(MyBase::Sphere{ .center = ball.position, .radius = ball.radius }, viewProjectionMatrix, viewportMatrix, ball.color);
+
+		// 線分の描画
+		Draw::DrawSegment(MyBase::Segment{ .origin = spring.anchor, .diff = MyTools::Subtract(ball.position, spring.anchor) }, viewProjectionMatrix, viewportMatrix, 0xFFFFFFFF);
 				
 		///
 		/// ↑描画処理ここまで
