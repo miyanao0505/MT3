@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_04_01_円運動_確認課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_04_02_振り子を作ってみよう_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -38,22 +38,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	Vector3 c = { 0.0f, 0.0f, 0.0f };
-	float r = 0.8f;
+	MyBase::Pendulum pendulum;
+	pendulum.anchor = { 0.0f, 1.0f, 0.0f };
+	pendulum.length = 0.8f;
+	pendulum.angle = 0.7f;
+	pendulum.angularVelocity = 0.0f;
+	pendulum.angularAcceleration = 0.0f;
 
 	MyBase::Ball ball{};
-	ball.position = { 0.8f, 0.0f, 0.0f };
+	ball.position = pendulum.anchor;
+	ball.position.y -= pendulum.length;
 	ball.mass = 2.0f;
 	ball.radius = 0.05f;
 	ball.color = WHITE;
 
 	float deltaTime = 1.0f / 60.0f;
-	float angularVelocity = 3.14f;
-	float angle = 0.0f;					// 角速度
-	float omega = angularVelocity * deltaTime;
 
-	Vector3 p = { r, 0.0f, 0.0f };
-	ball.position = p;
+	Vector3 p = { 0.0f, 0.0f, 0.0f };
 
 	bool isPlay = false;
 
@@ -96,31 +97,50 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (ImGui::Button("Start", { 50.f, 20.f }))
 			{
 				isPlay = !isPlay;
-				p = { r, 0.0f, 0.0f };
-				angle = 0.0f;
+				p = { 0.0f, 0.0f, 0.0f };
 			}
 
 			ImGui::Text("\n");
 
+			if (ImGui::Button("Reset", { 50.f, 20.f }))
+			{
+				pendulum.anchor = { 0.0f, 1.0f, 0.0f };
+				pendulum.length = 0.8f;
+				pendulum.angle = 0.7f;
+				pendulum.angularVelocity = 0.0f;
+				pendulum.angularAcceleration = 0.0f;
+
+				ball.position = pendulum.anchor;
+				ball.position.y -= pendulum.length;
+				ball.mass = 2.0f;
+				ball.radius = 0.05f;
+				ball.color = WHITE;
+
+				deltaTime = 1.0f / 60.0f;
+
+				p = { 0.0f, 0.0f, 0.0f };
+
+				// カメラ
+				cameraTranslate = { 0.0f, 1.9f, -6.49f };
+				cameraRotate = { 0.26f, 0.0f, 0.0f };
+			}
+
+			ImGui::Text("\n");
+
+			ImGui::DragFloat3("pendulumAnchor", &pendulum.anchor.x, 0.01f);
+			ImGui::DragFloat("pendulumLength", &pendulum.length, 0.01f);
+			ball.position = pendulum.anchor;
+			ball.position.y -= pendulum.length;
+			ImGui::DragFloat("pendulumAngle", &pendulum.angle, 0.01f);
+
+			ImGui::Text("\n");
+
 			ImGui::Text("BallPos : %.2f, %.2f, %.2f", ball.position.x, ball.position.y, ball.position.z);
-			ImGui::Text("BallVelocity : %.6f, %.6f, %.2f", ball.velocity.x, ball.velocity.y, ball.velocity.z);
-			ImGui::Text("BallAcceleration : %.6f, %.6f, %.2f", ball.acceleration.x, ball.acceleration.y, ball.acceleration.z);
 			ImGui::Text("BallRadius : %.2f", ball.radius);
 
 			ImGui::Text("\n");
 
-			ImGui::DragFloat3("c", &c.x, 0.01f);
-			ball.position = { c.x + r, c.y, c.z };
-			ImGui::DragFloat("r", &r, 0.01f);
-			ball.position.x = c.x + r;
-
-			ImGui::Text("\n");
-
-			ImGui::DragFloat("angularVelocity", &angularVelocity, 0.01f);
 			ImGui::DragFloat("deltaTime", &deltaTime, 0.01f);
-			omega = angularVelocity * deltaTime;
-			ImGui::Text("angle : %.2f", angle);
-			ImGui::Text("omega : %.2f", omega);
 		}
 		else
 		{
@@ -129,23 +149,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				isPlay = !isPlay;
 			}
 			ImGui::Text("\n");
+			
+			ImGui::Text("pendulumAnchor : %.2f, %.2f, %.2f", pendulum.anchor.x, pendulum.anchor.y, pendulum.anchor.z);
+			ImGui::Text("pendulumLength : %.2f", pendulum.length);
+			ImGui::Text("pendulumAngle : %.2f", pendulum.angle);
+			ImGui::Text("pendulumAngularVelocity : %.2f", pendulum.angularVelocity);
+			ImGui::Text("pendulumAngularAcceleration : %.f", pendulum.angularAcceleration);
+
+			ImGui::Text("\n");
 
 			ImGui::Text("BallPos : %.2f, %.2f, %.2f", ball.position.x, ball.position.y, ball.position.z);
-			ImGui::Text("BallVelocity : %.6f, %.6f, %.2f", ball.velocity.x, ball.velocity.y, ball.velocity.z);
-			ImGui::Text("BallAcceleration : %.6f, %.6f, %.2f", ball.acceleration.x, ball.acceleration.y, ball.acceleration.z);
-			//ImGui::Text("BallMass : %.2f", ball.mass);
 			ImGui::Text("BallRadius : %.2f", ball.radius);
 
 			ImGui::Text("\n");
 
-			ImGui::Text("c : %.2f, %.2f, %.2f", c.x, c.y, c.z);
-			ImGui::Text("r : %.2f", r);
-
-			ImGui::Text("\n");
-
-			ImGui::Text("angularVelocity : %.2f", angularVelocity);
-			ImGui::Text("angle : %.2f", angle);
-			ImGui::Text("omega : %.2f", omega);
+			ImGui::Text("deltaTime", &deltaTime, 0.01f);
 		}
 
 		
@@ -156,20 +174,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		if (isPlay)
 		{
-			angle += omega;
+			pendulum.angularAcceleration = -(9.8f / pendulum.length) * std::sin(pendulum.angle);
+			pendulum.angularVelocity += pendulum.angularAcceleration * deltaTime;
+			pendulum.angle += pendulum.angularVelocity * deltaTime;
 
-			p = ball.position;
-
-			ball.velocity.x = -r * omega * std::sinf(angle);
-			ball.velocity.y = r * omega * std::cosf(angle);
-
-			ball.acceleration.x = -powf(omega, 2) * (p.x - c.x);
-			ball.acceleration.y = -powf(omega, 2) * (p.y - c.y);
-
-			p.x += ball.velocity.x + ball.acceleration.x;
-			p.y += ball.velocity.y + ball.acceleration.y;
-			p.z = c.z;
-			ball.position = p/* + c*/;
+			// pは振り子の先端の位置、取り付けたいものを取り付ければ良い
+			p.x = pendulum.anchor.x + std::sin(pendulum.angle) * pendulum.length;
+			p.y = pendulum.anchor.y - std::cos(pendulum.angle) * pendulum.length;
+			p.z = pendulum.anchor.z;
+			ball.position = p;
 		}
 
 		// 各種行列の計算
@@ -248,20 +261,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			c = { 0.0f, 0.0f, 0.0f };
-			p = { r, 0.0f, 0.0f };
-			r = 0.8f;
+			pendulum.anchor = { 0.0f, 1.0f, 0.0f };
+			pendulum.length = 0.8f;
+			pendulum.angle = 0.7f;
+			pendulum.angularVelocity = 0.0f;
+			pendulum.angularAcceleration = 0.0f;
 
-			ball.position = { r, 0.0f, 0.0f };
+			ball.position = pendulum.anchor;
+			ball.position.y -= pendulum.length;
 			ball.mass = 2.0f;
 			ball.radius = 0.05f;
 			ball.color = WHITE;
-			ball.acceleration = { 0.0f, 0.0f, 0.0f };
-			ball.velocity = { 0.0f, 0.0f, 0.0f };
 
 			deltaTime = 1.0f / 60.0f;
-			angularVelocity = 3.14f / 2.f;
-			angle = 0.0f;
+
+			p = { 0.0f, 0.0f, 0.0f };
 
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
@@ -290,6 +304,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 		
+		// 線分の描画
+		Draw::DrawSegment(MyBase::Segment{ .origin = pendulum.anchor, .diff = ball.position - pendulum.anchor }, viewProjectionMatrix, viewportMatrix, WHITE);
+
 		// 球の描画
 		Draw::DrawSphere(MyBase::Sphere{ .center = ball.position, .radius = ball.radius }, viewProjectionMatrix, viewportMatrix, ball.color);
 
