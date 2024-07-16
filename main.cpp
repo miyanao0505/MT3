@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_04_00_ばねを作ってみよう_応用課題";
+const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_04_01_円運動_確認課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -38,44 +38,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	MyBase::Spring spring{};
-	spring.anchor = { 0.0f, 1.0f, 0.0f };
-	spring.naturalLength = 0.7f;
-	spring.stiffness = 100.0f;
-	spring.dampungCoefficient = 2.0f;
+	Vector3 c = { 0.0f, 0.0f, 0.0f };
+	float r = 0.8f;
 
 	MyBase::Ball ball{};
-	ball.position = { 0.8f, 0.2f, 0.0f };
+	ball.position = { 0.8f, 0.0f, 0.0f };
 	ball.mass = 2.0f;
 	ball.radius = 0.05f;
-	ball.color = BLUE;
+	ball.color = WHITE;
 
 	float deltaTime = 1.0f / 60.0f;
-	const Vector3 kGravity{ 0.0f, -9.8f, 0.0f };
+	float angularVelocity = 3.14f;
+	float angle = 0.0f;					// 角速度
+	float omega = angularVelocity * deltaTime;
 
-	Vector3 diff = ball.position - spring.anchor;
-	Vector3 direction;
-	Vector3 restPosition;
-	Vector3 displacement;
-	Vector3 restoringForce;
-	Vector3 dampingForce;
-	Vector3 force;
-	float length = MyTools::Length(diff);
-	if (length != 0.0f) {
-		direction = MyTools::Normalize(diff);
-		restPosition = spring.anchor + direction * spring.naturalLength;
-		displacement = length * (ball.position - restPosition);
-		restoringForce = -spring.stiffness * displacement;
-		// 減衰抵抗を計算する
-		dampingForce = -spring.dampungCoefficient * ball.velocity;
-		// 減衰抵抗も加味して、物体にかかるちからを決定する
-		force = restoringForce + dampingForce;
-		ball.acceleration = force / ball.mass + kGravity;
-	}
-	// 加速度も速度もどちらも秒を基準とした値である
-	// それが、1/60秒間(deltaTime)適用されたと考える
-	ball.velocity += ball.acceleration * deltaTime;
-	ball.position += ball.velocity * deltaTime;
+	Vector3 p = { r, 0.0f, 0.0f };
+	ball.position = p;
 
 	bool isPlay = false;
 
@@ -118,66 +96,80 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (ImGui::Button("Start", { 50.f, 20.f }))
 			{
 				isPlay = !isPlay;
-
-				spring.anchor = { 0.0f, 1.0f, 0.0f };
-				spring.naturalLength = 0.7f;
-				spring.stiffness = 100.0f;
-				spring.dampungCoefficient = 2.0f;
-
-				ball.position = { 0.8f, 0.2f, 0.0f };
-				ball.mass = 2.0f;
-				ball.radius = 0.05f;
-				ball.color = BLUE;
-
-				ball.acceleration = { 0.0f, 0.0f, 0.0f };
-				ball.velocity = { 0.0f, 0.0f, 0.0f };
+				p = { r, 0.0f, 0.0f };
+				angle = 0.0f;
 			}
+
+			ImGui::Text("\n");
+
+			ImGui::Text("BallPos : %.2f, %.2f, %.2f", ball.position.x, ball.position.y, ball.position.z);
+			ImGui::Text("BallVelocity : %.6f, %.6f, %.2f", ball.velocity.x, ball.velocity.y, ball.velocity.z);
+			ImGui::Text("BallAcceleration : %.6f, %.6f, %.2f", ball.acceleration.x, ball.acceleration.y, ball.acceleration.z);
+			ImGui::Text("BallRadius : %.2f", ball.radius);
+
+			ImGui::Text("\n");
+
+			ImGui::DragFloat3("c", &c.x, 0.01f);
+			ball.position = { c.x + r, c.y, c.z };
+			ImGui::DragFloat("r", &r, 0.01f);
+			ball.position.x = c.x + r;
+
+			ImGui::Text("\n");
+
+			ImGui::DragFloat("angularVelocity", &angularVelocity, 0.01f);
+			ImGui::DragFloat("deltaTime", &deltaTime, 0.01f);
+			omega = angularVelocity * deltaTime;
+			ImGui::Text("angle : %.2f", angle);
+			ImGui::Text("omega : %.2f", omega);
 		}
 		else
 		{
-			if (ImGui::Button("Stop", { 50.f, 20.f }) || MyTools::Length(ball.velocity) == 0.0f)
+			if (ImGui::Button("Stop", { 50.f, 20.f }))
 			{
 				isPlay = !isPlay;
 			}
 			ImGui::Text("\n");
 
 			ImGui::Text("BallPos : %.2f, %.2f, %.2f", ball.position.x, ball.position.y, ball.position.z);
-			ImGui::Text("BallVelocity : %.2f, %.2f, %.2f", ball.velocity.x, ball.velocity.y, ball.velocity.z);
-			ImGui::Text("BallAcceleration : %.2f, %.2f, %.2f", ball.acceleration.x, ball.acceleration.y, ball.acceleration.z);
-			ImGui::Text("BallMass : %.2f", ball.mass);
+			ImGui::Text("BallVelocity : %.6f, %.6f, %.2f", ball.velocity.x, ball.velocity.y, ball.velocity.z);
+			ImGui::Text("BallAcceleration : %.6f, %.6f, %.2f", ball.acceleration.x, ball.acceleration.y, ball.acceleration.z);
+			//ImGui::Text("BallMass : %.2f", ball.mass);
 			ImGui::Text("BallRadius : %.2f", ball.radius);
 
 			ImGui::Text("\n");
 
-			ImGui::Text("SpringAnchor : %.2f, %.2f, %.2f", spring.anchor.x, spring.anchor.y, spring.anchor.z);
-			ImGui::Text("SpringNaturalLength : %.2f", spring.naturalLength);
-			ImGui::Text("SpringStiffness : %.2f", spring.stiffness);
-			ImGui::Text("SpringDampungCoefficient : %.2f", spring.dampungCoefficient);
+			ImGui::Text("c : %.2f, %.2f, %.2f", c.x, c.y, c.z);
+			ImGui::Text("r : %.2f", r);
+
+			ImGui::Text("\n");
+
+			ImGui::Text("angularVelocity : %.2f", angularVelocity);
+			ImGui::Text("angle : %.2f", angle);
+			ImGui::Text("omega : %.2f", omega);
 		}
 
 		
-
+			
 		ImGui::End();
 
 #endif // _DEBUG
 
 		if (isPlay)
 		{
-			diff = ball.position - spring.anchor;
-			length = MyTools::Length(diff);
-			if (length != 0.0f) {
-				direction = MyTools::Normalize(diff);
-				restPosition = spring.anchor + direction * spring.naturalLength;
-				displacement = length * (ball.position - restPosition);
-				restoringForce = -spring.stiffness * displacement;
-				dampingForce = -spring.dampungCoefficient * ball.velocity;
-				force = restoringForce + dampingForce;
-				ball.acceleration = force / ball.mass + kGravity;
-			}
-			// 加速度も速度もどちらも秒を基準とした値である
-			// それが、1/60秒間(deltaTime)適用されたと考える
-			ball.velocity += ball.acceleration * deltaTime;
-			ball.position += ball.velocity * deltaTime;
+			angle += omega;
+
+			p = ball.position;
+
+			ball.velocity.x = -r * omega * std::sinf(angle);
+			ball.velocity.y = r * omega * std::cosf(angle);
+
+			ball.acceleration.x = -powf(omega, 2) * (p.x - c.x);
+			ball.acceleration.y = -powf(omega, 2) * (p.y - c.y);
+
+			p.x += ball.velocity.x + ball.acceleration.x;
+			p.y += ball.velocity.y + ball.acceleration.y;
+			p.z = c.z;
+			ball.position = p/* + c*/;
 		}
 
 		// 各種行列の計算
@@ -256,6 +248,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
+			c = { 0.0f, 0.0f, 0.0f };
+			p = { r, 0.0f, 0.0f };
+			r = 0.8f;
+
+			ball.position = { r, 0.0f, 0.0f };
+			ball.mass = 2.0f;
+			ball.radius = 0.05f;
+			ball.color = WHITE;
+			ball.acceleration = { 0.0f, 0.0f, 0.0f };
+			ball.velocity = { 0.0f, 0.0f, 0.0f };
+
+			deltaTime = 1.0f / 60.0f;
+			angularVelocity = 3.14f / 2.f;
+			angle = 0.0f;
+
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
 			cameraRotate = { 0.26f, 0.0f, 0.0f };
@@ -286,9 +293,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 球の描画
 		Draw::DrawSphere(MyBase::Sphere{ .center = ball.position, .radius = ball.radius }, viewProjectionMatrix, viewportMatrix, ball.color);
 
-		// 線分の描画
-		Draw::DrawSegment(MyBase::Segment{ .origin = spring.anchor, .diff = MyTools::Subtract(ball.position, spring.anchor) }, viewProjectionMatrix, viewportMatrix, 0xFFFFFFFF);
-				
 		///
 		/// ↑描画処理ここまで
 		///
