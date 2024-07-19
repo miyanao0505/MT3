@@ -210,12 +210,25 @@ public:
 		float dampungCoefficient;	// 減衰係数
 	};
 
-
+	/// <summary>
+	/// 振り子
+	/// </summary>
 	struct Pendulum {
 		Vector3 anchor;					// アンカーポイント。固定された端の位置
 		float length;					// 紐の長さ
 		float angle;					// 現在の角度
 		float angularVelocity;			// 角速度ω
 		float angularAcceleration;		// 角加速度
+	};
+
+	/// <summary>
+	/// 円錐振り子
+	/// </summary>
+	struct ConicalPendulum {
+		Vector3 anchor;					// アンカーポイント。固定された端の位置
+		float length;					// 紐の長さ
+		float halfApexAngle;			// 円錐の頂角の半分
+		float angle;					// 現在の角度
+		float angularVelocity;			// 角速度ω
 	};
 };
