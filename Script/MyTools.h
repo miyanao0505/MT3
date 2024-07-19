@@ -374,6 +374,14 @@ public:
 	/// <returns></returns>
 	static Vector3 Perpendicular(const Vector3& vector);
 
+	/// <summary>
+	/// 反射ベクトルを求める関数
+	/// </summary>
+	/// <param name="input">入射ベクトル</param>
+	/// <param name="normal">法線</param>
+	/// <returns></returns>
+	static Vector3 Reflect(const Vector3& input, const Vector3& normal);
+
 	/// 
 	/// 3次元ベクトル ここまで
 	/// 

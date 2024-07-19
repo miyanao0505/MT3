@@ -888,6 +888,19 @@ Vector3 MyTools::Perpendicular(const Vector3& vector)
 	return { 0.0f, -vector.z, vector.y };
 }
 
+/// 反射ベクトルを求める関数
+Vector3 MyTools::Reflect(const Vector3& input, const Vector3& normal)
+{
+	Vector3 r;
+	float iDotn = Dot(input, normal);
+
+	r.x = input.x - 2 * iDotn * normal.x;
+	r.y = input.y - 2 * iDotn * normal.y;
+	r.z = input.z - 2 * iDotn * normal.z;
+
+	return r;
+}
+
 /// 
 /// 3次元ベクトル ここまで
 /// 
