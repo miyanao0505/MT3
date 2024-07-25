@@ -97,6 +97,14 @@ public:
 	static bool IsCollision(const Segment& segment, const Plane& plane);
 
 	/// <summary>
+	/// カプセルと平面の衝突判定を返す関数
+	/// </summary>
+	/// <param name="capsule">カプセル</param>
+	/// <param name="plane">平面</param>
+	/// <returns></returns>
+	static bool IsCollision(const Capsule& capsule, const Plane& plane);
+
+	/// <summary>
 	/// 三角形と直線の衝突判定を返す関数
 	/// </summary>
 	/// <param name="triangle">三角形</param>
@@ -209,6 +217,15 @@ public:
 	/// <param name="e3"></param>
 	/// <returns></returns>
 	static float LenSegOnSeparateAxis(const Vector3* Seg, const Vector3* e1, const Vector3* e2, const Vector3 *e3);
+
+	/// <summary>
+	/// カプセルの直線と平面の交点を求める関数
+	/// </summary>
+	/// <param name="capsule">カプセル</param>
+	/// <param name="plane">平面</param>
+	/// <param name="t">媒介変数</param>
+	/// <returns></returns>
+	static Vector3 PointOfIntersection(const Capsule& capsule, const Plane& plane, float& t);
 
 	/// 
 	/// ツール関数 ここまで

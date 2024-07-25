@@ -231,4 +231,12 @@ public:
 		float angle;					// 現在の角度
 		float angularVelocity;			// 角速度ω
 	};
+
+	/// <summary>
+	/// カプセル
+	/// </summary>
+	struct Capsule {
+		Segment segment;				// 線分
+		float radius;					// 半径
+	};
 };
