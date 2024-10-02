@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2A_17_ミヤザワ_ナオキ_MT3_04_04_平面にボールを落としてみよう_応用課題";
+const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -38,30 +38,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
 
 	// 変動値
-	MyBase::Plane plane;
-	plane.normal = MyTools::Normalize({ -0.2f, 1.2f, -0.3f });
-	plane.distance = 0.0f;
-
-	MyBase::Ball ball{};
-	ball.position = { 0.8f, 1.2f, 0.3f };
-	ball.mass = 2.0f;
-	ball.radius = 0.05f;
-	ball.color = WHITE;
-
-	MyBase::Capsule capsule{};
-	capsule.segment.origin = ball.position;
-	capsule.segment.diff = ball.position - capsule.segment.origin;
-	capsule.radius = ball.radius;
-
-	Vector3 point = { 0.0f, 0.0f, 0.0f };
-
-	Vector3 accele = { 0.0f, -9.8f, 0.0f };
-
-	float deltaTime = 1.0f / 60.0f;
-	float e = 0.5f;
-	float t = 0.0f;
-
-	bool isPlay = false;
 
 	// 各種行列の計算
 	Matrix4x4 cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -96,124 +72,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowSize(ImVec2(400, 350), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
 		ImGui::Begin("Window");
-		
-		if (!isPlay)
-		{
-			if (ImGui::Button("Start", { 50.f, 20.f }))
-			{
-				isPlay = !isPlay;
-
-				ball.velocity = { 0.0f, 0.0f, 0.0f };
-				ball.acceleration = accele;
-			}
-
-			ImGui::Text("\n");
-
-			if (ImGui::Button("Reset", { 50.f, 20.f }))
-			{
-				plane.normal = MyTools::Normalize({ -0.2f, 1.2f, -0.3f });
-				plane.distance = 0.0f;
-
-				ball.position = { 0.8f, 1.2f, 0.3f };
-				ball.mass = 2.0f;
-				ball.radius = 0.05f;
-				ball.color = WHITE;
-
-				point = { 0.0f, 0.0f, 0.0f };
-				accele = { 0.0f, -9.8f, 0.0f };
-
-				e = 0.5f;
-				t = 0.0f;
-
-				deltaTime = 1.0f / 60.0f;
-
-				// カメラ
-				cameraTranslate = { 0.0f, 1.9f, -6.49f };
-				cameraRotate = { 0.26f, 0.0f, 0.0f };
-			}
-
-			ImGui::Text("\n");
-
-			ImGui::DragFloat3("planeNormal", &plane.normal.x, 0.01f);
-			plane.normal = MyTools::Normalize(plane.normal);
-			ImGui::DragFloat("planeDistance", &plane.distance, 0.01f);
-
-			ImGui::Text("\n");
-
-			ImGui::DragFloat3("ballPosition", &ball.position.x, 0.01f);
-			ImGui::DragFloat("ball.radius", &ball.radius, 0.01f);
-
-			ImGui::Text("\n");
-
-			ImGui::DragFloat3("accele", &accele.x, 0.01f);
-			ImGui::DragFloat("e", &e, 0.01f);
-			ImGui::DragFloat("deltaTime", &deltaTime, 0.01f);
-		}
-		else
-		{
-			if (ImGui::Button("Stop", { 50.f, 20.f }))
-			{
-				isPlay = !isPlay;
-
-				ball.position = { 0.8f, 1.2f, 0.3f };
-			}
-
-			ImGui::Text("\n");
-
-			ImGui::Text("planeNormal : %.2f, %.2f, %.2f", plane.normal.x, plane.normal.y, plane.normal.z);
-			ImGui::Text("planeDistance : %.2f", plane.distance);
-
-			ImGui::Text("\n");
-
-			ImGui::Text("ballPosition : %.2f, %.2f, %.2f", ball.position.x, ball.position.y, ball.position.z);
-			ImGui::Text("ballVelocity : %.2f, %.2f, %.2f", ball.velocity.x, ball.velocity.y, ball.velocity.z);
-			ImGui::Text("ballAcceleration : %.2f, %.2f, %.2f", ball.acceleration.x, ball.acceleration.y, ball.acceleration.z);
-			ImGui::Text("ball.radius : %.2f", ball.radius);
-
-			ImGui::Text("\n");
-			
-			ImGui::Text("accele : %.2f, %.2f, %.2f", accele.x, accele.y, accele.z);
-			ImGui::Text("e : %.2f", e);
-			ImGui::Text("deltaTime : %.2f", deltaTime);
-
-			ImGui::Text("\n");
-
-			ImGui::Text("t : %.2f", t);
-			ImGui::Text("point : %.2f, %.2f, %.2f", point.x, point.y, point.z);
-		}
-			
+				
 		ImGui::End();
 
 #endif // _DEBUG
-
-		if (isPlay)
-		{
-			capsule.segment.origin = ball.position;
-
-			ball.velocity += ball.acceleration * deltaTime;
-			ball.position += ball.velocity * deltaTime;
-
-			capsule.segment.diff = ball.position - capsule.segment.origin;
-
-			if (MyTools::IsCollision(MyBase::Sphere{ ball.position, ball.radius }, plane))
-			{
-				Vector3 reflected = MyTools::Reflect(ball.velocity, plane.normal);
-				Vector3 projectToNormal = MyTools::Project(reflected, plane.normal);
-				Vector3 movingDirection = reflected - projectToNormal;
-				ball.velocity = projectToNormal * e + movingDirection;
-			}
-			//if (MyTools::IsCollision(capsule, plane))
-			//{
-			//	point = MyTools::PointOfIntersection(capsule, plane, t);
-			//	//ball.position = (capsule.segment.origin + t * capsule.segment.diff) - MyTools::Normalize(capsule.segment.diff) * (capsule.radius + 0.01f);
-			//	ball.position = point - MyTools::Normalize(capsule.segment.diff) * (capsule.radius + 0.01f);
-
-			//	Vector3 reflected = MyTools::Reflect(ball.velocity, plane.normal);
-			//	Vector3 projectToNormal = MyTools::Project(reflected, plane.normal);
-			//	Vector3 movingDirection = reflected - projectToNormal;
-			//	ball.velocity = projectToNormal * e + movingDirection;
-			//}
-		}
 
 		// 各種行列の計算
 		cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -291,22 +153,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// リセット
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
-			plane.normal = MyTools::Normalize({ -0.2f, 1.2f, -0.3f });
-			plane.distance = 0.0f;
-
-			ball.position = { 0.8f, 1.2f, 0.3f };
-			ball.mass = 2.0f;
-			ball.radius = 0.05f;
-			ball.color = WHITE;
-
-			point = { 0.0f, 0.0f, 0.0f };
-			accele = { 0.0f, -9.8f, 0.0f };
-
-			e = 0.5f;
-			t = 0.0f;
-
-			deltaTime = 1.0f / 60.0f;
-
 			// カメラ
 			cameraTranslate = { 0.0f, 1.9f, -6.49f };
 			cameraRotate = { 0.26f, 0.0f, 0.0f };
@@ -333,14 +179,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// グリッドの描画
 		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
-
-		// 平面の描画
-		Draw::DrawPlane(plane, viewProjectionMatrix, viewportMatrix, WHITE);
-
-		// ボールの描画
-		Draw::DrawSphere(MyBase::Sphere{ ball.position, ball.radius }, viewProjectionMatrix, viewportMatrix, WHITE);
-
-		Draw::DrawSphere(MyBase::Sphere{ point, 0.05f }, viewProjectionMatrix, viewportMatrix, RED);
 
 		///
 		/// ↑描画処理ここまで
