@@ -80,7 +80,7 @@ Matrix::Matrix2x2 Matrix::Multiply(const float& scalar, const Matrix2x2& matrix)
 }
 
 /// 2次元ベクトルと2x2行列の積を返す関数
-Vector2 Matrix::Multiply(const Vector2& vector, const Matrix2x2& matrix)
+MyBase::Vector2 Matrix::Multiply(const Vector2& vector, const Matrix2x2& matrix)
 {
 	Vector2 ans;
 
@@ -299,7 +299,7 @@ Matrix::Matrix3x3 Matrix::Multipty(const float& scalar, const Matrix3x3& matrix)
 }
 
 /// 2次元ベクトルを同次座標として変換する関数
-Vector2 Matrix::Transform(const Vector2& vector, const Matrix3x3& matrix)
+MyBase::Vector2 Matrix::Transform(const Vector2& vector, const Matrix3x3& matrix)
 {
 	Vector2 result;
 
@@ -372,7 +372,7 @@ Matrix::Matrix3x3 Matrix::Transpose(const Matrix3x3& matrix)
 ///
 
 /// 4x4拡縮行列の作成
-Matrix4x4 Matrix::MakeScaleMatrix(const Vector3& scale) {
+MyBase::Matrix4x4 Matrix::MakeScaleMatrix(const Vector3& scale) {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = scale.x;
@@ -384,7 +384,7 @@ Matrix4x4 Matrix::MakeScaleMatrix(const Vector3& scale) {
 }
 
 /// X軸回転行列の作成
-Matrix4x4 Matrix::MakeRotateXMatrix4x4(const float& radian) {
+MyBase::Matrix4x4 Matrix::MakeRotateXMatrix4x4(const float& radian) {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = 1;
@@ -398,7 +398,7 @@ Matrix4x4 Matrix::MakeRotateXMatrix4x4(const float& radian) {
 }
 
 /// Y軸回転行列の作成
-Matrix4x4 Matrix::MakeRotateYMatrix4x4(const float& radian) {
+MyBase::Matrix4x4 Matrix::MakeRotateYMatrix4x4(const float& radian) {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = std::cos(radian);
@@ -412,7 +412,7 @@ Matrix4x4 Matrix::MakeRotateYMatrix4x4(const float& radian) {
 }
 
 /// Z軸回転行列の作成
-Matrix4x4 Matrix::MakeRotateZMatrix4x4(const float& radian) {
+MyBase::Matrix4x4 Matrix::MakeRotateZMatrix4x4(const float& radian) {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = std::cos(radian);
@@ -426,7 +426,7 @@ Matrix4x4 Matrix::MakeRotateZMatrix4x4(const float& radian) {
 }
 
 /// 4x4回転行列の作成
-Matrix4x4 Matrix::MakeRotateMatrix4x4(const float& radianX, const float& radianY, const float& radianZ) {
+MyBase::Matrix4x4 Matrix::MakeRotateMatrix4x4(const float& radianX, const float& radianY, const float& radianZ) {
 	Matrix4x4 rotateX = MakeRotateXMatrix4x4(radianX);
 	Matrix4x4 rotateY = MakeRotateYMatrix4x4(radianY);
 	Matrix4x4 rotateZ = MakeRotateZMatrix4x4(radianZ);
@@ -438,7 +438,7 @@ Matrix4x4 Matrix::MakeRotateMatrix4x4(const float& radianX, const float& radianY
 }
 
 /// 4x4平行移動行列の作成
-Matrix4x4 Matrix::MakeTranslateMatrix(const Vector3& translate) {
+MyBase::Matrix4x4 Matrix::MakeTranslateMatrix(const Vector3& translate) {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = 1;
@@ -454,7 +454,7 @@ Matrix4x4 Matrix::MakeTranslateMatrix(const Vector3& translate) {
 }
 
 /// 3次元アフィン変換行列の作成
-Matrix4x4 Matrix::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
+MyBase::Matrix4x4 Matrix::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
 	Matrix4x4 rotateMatrix = MakeRotateMatrix4x4(rotate.x, rotate.y, rotate.z);
 	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
@@ -467,7 +467,7 @@ Matrix4x4 Matrix::MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, 
 }
 
 /// 4x4透視投影行列の作成
-Matrix4x4 Matrix::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
+MyBase::Matrix4x4 Matrix::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = (1 / aspectRatio) * (1 / std::tan(fovY / 2));
@@ -480,7 +480,7 @@ Matrix4x4 Matrix::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float 
 }
 
 /// 4x4正射影行列の作成
-Matrix4x4 Matrix::MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
+MyBase::Matrix4x4 Matrix::MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = 2 / (right - left);
@@ -495,7 +495,7 @@ Matrix4x4 Matrix::MakeOrthographicMatrix(float left, float top, float right, flo
 }
 
 /// 4x4ビューポート変換行列の作成
-Matrix4x4 Matrix::MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
+MyBase::Matrix4x4 Matrix::MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = width / 2;
@@ -510,7 +510,7 @@ Matrix4x4 Matrix::MakeViewportMatrix(float left, float top, float width, float h
 }
 
 /// 4x4単位行列の作成
-Matrix4x4 Matrix::MakeIdentity4x4() {
+MyBase::Matrix4x4 Matrix::MakeIdentity4x4() {
 	Matrix4x4 ans = { 0 };
 
 	ans.m[0][0] = 1;
@@ -522,7 +522,7 @@ Matrix4x4 Matrix::MakeIdentity4x4() {
 }
 
 /// 4x4行列の加算を返す関数
-Matrix4x4 Matrix::Add(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
+MyBase::Matrix4x4 Matrix::Add(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
 	Matrix4x4 ans = { 0 };
 
 	for (int i = 0; i < 4; i++) {
@@ -535,7 +535,7 @@ Matrix4x4 Matrix::Add(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
 }
 
 /// 4x4行列の減算を返す関数
-Matrix4x4 Matrix::Subtract(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
+MyBase::Matrix4x4 Matrix::Subtract(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
 	Matrix4x4 ans = { 0 };
 
 	for (int i = 0; i < 4; i++) {
@@ -548,7 +548,7 @@ Matrix4x4 Matrix::Subtract(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
 }
 
 /// 4x4行列の積を返す関数
-Matrix4x4 Matrix::Multiply(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
+MyBase::Matrix4x4 Matrix::Multiply(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
 	Matrix4x4 ans = { 0 };
 
 	/*for (int i = 0; i < 4; i++)
@@ -583,7 +583,7 @@ Matrix4x4 Matrix::Multiply(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
 }
 
 /// スカラーと4x4行列の積を返す関数
-Matrix4x4 Matrix::Multiply(const float& scalar, const Matrix4x4& matrix) {
+MyBase::Matrix4x4 Matrix::Multiply(const float& scalar, const Matrix4x4& matrix) {
 	Matrix4x4 ans = { 0 };
 
 	for (int i = 0; i < 4; i++) {
@@ -636,7 +636,7 @@ Vector3 Matrix::TransformNormal(const Vector3& vector, const Matrix4x4& matrix) 
 }
 
 /// 4x4逆行列の作成
-Matrix4x4 Matrix::Inverse(const Matrix4x4& matrix) {
+MyBase::Matrix4x4 Matrix::Inverse(const Matrix4x4& matrix) {
 	Matrix4x4 ans = { 0 };
 	float determinant = Determinant(matrix);
 
@@ -709,7 +709,7 @@ float Matrix::Determinant(const Matrix4x4& matrix) {
 }
 
 /// 4x4転置行列の作成
-Matrix4x4 Matrix::Transpose(const Matrix4x4& matrix) {
+MyBase::Matrix4x4 Matrix::Transpose(const Matrix4x4& matrix) {
 	Matrix4x4 ans = { 0 };
 
 	for (int i = 0; i < 4; i++) {

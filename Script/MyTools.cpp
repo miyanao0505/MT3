@@ -164,33 +164,6 @@ bool MyTools::IsCollision(const Segment& segment, const Plane& plane)
 	return false;
 }
 
-/// カプセルと平面の衝突判定を返す関数
-bool MyTools::IsCollision(const Capsule& capsule, const Plane& plane)
-{
-	float t = 0.0f;
-
-	Vector3 point = PointOfIntersection(capsule, plane, t);
-
-	// 0 < t < 1なら衝突
-	if (t > 0 && t < 1)
-	{
-		return true;
-	}
-	// 範囲外ならtが0,1の時の当たり判定を取る
-	else
-	{
-		// カプセルの最終端
-		Vector3 end = Add(capsule.segment.origin, capsule.segment.diff);
-
-		if (IsCollision(Sphere(capsule.segment.origin, capsule.radius), plane) || IsCollision(Sphere(end, capsule.radius), plane))
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 /// 三角形と直線の衝突判定を返す関数
 bool MyTools::IsCollision(const Triangle& triangle, const Line& line)
 {
@@ -635,14 +608,6 @@ float MyTools::LenSegOnSeparateAxis(const Vector3* Seg, const Vector3* e1, const
 	return r1 + r2 + r3;
 }
 
-/// カプセルの直線と平面の交点を求める関数
-Vector3 MyTools::PointOfIntersection(const Capsule& capsule, const Plane& plane, float& t)
-{
-	t = -(plane.normal.x * capsule.segment.origin.x + plane.normal.y * capsule.segment.origin.y + plane.normal.z * capsule.segment.origin.z) / (plane.normal.x * capsule.segment.diff.x + plane.normal.y * capsule.segment.diff.y + plane.normal.z * capsule.segment.diff.z);
-
-	return Add(capsule.segment.origin, Multiply(t, capsule.segment.diff));
-}
-
 /// 
 /// ツール関数 ここまで
 /// 
@@ -670,7 +635,7 @@ float MyTools::Length(float x, float y)
 }
 
 /// 2次元ベクトルの正規化した値を返す関数
-Vector2 MyTools::Normalize(float x, float y)
+MyBase::Vector2 MyTools::Normalize(float x, float y)
 {
 	float length = Length(x, y);
 	if (length != 0) {
@@ -681,7 +646,7 @@ Vector2 MyTools::Normalize(float x, float y)
 }
 
 /// 2次元ベクトルの方向を求める関数
-Vector2 MyTools::Direction(float x, float y)
+MyBase::Vector2 MyTools::Direction(float x, float y)
 {
 	return Normalize(x, y);
 }
@@ -964,4 +929,3 @@ void MyTools::VectorScreenPrintf(int x, int y, const Vector3& vector, const char
 /// 
 /// 描画関数 ここまで
 /// 
-
