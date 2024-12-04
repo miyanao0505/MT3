@@ -116,6 +116,10 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Script\MyTools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Matrix4x4.h" />
+    <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Vector2.h" />
+    <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Vector3.h" />
+    <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Vector4.h" />
     <ClInclude Include="C:\KamataEngine\DirectXGame\base\StringUtility.h" />
     <ClInclude Include="C:\KamataEngine\DirectXGame\3d\CircleShadow.h" />
     <ClInclude Include="C:\KamataEngine\DirectXGame\3d\DebugCamera.h" />
