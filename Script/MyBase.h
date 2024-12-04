@@ -1,10 +1,9 @@
 #pragma once
-#include "Vector2.h"
-//#include "Vector3.h"
-#include "Vector4.h"
-#include "Matrix4x4.h"
+#include <string>
+#include <cstdint>
+#include <vector>
 
-class Vector3 
+class Vector3
 {
 public:
 	float x, y, z;
@@ -24,10 +23,10 @@ public:
 	/// <summary>
 	/// 2次元ベクトル
 	/// </summary>
-	/*struct Vector2 {
+	struct Vector2 {
 		float x;
 		float y;
-	};*/
+	};
 
 	/// <summary>
 	/// 3次元ベクトル
@@ -41,12 +40,12 @@ public:
 	/// <summary>
 	/// 4次元ベクトル
 	/// </summary>
-	/*struct Vector4 {
+	struct Vector4 {
 		float x;
 		float y;
 		float z;
 		float w;
-	};*/
+	};
 
 	/// <summary>
 	/// 2x2の行列
@@ -65,9 +64,9 @@ public:
 	/// <summary>
 	/// 4x4の行列
 	/// </summary>
-	/*struct Matrix4x4 {
+	struct Matrix4x4 {
 		float m[4][4];
-	};*/
+	};
 
 	/// <summary>
 	/// Transform
@@ -97,9 +96,9 @@ public:
 	/// 円
 	/// </summary>
 	struct Ball {
-		Vector3 position;		// ボールの位置
-		Vector3 velocity;		// 速度
-		Vector3 acceleration;	// 加速度
+		Vector2 pos;			// 中心点
+		Vector2 velocity;		// 速度
+		Vector2 acceleration;	// 加速度
 		float mass;				// 質量
 		float radius;			// 半径
 		unsigned int color;		// 色
@@ -233,10 +232,82 @@ public:
 	};
 
 	/// <summary>
-	/// カプセル
+	/// Transform
 	/// </summary>
-	struct Capsule {
-		Segment segment;				// 線分
-		float radius;					// 半径
+	/*struct Transform {
+		Vector3 scale;
+		Vector3 rotate;
+		Vector3 translate;
+	};*/
+
+	/// <summary>
+	/// 頂点データ
+	/// </summary>
+	/*struct VertexData {
+		Vector4 position;
+		Vector2 texcoord;
+		Vector3 normal;
+	};*/
+
+	/// <summary>
+	/// マテリアル(モデル用)
+	/// </summary>
+	struct ModelMaterial {
+		Vector4 color;
+		int enableLighting;
+		float padding[3];
+		Matrix4x4 uvTransform;
 	};
+
+	/// <summary>
+	/// マテリアル(スプライト用)
+	/// </summary>
+	struct SpriteMaterial {
+		Vector4 color;
+		int enableLighting;
+		float padding[3];
+	};
+
+	/// <summary>
+	/// トランスフォーメーション行列
+	/// </summary>
+	struct TransformationMatrix {
+		Matrix4x4 WVP;
+		Matrix4x4 World;
+	};
+
+	/// <summary>
+	/// 平行光源
+	/// </summary>
+	struct DirectionalLight {
+		Vector4 color;			//!< ライトの色
+		Vector3 direction;		//!< ライトの向き
+		float intensity;		//!< 輝度
+	};
+
+	/// <summary>
+	/// MaterialData
+	/// </summary>
+	struct MaterialData {
+		std::string textureFilePath;
+		uint32_t textureIndex = 0;
+	};
+
+	/// <summary>
+	/// objモデルデータ
+	/// </summary>
+	struct ModelData {
+		std::vector<VertexData> vertices;
+		MaterialData material;
+	};
+
+	/// <summary>
+	/// モデルファイルパス
+	/// </summary>
+	struct ModelFilePath {
+		std::string directoryPath;
+		std::string filename;
+	};
+
 };
+
