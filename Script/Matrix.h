@@ -210,6 +210,13 @@ public:
 	static Matrix4x4 MakeRotateMatrix4x4(const float& radianX, const float& radianY, const float& radianZ);
 
 	/// <summary>
+	/// 任意軸回転行列の作成
+	/// </summary>
+	/// <param name="axis">軸</param>
+	/// <param name="angle">角度</param>
+	static Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
+
+	/// <summary>
 	/// 4x4平行移動行列の作成
 	/// </summary>
 	/// <param name="translate">移動値</param>

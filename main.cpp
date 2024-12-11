@@ -43,6 +43,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	MyBase::Matrix4x4 viewProjectionMatrix = Matrix::Matrix::Multiply(viewMatrix, projectionMatrix);
 	MyBase::Matrix4x4 viewportMatrix = Matrix::MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
+	// お試し
+	Vector3 axis = MyTools::Normalize({ 1.0f, 1.0f, 1.0f });
+	float angle = 0.44f;
+	Matrix::Matrix4x4 rotateMatrix = Matrix::MakeRotateAxisAngle(axis, angle);
+
 #ifdef _DEBUG
 
 	// デバッグ用
@@ -68,9 +73,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowPos(ImVec2(20, 150), ImGuiCond_Once);							// ウィンドウの座標(プログラム起動時のみ読み込み)
 		ImGui::SetNextWindowSize(ImVec2(400, 350), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
-		ImGui::Begin("Window");
+		/*ImGui::Begin("Window");
 
-		ImGui::End();
+		ImGui::End();*/
 
 #endif // _DEBUG
 
@@ -158,10 +163,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);							// ウィンドウの座標(プログラム起動時のみ読み込み)
 		ImGui::SetNextWindowSize(ImVec2(400, 80), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
-		ImGui::Begin("camera");
+		/*ImGui::Begin("camera");
 		ImGui::DragFloat3("translate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("rotate", &cameraRotate.x, 0.01f);
-		ImGui::End();
+		ImGui::End();*/
 
 #endif // _DEBUG
 
@@ -175,7 +180,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		// グリッドの描画
-		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
+		//Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
+
+		Matrix::MatrixScreenPrintf(0, 0, rotateMatrix, "rotateMatrix");
 
 		///
 		/// ↑描画処理ここまで

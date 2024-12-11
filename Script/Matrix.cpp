@@ -1,4 +1,5 @@
 ﻿#include "Matrix.h"
+#include "MyTools.h"
 #include <Novice.h>
 
 ///
@@ -437,6 +438,33 @@ MyBase::Matrix4x4 Matrix::MakeRotateMatrix4x4(const float& radianX, const float&
 	return ans;
 }
 
+/// 任意軸回転行列の作成
+MyBase::Matrix4x4 Matrix::MakeRotateAxisAngle(const Vector3& axis, float angle)
+{
+	// 戻り値
+	Matrix4x4 ans = { 0 };
+
+	// 回転軸を正規化
+	Vector3 n = MyTools::Normalize(axis);
+
+	// 回転行列の計算
+	ans.m[0][0] = cosf(angle) + n.x * n.x * (1.0f - cosf(angle));
+	ans.m[0][1] = n.x * n.y * (1.0f - cosf(angle)) + n.z * sinf(angle);
+	ans.m[0][2] = n.x * n.z * (1.0f - cosf(angle)) - n.y * sinf(angle); 
+
+	ans.m[1][0] = n.y * n.x * (1.0f - cosf(angle)) - n.y * sinf(angle);
+	ans.m[1][1] = cosf(angle) + n.y * n.y * (1.0f - cosf(angle));
+	ans.m[1][2] = n.y * n.z * (1.0f - cosf(angle)) + n.x * sinf(angle);
+
+	ans.m[2][0] = n.z * n.x * (1.0f - cosf(angle)) + n.y * sinf(angle);
+	ans.m[2][1] = n.z * n.y * (1.0f - cosf(angle)) - n.x * sinf(angle);
+	ans.m[2][2] = cosf(angle) + n.z * n.z * (1.0f - cosf(angle));
+
+	ans.m[3][3] = 1.0f;
+
+	return ans;
+}
+
 /// 4x4平行移動行列の作成
 MyBase::Matrix4x4 Matrix::MakeTranslateMatrix(const Vector3& translate) {
 	Matrix4x4 ans = { 0 };
@@ -766,7 +794,7 @@ void Matrix::MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const cha
 	{
 		for (int column = 0; column < 4; ++column)
 		{
-			Novice::ScreenPrintf(x + column * kColumnWidth, (y + kRowHeight) + row * kRowHeight, "%6.02f", matrix.m[row][column]);
+			Novice::ScreenPrintf(x + column * kColumnWidth, (y + kRowHeight) + row * kRowHeight, "%8.03f", matrix.m[row][column]);
 		}
 	}
 }
