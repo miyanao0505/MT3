@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_1_02_こっちからあっち";
+const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_1_03_Quaternionことはじめ";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
