@@ -217,6 +217,13 @@ public:
 	static Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 
 	/// <summary>
+	/// ある方向からある方向への回転行列を作成
+	/// </summary>
+	/// <param name="from">今見てる方向</param>
+	/// <param name="to">次見る方向</param>
+	static Matrix4x4 MakeDirectionToDirection(const Vector3& from, const Vector3& to);
+
+	/// <summary>
 	/// 4x4平行移動行列の作成
 	/// </summary>
 	/// <param name="translate">移動値</param>

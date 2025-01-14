@@ -4,7 +4,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_";
+const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_1_02_こっちからあっち";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -44,9 +44,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	MyBase::Matrix4x4 viewportMatrix = Matrix::MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
 	// お試し
-	Vector3 axis = MyTools::Normalize({ 1.0f, 1.0f, 1.0f });
-	float angle = 0.44f;
-	Matrix::Matrix4x4 rotateMatrix = Matrix::MakeRotateAxisAngle(axis, angle);
+	Vector3 from0 = MyTools::Normalize(Vector3{ 1.0f, 0.7f, 0.5f });
+	Vector3 to0 = -from0;
+	Vector3 from1 = MyTools::Normalize(Vector3{ -0.6f, 0.9f, 0.2f });
+	Vector3 to1 = MyTools::Normalize(Vector3{ 0.4f, 0.7f, -0.5f });
+	Matrix::Matrix4x4 rotateMatrix0 = Matrix::MakeDirectionToDirection(MyTools::Normalize(Vector3{ 1.0f, 0.0f, 0.0f }), MyTools::Normalize(Vector3{ -1.0f, 0.0f, 0.0f }));
+	Matrix::Matrix4x4 rotateMatrix1 = Matrix::MakeDirectionToDirection(from0, to0);
+	Matrix::Matrix4x4 rotateMatrix2 = Matrix::MakeDirectionToDirection(from1, to1);
 
 #ifdef _DEBUG
 
@@ -182,7 +186,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		//Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		Matrix::MatrixScreenPrintf(0, 0, rotateMatrix, "rotateMatrix");
+		Matrix::MatrixScreenPrintf(0, 0, rotateMatrix0, "rotateMatrix0");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5, rotateMatrix1, "rotateMatrix1");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 10, rotateMatrix2, "rotateMatrix2");
 
 		///
 		/// ↑描画処理ここまで
