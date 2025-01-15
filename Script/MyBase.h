@@ -48,16 +48,6 @@ public:
 	};
 
 	/// <summary>
-	/// クォータニオン
-	/// </summary>
-	struct Quaternion {
-		float x;
-		float y;
-		float z;
-		float w;
-	};
-
-	/// <summary>
 	/// 2x2の行列
 	/// </summary>
 	struct Matrix2x2 {
