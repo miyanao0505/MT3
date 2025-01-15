@@ -32,6 +32,9 @@
     <ClCompile Include="Script\MyTools.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="Script\Quaternion.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -104,5 +107,10 @@
     <ClInclude Include="Script\Matrix.h" />
     <ClInclude Include="Script\MyBase.h" />
     <ClInclude Include="Script\MyTools.h" />
+    <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Matrix4x4.h" />
+    <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Vector2.h" />
+    <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Vector3.h" />
+    <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Vector4.h" />
+    <ClInclude Include="Script\Quaternion.h" />
   </ItemGroup>
 </Project>

@@ -114,6 +114,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClCompile Include="Script\Matrix.cpp" />
     <ClCompile Include="Script\MyBase.cpp" />
     <ClCompile Include="Script\MyTools.cpp" />
+    <ClCompile Include="Script\Quaternion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\KamataEngine\External\KamataEngine\include\math\Matrix4x4.h" />
@@ -146,6 +147,7 @@ xcopy C:\KamataEngine\DirectXGame\Resources "$(OutDirFullPath)NoviceResources" /
     <ClInclude Include="Script\Matrix.h" />
     <ClInclude Include="Script\MyBase.h" />
     <ClInclude Include="Script\MyTools.h" />
+    <ClInclude Include="Script\Quaternion.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

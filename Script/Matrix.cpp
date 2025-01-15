@@ -448,17 +448,17 @@ MyBase::Matrix4x4 Matrix::MakeRotateAxisAngle(const Vector3& axis, float angle)
 	Vector3 n = MyTools::Normalize(axis);
 
 	// 回転行列の計算
-	ans.m[0][0] = cosf(angle) + n.x * n.x * (1.0f - cosf(angle));
+	ans.m[0][0] = n.x * n.x * (1.0f - cosf(angle)) + cosf(angle);
 	ans.m[0][1] = n.x * n.y * (1.0f - cosf(angle)) + n.z * sinf(angle);
 	ans.m[0][2] = n.x * n.z * (1.0f - cosf(angle)) - n.y * sinf(angle); 
 
-	ans.m[1][0] = n.y * n.x * (1.0f - cosf(angle)) - n.y * sinf(angle);
-	ans.m[1][1] = cosf(angle) + n.y * n.y * (1.0f - cosf(angle));
+	ans.m[1][0] = n.x * n.y * (1.0f - cosf(angle)) - n.z * sinf(angle);
+	ans.m[1][1] = n.y * n.y * (1.0f - cosf(angle)) + cosf(angle);
 	ans.m[1][2] = n.y * n.z * (1.0f - cosf(angle)) + n.x * sinf(angle);
 
-	ans.m[2][0] = n.z * n.x * (1.0f - cosf(angle)) + n.y * sinf(angle);
-	ans.m[2][1] = n.z * n.y * (1.0f - cosf(angle)) - n.x * sinf(angle);
-	ans.m[2][2] = cosf(angle) + n.z * n.z * (1.0f - cosf(angle));
+	ans.m[2][0] = n.x * n.z * (1.0f - cosf(angle)) + n.y * sinf(angle);
+	ans.m[2][1] = n.y * n.z * (1.0f - cosf(angle)) - n.x * sinf(angle);
+	ans.m[2][2] = n.z * n.z * (1.0f - cosf(angle)) + cosf(angle);
 
 	ans.m[3][3] = 1.0f;
 
@@ -481,12 +481,12 @@ MyBase::Matrix4x4 Matrix::MakeDirectionToDirection(const Vector3& from, const Ve
 	ans.m[0][1] = n.x * n.y * (1.0f - cosTheta) + n.z * sinTheta;
 	ans.m[0][2] = n.x * n.z * (1.0f - cosTheta) - n.y * sinTheta;
 
-	ans.m[1][0] = n.y * n.x * (1.0f - cosTheta) - n.y * sinTheta;
+	ans.m[1][0] = n.x * n.y * (1.0f - cosTheta) - n.z * sinTheta;
 	ans.m[1][1] = n.y * n.y * (1.0f - cosTheta) + cosTheta;
 	ans.m[1][2] = n.y * n.z * (1.0f - cosTheta) + n.x * sinTheta;
 
-	ans.m[2][0] = n.z * n.x * (1.0f - cosTheta) + n.y * sinTheta;
-	ans.m[2][1] = n.z * n.y * (1.0f - cosTheta) - n.x * sinTheta;
+	ans.m[2][0] = n.x * n.z * (1.0f - cosTheta) + n.y * sinTheta;
+	ans.m[2][1] = n.y * n.z * (1.0f - cosTheta) - n.x * sinTheta;
 	ans.m[2][2] = n.z * n.z * (1.0f - cosTheta) + cosTheta;
 
 	ans.m[3][3] = 1.0f;
