@@ -468,28 +468,16 @@ MyBase::Matrix4x4 Matrix::MakeRotateAxisAngle(const Vector3& axis, float angle)
 /// ある方向からある方向への回転行列を作成
 MyBase::Matrix4x4 Matrix::MakeDirectionToDirection(const Vector3& from, const Vector3& to)
 {
-	// 戻り値
-	Matrix4x4 ans = { 0 };
-
 	// 回転軸を正規化
 	Vector3 n = MyTools::Normalize(MyTools::Cross(from, to));
-	float cosTheta = MyTools::Dot(from, to);
-	float sinTheta = MyTools::Length(MyTools::Cross(from, to));
+	if (from.x == -to.x && from.y == -to.y && from.z == -to.z) {
+		if (to.x != 0 || to.y != 0) {
+			n = { to.y, -to.x, 0.0f };
+		}
+	}
+	float angle = acosf(MyTools::Dot(from, to));
 
-	// 回転行列の計算
-	ans.m[0][0] = n.x * n.x * (1.0f - cosTheta) + cosTheta;
-	ans.m[0][1] = n.x * n.y * (1.0f - cosTheta) + n.z * sinTheta;
-	ans.m[0][2] = n.x * n.z * (1.0f - cosTheta) - n.y * sinTheta;
-
-	ans.m[1][0] = n.x * n.y * (1.0f - cosTheta) - n.z * sinTheta;
-	ans.m[1][1] = n.y * n.y * (1.0f - cosTheta) + cosTheta;
-	ans.m[1][2] = n.y * n.z * (1.0f - cosTheta) + n.x * sinTheta;
-
-	ans.m[2][0] = n.x * n.z * (1.0f - cosTheta) + n.y * sinTheta;
-	ans.m[2][1] = n.y * n.z * (1.0f - cosTheta) - n.x * sinTheta;
-	ans.m[2][2] = n.z * n.z * (1.0f - cosTheta) + cosTheta;
-
-	ans.m[3][3] = 1.0f;
+	Matrix4x4 ans = MakeRotateAxisAngle(n, angle);
 
 	return ans;
 }
