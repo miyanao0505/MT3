@@ -5,7 +5,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_1_03_Quaternionことはじめ";
+const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_1_04_Quaternioonによるベクトルの回転";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -45,23 +45,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	MyBase::Matrix4x4 viewportMatrix = Matrix::MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
 	// お試し
-	Vector3 from0 = MyTools::Normalize(Vector3{ 1.0f, 0.7f, 0.5f });
-	Vector3 to0 = -from0;
-	Vector3 from1 = MyTools::Normalize(Vector3{ -0.6f, 0.9f, 0.2f });
-	Vector3 to1 = MyTools::Normalize(Vector3{ 0.4f, 0.7f, -0.5f });
-	Matrix::Matrix4x4 rotateMatrix0 = Matrix::MakeDirectionToDirection(MyTools::Normalize(Vector3{ 1.0f, 0.0f, 0.0f }), MyTools::Normalize(Vector3{ -1.0f, 0.0f, 0.0f }));
-	Matrix::Matrix4x4 rotateMatrix1 = Matrix::MakeDirectionToDirection(from0, to0);
-	Matrix::Matrix4x4 rotateMatrix2 = Matrix::MakeDirectionToDirection(from1, to1);
-
-	/*Quaternion q1 = { 2.0f, 3.0f, 4.0f, 1.0f };
-	Quaternion q2 = { 1.0f, 3.0f, 5.0f, 2.0f };
-	Quaternion identity = Quaternion::IdentityQuaternion();
-	Quaternion conj = Quaternion::Conjugate(q1);
-	Quaternion inv = Quaternion::Inverse(q1);
-	Quaternion normal = Quaternion::Normalize(q1);
-	Quaternion mul1 = Quaternion::Multiply(q1, q2);
-	Quaternion mul2 = Quaternion::Multiply(q2, q1);
-	float norm = Quaternion::Norm(q1);*/
+	Quaternion rotation = Quaternion::MakeRotateAxisAngleQuaternion(MyTools::Normalize(Vector3{ 1.0f, 0.4f, -0.2f }), 0.45f);
+	Vector3 pointY = { 2.1f, -0.9f, 1.3f };
+	Matrix::Matrix4x4 rotateMatrix = Quaternion::MakeRotateMatrix(rotation);
+	Vector3 rotateByQuaternion = Quaternion::RotateVector(pointY, rotation);
+	Vector3 rotatebyMatrix = Matrix::Transform(pointY, rotateMatrix);
 
 #ifdef _DEBUG
 
@@ -197,17 +185,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		//Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		Matrix::MatrixScreenPrintf(0, 0, rotateMatrix0, "rotateMatrix0");
-		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 5, rotateMatrix1, "rotateMatrix1");
-		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 10, rotateMatrix2, "rotateMatrix2");
-
-		/*Quaternion::QuaternionScreenPrintf(0, 0, identity, "Identity");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight, conj, "Conjugate");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 2, inv, "Inverse");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 3, normal, "Normalize");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 4, mul1, "Multiply(q1, q2)");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 5, mul2, "Multiply(q2, q1)");
-		Novice::ScreenPrintf(0, Quaternion::kRowHeight * 6, "%.02f                            : Norm", norm);*/
+		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 0, rotation, "rotation");
+		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 1, rotateMatrix, "rotateMatrix");
+		MyTools::VectorScreenPrintf(0, MyTools::kRowHeight * 6, rotateByQuaternion, "   : rotateByQuaternion");
+		MyTools::VectorScreenPrintf(0, MyTools::kRowHeight * 7, rotatebyMatrix, "   : rotateByMatrix");
 
 		///
 		/// ↑描画処理ここまで

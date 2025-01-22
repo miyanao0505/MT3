@@ -74,6 +74,53 @@ Quaternion Quaternion::Inverse(const Quaternion& quaternion)
 	return { conjugate.x / normPow2, conjugate.y / normPow2, conjugate.z / normPow2, conjugate.w / normPow2 };
 }
 
+// 任意軸回転を表すQuaternionの生成
+Quaternion Quaternion::MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
+{
+	Quaternion q(0.0f, 0.0f, 0.0f, 0.0f);
+
+	q.w = cosf(angle / 2.0f);
+	q.x = axis.x * sinf(angle / 2.0f);
+	q.y = axis.y * sinf(angle / 2.0f);
+	q.z = axis.z * sinf(angle / 2.0f);
+
+	return q;
+}
+
+// ベクトルをQuaternionで回転させた結果のベクトルを求める
+Vector3 Quaternion::RotateVector(const Vector3& vector, const Quaternion& quaternion)
+{
+	Quaternion ans(0.0f, 0.0f, 0.0f, 0.0f);
+	Quaternion r(vector.x, vector.y, vector.z, 0.0f);
+	
+	ans = Multiply(quaternion, r);
+	ans = Multiply(ans, Conjugate(quaternion));
+	
+	return Vector3{ ans.x, ans.y, ans.z };
+}
+
+// Quaternionから回転行列を求める
+Matrix::Matrix4x4 Quaternion::MakeRotateMatrix(const Quaternion& quaternion)
+{
+	Matrix::Matrix4x4 ans{ 0 };
+
+	ans.m[0][0] = powf(quaternion.w, 2) + powf(quaternion.x, 2) - powf(quaternion.y, 2) - powf(quaternion.z, 2);
+	ans.m[0][1] = 2 * (quaternion.x * quaternion.y + quaternion.w * quaternion.z);
+	ans.m[0][2] = 2 * (quaternion.x * quaternion.z - quaternion.w * quaternion.y);
+
+	ans.m[1][0] = 2 * (quaternion.x * quaternion.y - quaternion.w * quaternion.z);
+	ans.m[1][1] = powf(quaternion.w, 2) - powf(quaternion.x, 2) + powf(quaternion.y, 2) - powf(quaternion.z, 2);
+	ans.m[1][2] = 2 * (quaternion.y * quaternion.z + quaternion.w * quaternion.x);
+
+	ans.m[2][0] = 2 * (quaternion.x * quaternion.z + quaternion.w * quaternion.y);
+	ans.m[2][1] = 2 * (quaternion.y * quaternion.z - quaternion.w * quaternion.x);
+	ans.m[2][2] = powf(quaternion.w, 2) - powf(quaternion.x, 2) - powf(quaternion.y, 2) + powf(quaternion.z, 2);
+
+	ans.m[3][3] = 1.0f;
+
+	return ans;
+}
+
 /// クォータニオンの表示
 void Quaternion::QuaternionScreenPrintf(int x, int y, const Quaternion& quaternion, const char* label)
 {
