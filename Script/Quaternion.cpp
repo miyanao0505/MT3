@@ -162,6 +162,10 @@ Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, float t
 		dot = -dot;					// 内積も反転
 	}
 
+	if (dot >= 1.0f - DBL_EPSILON) {
+		return Add(Multiply((1.0f - t), q2), Multiply(t, q1));
+	}
+
 	// なす角を求める
 	float theta = std::acosf(dot);
 
