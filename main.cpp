@@ -16,10 +16,19 @@ Vector3 operator-(const Vector3& v1, const Vector3& v2) { return MyTools::Subtra
 Vector3 operator*(float s, const Vector3& v) { return MyTools::Multiply(s, v); }
 Vector3 operator*(const Vector3& v, float s) { return s * v; }
 Vector3 operator/(const Vector3& v, float s) { return MyTools::Multiply(1.0f / s, v); }
+/// 二項演算子
+Quaternion operator+(const Quaternion& q1, const Quaternion& q2) { return Quaternion::Add(q1, q2); }
+Quaternion operator-(const Quaternion& q1, const Quaternion& q2) { return Quaternion::Subtract(q1, q2); }
+Quaternion operator*(float s, const Quaternion& q) { return Quaternion::Multiply(s, q); }
+Quaternion operator*(const Quaternion& q, float s) { return s * q; }
+Quaternion operator/(const Quaternion& q, float s) { return Quaternion::Multiply(1.0f / s, q); }
 
 /// 単項演算子
 Vector3 operator-(const Vector3& v) { return { -v.x, -v.y, -v.z }; }
 Vector3 operator+(const Vector3& v) { return v; }
+/// 単項演算子
+Quaternion operator-(const Quaternion& q) { return { -q.x, -q.y, -q.z, -q.w }; }
+Quaternion operator+(const Quaternion& q) { return q; }
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -45,11 +54,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	MyBase::Matrix4x4 viewportMatrix = Matrix::MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
 	// お試し
-	Quaternion rotation = Quaternion::MakeRotateAxisAngleQuaternion(MyTools::Normalize(Vector3{ 1.0f, 0.4f, -0.2f }), 0.45f);
-	Vector3 pointY = { 2.1f, -0.9f, 1.3f };
-	Matrix::Matrix4x4 rotateMatrix = Quaternion::MakeRotateMatrix(rotation);
-	Vector3 rotateByQuaternion = Quaternion::RotateVector(pointY, rotation);
-	Vector3 rotatebyMatrix = Matrix::Transform(pointY, rotateMatrix);
+	Quaternion rotation0 = Quaternion::MakeRotateAxisAngleQuaternion({ 0.71f, 0.71f, 0.0f }, 0.3f);
+	Quaternion rotation1 = Quaternion::MakeRotateAxisAngleQuaternion({ 0.71f, 0.0f, 0.71f }, 3.141592f);
+
+	Quaternion interpolate0 = Quaternion::Slerp(rotation0, rotation1, 0.0f);
+	Quaternion interpolate1 = Quaternion::Slerp(rotation0, rotation1, 0.3f);
+	Quaternion interpolate2 = Quaternion::Slerp(rotation0, rotation1, 0.5f);
+	Quaternion interpolate3 = Quaternion::Slerp(rotation0, rotation1, 0.7f);
+	Quaternion interpolate4 = Quaternion::Slerp(rotation0, rotation1, 1.0f);
 
 #ifdef _DEBUG
 
@@ -185,10 +197,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// グリッドの描画
 		//Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 0, rotation, "rotation");
-		Matrix::MatrixScreenPrintf(0, Matrix::kRowHeight * 1, rotateMatrix, "rotateMatrix");
-		MyTools::VectorScreenPrintf(0, MyTools::kRowHeight * 6, rotateByQuaternion, "   : rotateByQuaternion");
-		MyTools::VectorScreenPrintf(0, MyTools::kRowHeight * 7, rotatebyMatrix, "   : rotateByMatrix");
+		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 0, interpolate0, "Slerp(q0, q1, 0.0f)");
+		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 1, interpolate1, "Slerp(q0, q1, 0.3f)");
+		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 2, interpolate2, "Slerp(q0, q1, 0.5f)");
+		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 3, interpolate3, "Slerp(q0, q1, 0.7f)");
+		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 4, interpolate4, "Slerp(q0, q1, 1.0f)");
 
 		///
 		/// ↑描画処理ここまで

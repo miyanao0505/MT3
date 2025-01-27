@@ -2,6 +2,36 @@
 #include "MyTools.h"
 #include "Novice.h"
 
+// Quaternionの和
+Quaternion Quaternion::Add(const Quaternion& q, const Quaternion& r)
+{
+	Quaternion ans(0.0f, 0.0f, 0.0f, 0.0f);
+
+	ans = { q.x + r.x, q.y + r.y, q.z + r.z, q.w + r.w };
+
+	return ans;
+}
+
+// Quaternionの差
+Quaternion Quaternion::Subtract(const Quaternion& q, const Quaternion& r)
+{
+	Quaternion ans(0.0f, 0.0f, 0.0f, 0.0f);
+
+	ans = { q.x - r.x, q.y - r.y, q.z - r.z, q.w - r.w };
+
+	return ans;
+}
+
+// Quaternionの積
+Quaternion Quaternion::Multiply(const float s, const Quaternion& q)
+{
+	Quaternion ans(0.0f, 0.0f, 0.0f, 0.0f);
+
+	ans = { s * q.x, s * q.y, s * q.z, s * q.w };
+
+	return ans;
+}
+
 // Quaternionの積
 Quaternion Quaternion::Multiply(const Quaternion& q, const Quaternion& r)
 {
@@ -117,6 +147,30 @@ Matrix::Matrix4x4 Quaternion::MakeRotateMatrix(const Quaternion& quaternion)
 	ans.m[2][2] = powf(quaternion.w, 2) - powf(quaternion.x, 2) - powf(quaternion.y, 2) + powf(quaternion.z, 2);
 
 	ans.m[3][3] = 1.0f;
+
+	return ans;
+}
+
+// 球面線形補間
+Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, float t)
+{
+	Quaternion q2 = q0;
+	// q0 と q1 の内積
+	float dot = Dot(q2, q1);
+	if (dot < 0) {
+		q2 = Multiply(-1.0f, q2);	// もう片方の回転を利用する
+		dot = -dot;					// 内積も反転
+	}
+
+	// なす角を求める
+	float theta = std::acosf(dot);
+
+	// theta と sin を使って補間係数 scale0, scale1 を求める
+	float scale0 = sinf((1.0f - t) * theta) / sinf(theta);
+	float scale1 = sinf(t * theta) / sinf(theta);
+
+	// それぞれの補間係数を利用して補間後の Quaternion を求める
+	Quaternion ans = Add(Multiply(scale0, q2), Multiply(scale1, q1));
 
 	return ans;
 }
