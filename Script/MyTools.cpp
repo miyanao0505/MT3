@@ -588,6 +588,25 @@ float MyTools::LenSegOnSeparateAxis(const Vector3* Seg, const Vector3* e1, const
 	return r1 + r2 + r3;
 }
 
+/// 動いている物体同士の衝突
+std::pair<Vector3, Vector3> MyTools::ComputeCollisionVelocities(float mass1, const Vector3& velocity1, float mass2, const Vector3& velocity2, float coefficientOfRestitution, const Vector3& normal)
+{
+	// 衝突面法線方向(射影)とその他に分解
+	Vector3 project1 = Project(velocity1, normal);
+	Vector3 project2 = Project(velocity2, normal);
+	Vector3 sub1 = Subtract(velocity1, project1);
+	Vector3 sub2 = Subtract(velocity2, project2);
+
+	// 衝突面方向に対する反発後の速度を求める
+	Vector3 velocityAfter1 = Add(Add(Multiply(mass1, velocity1), Multiply(mass2, velocity2)), Multiply(coefficientOfRestitution * mass2, Subtract(velocity2, velocity1)));
+	velocityAfter1 /= mass1 + mass2;
+	Vector3 velocityAfter2 = Add(Add(Multiply(mass1, velocity1), Multiply(mass2, velocity2)), Multiply(coefficientOfRestitution * mass1, Subtract(velocity1, velocity2)));
+	velocityAfter2 /= mass1 + mass2;
+
+	// 反発係数の衝突面方向の速度と、もともとの速度で分解していて反発にかかわらない速度を足して最終的な反発後の速度を計算する
+	return std::make_pair(Add(velocityAfter1, sub1), Add(velocityAfter2, sub2));
+}
+
 /// 
 /// ツール関数 ここまで
 /// 

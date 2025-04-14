@@ -200,6 +200,18 @@ public:
 	/// <returns></returns>
 	static float LenSegOnSeparateAxis(const Vector3* Seg, const Vector3* e1, const Vector3* e2, const Vector3* e3);
 
+	/// <summary>
+	/// 動いている物体同士の衝突
+	/// </summary>
+	/// <param name="mass1">物体1 質量</param>
+	/// <param name="velocity1">物体1 速度</param>
+	/// <param name="mass2">物体2 質量</param>
+	/// <param name="velocity2">物体2 速度</param>
+	/// <param name="coefficientOfRestitution">反発係数</param>
+	/// <param name="normal">衝突面法線</param>
+	/// <returns>各物体の衝突後の速度</returns>
+	static std::pair<Vector3, Vector3> ComputeCollisionVelocities(float mass1, const Vector3& velocity1, float mass2, const Vector3& velocity2, float coefficientOfRestitution, const Vector3& normal);
+
 	/// 
 	/// ツール関数 ここまで
 	///

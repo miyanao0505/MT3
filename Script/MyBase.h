@@ -138,8 +138,12 @@ public:
 	/// 球
 	/// </summary>
 	struct Sphere {
-		Vector3 center;		//!< 中心
-		float radius;		//!< 半径
+		Vector3 center;			//!< 中心
+		Vector3 velocity;		//!< 速度
+		Vector3 accleration;	//!< 加速度
+		float radius;			//!< 半径
+		float mass;				//!< 質量
+		unsigned int color;		//!< 色
 	};
 
 	/// <summary>

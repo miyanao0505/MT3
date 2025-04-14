@@ -5,7 +5,7 @@
 #include "Script/Draw.h"
 #include <imgui.h>
 
-const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_1_05_回転の補間こそ真価_応用課題";
+const char kWindowTitle[] = "LE2B_22_ミヤザワ_ナオキ_MT4_2_01_動いている物体同士の衝突_応用課題";
 
 // ウィンドウサイズ
 const int kWindowWidth = 1280, kWindowHeight = 720;
@@ -54,14 +54,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	MyBase::Matrix4x4 viewportMatrix = Matrix::MakeViewportMatrix(0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f);
 
 	// お試し
-	Quaternion rotation0 = Quaternion::MakeRotateAxisAngleQuaternion({ 0.71f, 0.71f, 0.0f }, 0.3f);
-	Quaternion rotation1 = { -rotation0.x, -rotation0.y, -rotation0.z, -rotation0.w };
+	MyTools::Sphere sphere = { 
+		.center{1.2f, 0.0f, 3.0f},
+		.velocity{0.0f, 0.0f, 0.02f},
+		.accleration{0.0f, 0.0f, 0.0f},
+		.radius{0.2f},
+		.mass{1.0f},
+		.color{0xFFFFFFFF}
+	};
+	MyTools::Sphere bullet = {
+		.center{-1.2f, 0.0f, -0.2f},
+		.velocity{0.0f, 0.0f, 0.0f},
+		.accleration{0.0f, 0.0f, 0.0f},
+		.radius{0.05f},
+		.mass{1.0f},
+		.color{0xFF0000FF}
+	};
+	MyTools::Segment ballistic = {
+		.origin = bullet.center,
+		.diff = MyTools::Normalize(MyTools::Subtract(sphere.center, bullet.center))
+	};
 
-	Quaternion interpolate0 = Quaternion::Slerp(rotation0, rotation1, 0.0f);
-	Quaternion interpolate1 = Quaternion::Slerp(rotation0, rotation1, 0.3f);
-	Quaternion interpolate2 = Quaternion::Slerp(rotation0, rotation1, 0.5f);
-	Quaternion interpolate3 = Quaternion::Slerp(rotation0, rotation1, 0.7f);
-	Quaternion interpolate4 = Quaternion::Slerp(rotation0, rotation1, 1.0f);
+	bool isShot = false;
 
 #ifdef _DEBUG
 
@@ -93,6 +107,33 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::End();*/
 
 #endif // _DEBUG
+
+		if (keys[DIK_SPACE]) {
+			isShot = true;
+			bullet.velocity = ballistic.diff * 0.1f;
+		}
+
+		// 球と弾の当たり判定
+		if (MyTools::IsCollision(bullet, sphere)) {
+			auto [velocity1, velocity2] = MyTools::ComputeCollisionVelocities(bullet.mass, bullet.velocity, sphere.mass, sphere.velocity, 1.0f, ballistic.diff);
+			bullet.velocity = velocity1;
+			sphere.velocity = velocity2;
+		}	
+
+		// 弾の移動処理
+		bullet.center += bullet.velocity;
+
+		// 球の前後移動
+		sphere.center += sphere.velocity;
+		if(sphere.velocity.x == 0.0f)
+		{
+			if (sphere.center.z >= 4.0f) {
+				sphere.velocity *= -1.0f;
+			}
+			if (sphere.center.z <= 2.0f) {
+				sphere.velocity *= -1.0f;
+			}
+		}
 
 		// 各種行列の計算
 		cameraMatrix = Matrix::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, cameraTranslate);
@@ -171,17 +212,37 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		if (keys[DIK_R] && !preKeys[DIK_R])
 		{
 			// カメラ
-			cameraTranslate = { 0.0f, 1.9f, -6.49f };
-			cameraRotate = { 0.26f, 0.0f, 0.0f };
+			cameraTranslate = { -3.26f, 1.58f, -3.01f };
+			cameraRotate = { 0.26f, 0.607f, 0.0f };
+
+			sphere = {
+				.center{1.2f, 0.0f, 3.0f},
+				.velocity{0.0f, 0.0f, 0.02f},
+				.accleration{0.0f, 0.0f, 0.0f},
+				.radius{0.2f},
+				.mass{1.0f},
+				.color{0xFFFFFFFF}
+			};
+
+			bullet = {
+				.center{-1.2f, 0.0f, -0.2f},
+				.velocity{0.0f, 0.0f, 0.0f},
+				.accleration{0.0f, 0.0f, 0.0f},
+				.radius{0.05f},
+				.mass{0.5f},
+				.color{0xFF0000FF}
+			};
+
+			isShot = false;
 		}
 
 		ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);							// ウィンドウの座標(プログラム起動時のみ読み込み)
 		ImGui::SetNextWindowSize(ImVec2(400, 80), ImGuiCond_Once);							// ウィンドウのサイズ(プログラム起動時のみ読み込み)
 
-		/*ImGui::Begin("camera");
+		ImGui::Begin("camera");
 		ImGui::DragFloat3("translate", &cameraTranslate.x, 0.01f);
 		ImGui::DragFloat3("rotate", &cameraRotate.x, 0.01f);
-		ImGui::End();*/
+		ImGui::End();
 
 #endif // _DEBUG
 
@@ -195,13 +256,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		// グリッドの描画
-		//Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
+		Draw::DrawGrid(viewProjectionMatrix, viewportMatrix);
 
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 0, interpolate0, "Slerp(q0, q1, 0.0f)");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 1, interpolate1, "Slerp(q0, q1, 0.3f)");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 2, interpolate2, "Slerp(q0, q1, 0.5f)");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 3, interpolate3, "Slerp(q0, q1, 0.7f)");
-		Quaternion::QuaternionScreenPrintf(0, Quaternion::kRowHeight * 4, interpolate4, "Slerp(q0, q1, 1.0f)");
+		// 球の描画
+		Draw::DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, sphere.color);
+
+		// 弾道の描画
+		if(!isShot) {
+			Draw::DrawSegment(ballistic, viewProjectionMatrix, viewportMatrix, bullet.color);
+		}
+
+		// 弾の描画
+		Draw::DrawSphere(bullet, viewProjectionMatrix, viewportMatrix, bullet.color);
 
 		///
 		/// ↑描画処理ここまで
